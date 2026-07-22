@@ -1,0 +1,69 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging and build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+config/config.local.json
+**/*secret*.json
+**/*credential*.json
+
+# Logs and runtime output
+*.log
+logs/
+outputs/
+results/
+checkpoints/
+wandb/
+runs/
+
+# Model files and downloaded caches
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+.cache/
+**/.cache/
+
+# Generated RAG artifacts
+RAG/chunks.pkl
+RAG/faiss.index
+RAG/registered_files.json
+
+# Large local EEG recordings (keep small curated examples explicitly if needed)
+*.edf
+*.rec
+.agents
