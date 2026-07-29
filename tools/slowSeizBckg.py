@@ -130,3 +130,21 @@ def slowSeizBckgModel_TenSeconds(start: int, end: int, config):
         infos.append(info)
     
     return infos
+
+
+def predict_slow_seizure_background(data):
+    """Return background/slow/seizure probabilities for one 10-second window.
+
+    Unlike the legacy registered tool above, this helper receives data explicitly.
+    It is intended for session-isolated callers such as the MCP skills.
+    """
+    if data.ndim != 2 or data.shape[0] != 22 or data.shape[1] != 2560:
+        raise ValueError("The coarse detector requires data shaped (22, 2560) at 256 Hz.")
+
+    data_tensor = torch.tensor(data, dtype=torch.float32).unsqueeze(0).to(device)
+    probs = multi_model_predict(slowSeizBckgModels, data_tensor)
+    return {
+        "background": float(probs[0]),
+        "slow": float(probs[1]),
+        "seizure": float(probs[2]),
+    }

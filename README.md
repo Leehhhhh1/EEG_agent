@@ -76,6 +76,18 @@ EEGAgent/
 ```
 
 # note
+## Desktop MCP mode
+The desktop client now starts the local EEG MCP server over stdio when an EDF file is loaded. It opens an EEG session, keeps the returned session ID in the active chat, and uses DeepSeek native Function Calling to invoke only the MCP tools allowed by the selected skill route.
+
+Install the project dependencies, including the MCP 1.x SDK, then start the client:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe desktop_app.py
+```
+
+The desktop client starts `mcp_server.server` automatically. Do not start a second MCP server manually for the normal desktop workflow.
+
 ## Adding New Tools
 Model-based tools
 Add the .pth weight files under tools/localModels/, and create a corresponding Python file in /tools/ containing the tool description and model implementation.

@@ -1,5 +1,6 @@
 import os
 import json
+from dotenv import load_dotenv
 from openai import OpenAI
 from tools import function_register
 from tools.registerData import registerData
@@ -12,7 +13,16 @@ import yaml
 import time
 
 class EEGAgent:
-    def __init__(self, config_path: str, file_name: str, api_key: str, base_url: str):
+    def __init__(self, config_path: str, file_name: str):
+        load_dotenv()
+        api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("api_key")
+        base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+        model = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
+        if not api_key:
+            raise ValueError(
+                "Missing DeepSeek API key. Set DEEPSEEK_API_KEY in .env."
+            )
+
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
         with open(os.path.join(self.config['report_template_path'], 'report_template.yaml'), 'r') as file:
@@ -30,7 +40,11 @@ class EEGAgent:
         self.tool_schemas = function_register.export_tool_schemas()
 
         ### init ###
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url=base_url,
+        )
+        self.model = model
 
         ### construct system prompt ###
         prior_knowlwdge = self.config['prior knowledge'].copy()
@@ -43,9 +57,9 @@ class EEGAgent:
     def prepare_user_message(self, user_query: str):
         self.messages.append({'role': 'user', 'content': user_query})
 
-    def call_model(self, model="qwen-plus-2025-09-11"): # qwen3-14b qwen3-32b qwen3-235b-a22b qwen-plus-2025-07-28
+    def call_model(self):
         completion = self.client.chat.completions.create(
-            model=model,
+            model=self.model,
             messages=self.messages,
             # extra_body={"enable_thinking": False},
             timeout=60
@@ -57,7 +71,7 @@ class EEGAgent:
         })
         return response
 
-    def handle_tool_calls(self, response):
+    def handle_tool_calls(self, response, on_tool_start=None, on_tool_end=None):
         calls = extract_tool_calls(response)
         if not calls:
             return False 
@@ -76,11 +90,17 @@ class EEGAgent:
                 args['config'] = self.config
 
             try:
+                if on_tool_start:
+                    on_tool_start(function_name)
                 output = function(**args)
                 new_call = call.copy()
                 new_call['return'] = output
                 function_return.append(new_call)
+                if on_tool_end:
+                    on_tool_end(function_name)
             except Exception as e:
+                if on_tool_end:
+                    on_tool_end(function_name)
                 print(f"{function_name} execution unsuccessful: {e}")
                 raise e
         messageMerge(function_return, self.messages)
@@ -130,15 +150,83 @@ class EEGAgent:
             "local_tool_time": local_tool_time,
             "total_time": total_duration
         }
+
+    def call_model_stream(self, on_delta=None):
+        stream = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.messages,
+            timeout=60,
+            stream=True,
+        )
+        response_parts = []
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+            content = chunk.choices[0].delta.content
+            if content:
+                response_parts.append(content)
+                if on_delta:
+                    on_delta(content)
+
+        response = "".join(response_parts)
+        self.messages.append({"role": "assistant", "content": response})
+        return response
+
+    def run_stream(self, user_query, on_delta=None, on_tool_start=None,
+                   on_tool_end=None, on_tool_call_detected=None):
+        from RAG.embedder import BGEEmbedder
+        from RAG.searcher import FaissSearcher
+
+        embedder = BGEEmbedder()
+        searcher = FaissSearcher("RAG/faiss.index", "RAG/chunks.pkl")
+        query_vector = embedder.encode([user_query])[0]
+        threshold = self.config.get("similarity_threshold")
+        results = searcher.search(query_vector, top_k=3)
+        for rank, (text, score) in enumerate(results, 1):
+            if score >= threshold:
+                self.messages[0]['content'] += f"{rank}. {text}\n"
+
+        self.prepare_user_message(user_query)
+        total_rounds = 0
+        total_time = 0.0
+        local_tool_time = 0.0
+        start_total = time.time()
+
+        while True:
+            round_start = time.time()
+            response = self.call_model_stream(on_delta=on_delta)
+            total_time += time.time() - round_start
+            total_rounds += 1
+
+            if extract_tool_calls(response) and on_tool_call_detected:
+                on_tool_call_detected()
+
+            tool_start = time.time()
+            has_more_tools = self.handle_tool_calls(
+                response,
+                on_tool_start=on_tool_start,
+                on_tool_end=on_tool_end,
+            )
+            local_tool_time += time.time() - tool_start
+            if not has_more_tools:
+                break
+
+        return {
+            "response": response,
+            "rounds": total_rounds,
+            "model_time": total_time,
+            "local_tool_time": local_tool_time,
+            "total_time": time.time() - start_total,
+        }
         
 
 if __name__ == "__main__":
     agent = EEGAgent(
         config_path="config/config.json",
-        file_name="spsw_077_a_1.edf",
-        api_key = "***",
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        file_name="data/gped_049_a_6.edf",
     )
     user_question = "Can epileptic discharges be observed within the first minute? If so, where?"
     print("Human:", user_question)
-    agent.run(user_question)
+    result = agent.run(user_question)
+    print("Assistant:", result["response"])
+    print("耗时:", round(result["total_time"], 2), "秒")

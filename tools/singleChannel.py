@@ -279,3 +279,35 @@ def seizureNormalModel_OneSecond(name: List[str], start:int, end:int, config):
             }
         infos.append(info)
     return infos
+
+
+def predict_seizure_normal(data):
+    """Return seizure/non-seizure probabilities for one second per input channel.
+
+    ``data`` is passed directly instead of using ``registerData`` so simultaneous
+    MCP sessions cannot overwrite each other's recording.
+    """
+    if data.ndim != 2 or data.shape[1] != 256:
+        raise ValueError("The fine detector requires data shaped (channels, 256) at 256 Hz.")
+
+    data_tensor = torch.tensor(data, dtype=torch.float32).to(device)
+    with torch.no_grad():
+        probs = torch.softmax(model_seiz_normal(data_tensor), dim=-1).cpu().numpy()
+    return [
+        {"non_seizure": float(probability[0]), "seizure": float(probability[1])}
+        for probability in probs
+    ]
+
+
+def predict_seizure_artifact_background(data):
+    """Return background/artifact/seizure probabilities for one second per channel."""
+    if data.ndim != 2 or data.shape[1] != 256:
+        raise ValueError("The artifact detector requires data shaped (channels, 256) at 256 Hz.")
+
+    data_tensor = torch.tensor(data, dtype=torch.float32).to(device)
+    with torch.no_grad():
+        probs = torch.softmax(model_seiz_arti_bckg(data_tensor), dim=-1).cpu().numpy()
+    return [
+        {"background": float(probability[0]), "artifact": float(probability[1]), "seizure": float(probability[2])}
+        for probability in probs
+    ]

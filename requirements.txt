@@ -13,3 +13,6 @@ torch
 tqdm==4.67.1
 transformers
 PyYAML
+python-dotenv>=1.0.0
+PySide6
+mcp>=1.26,<2

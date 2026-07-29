@@ -145,9 +145,7 @@ for i, (psg_file, hyp_file) in enumerate(files):
 
     agent = EEGAgent(
         config_path="config/config.json",
-        file_name=psg_file,
-        api_key="***",
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        file_name=psg_file
     )
 
     result = agent.run(question)

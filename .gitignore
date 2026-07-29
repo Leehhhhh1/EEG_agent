@@ -50,13 +50,16 @@ wandb/
 runs/
 
 # Model files and downloaded caches
+*.bin
 *.pt
 *.pth
 *.ckpt
 *.onnx
+*.onnx_data
 *.safetensors
 .cache/
 **/.cache/
+RAG/sentenceModel/
 
 # Generated RAG artifacts
 RAG/chunks.pkl

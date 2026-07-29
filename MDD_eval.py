@@ -38,9 +38,7 @@ for subj in subject_files:
     ### init EEGAgent ###
     agent = EEGAgent(
         config_path="config/config.json",
-        file_name=subj["file"],
-        api_key="***",
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        file_name=subj["file"]
     )
 
     response = agent.run(question)
