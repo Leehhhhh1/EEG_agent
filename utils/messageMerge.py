@@ -1,6 +1,7 @@
 import json
 
 def messageMerge(function_return, messages):
+    """处理 message Merge 相关逻辑。"""
     tool_response_text = "\n\n"
     for item in function_return:
         tool_response_text += f"<FUNCTION>\n{item['name']}\n"

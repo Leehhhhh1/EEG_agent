@@ -20,6 +20,7 @@ with (PROJECT_ROOT / "config" / "config.json").open("r", encoding="utf-8") as co
 
 
 def _resolve_edf_path(file_path: str) -> Path:
+    """解析并校验用户选择的 EDF 文件路径。"""
     path = Path(file_path).expanduser().resolve()
     if path.suffix.lower() != ".edf":
         raise ValueError("Only EDF files are supported.")
@@ -30,7 +31,7 @@ def _resolve_edf_path(file_path: str) -> Path:
 
 @mcp.tool()
 def open_eeg_session(file_path: str) -> dict:
-    """Open a local EDF recording and return a session ID plus a minimal summary."""
+    """处理 open eeg session 相关逻辑。"""
     path = _resolve_edf_path(file_path)
     raw = mne.io.read_raw_edf(path, preload=False, verbose=False)
     basic_info = build_basic_information(path, raw)
@@ -47,7 +48,7 @@ def open_eeg_session(file_path: str) -> dict:
 
 @mcp.tool()
 def get_eeg_basic_information(session_id: str) -> dict:
-    """Return EEG metadata, montage, channels, and analysis limits for a session."""
+    """获取 get eeg basic information 相关信息。"""
     try:
         return sessions.get(session_id).basic_info
     except SessionNotFoundError as exc:
@@ -62,7 +63,7 @@ def explore_eeg_segment(
     focus: str = "overview",
     channels: list[str] | None = None,
 ) -> dict:
-    """Explore up to 60 seconds of EEG using amplitude, spectral, and symmetry features."""
+    """处理 explore eeg segment 相关逻辑。"""
     try:
         session = sessions.get(session_id)
     except SessionNotFoundError as exc:
@@ -79,7 +80,7 @@ def detect_eeg_events(
     channels: list[str] | None = None,
     sensitivity: str = "balanced",
 ) -> dict:
-    """Screen an EDF session for seizure-like EEG events; results require clinical review."""
+    """处理 detect eeg events 相关逻辑。"""
     try:
         session = sessions.get(session_id)
     except SessionNotFoundError as exc:
@@ -95,7 +96,7 @@ def generate_eeg_report(
     include_detection: bool = True,
     language: str = "zh-CN",
 ) -> dict:
-    """Generate an evidence-linked EEG screening report draft from prior session findings."""
+    """处理 generate eeg report 相关逻辑。"""
     try:
         session = sessions.get(session_id)
     except SessionNotFoundError as exc:
@@ -110,7 +111,7 @@ def export_eeg_report(
     output_path: str,
     format: str = "json",
 ) -> dict:
-    """Export an existing session report as JSON or Markdown after explicit user request."""
+    """导出 export eeg report 相关结果。"""
     try:
         session = sessions.get(session_id)
     except SessionNotFoundError as exc:
@@ -120,7 +121,7 @@ def export_eeg_report(
 
 @mcp.tool()
 def close_eeg_session(session_id: str) -> dict:
-    """Close an opened EEG session and release its in-memory recording handle."""
+    """处理 close eeg session 相关逻辑。"""
     if not sessions.close(session_id):
         raise ValueError(f"Unknown EEG session: {session_id}")
     return {"session_id": session_id, "closed": True}

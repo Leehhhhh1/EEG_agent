@@ -3,6 +3,7 @@ import json
 import inspect
 
 def extract_tool_calls(response):
+    """处理 extract tool calls 相关逻辑。"""
     pattern = r"<FUNCTION>\s*(\w+)\s+<ARGS>\s*(\{.*?\})"
 
     matches = re.findall(pattern, response, re.DOTALL)
@@ -25,4 +26,5 @@ def extract_tool_calls(response):
     return tool_calls
 
 def has_config_parameter(func):
+    """处理 has config parameter 相关逻辑。"""
     return 'config' in inspect.signature(func).parameters

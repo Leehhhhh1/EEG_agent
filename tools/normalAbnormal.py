@@ -9,6 +9,7 @@ import numpy as np
 
 class NormalAbnormalEEG(nn.Module):
     def __init__(self, window, n_dim, n_head, n_layer) -> None:
+        """初始化对象状态。"""
         super().__init__()
         self.window = window
         self.n_dim = n_dim
@@ -30,6 +31,7 @@ class NormalAbnormalEEG(nn.Module):
         self.lm_head = nn.Linear(n_dim, 2)
         
     def forward(self, x, mask):
+        """执行模型前向计算。"""
         B, C, T = x.shape
         W = self.window
         x = x.view(B, C, T//W, W).transpose(1, 2).flatten(0, 1) # (B*T//W, C, W)
@@ -44,6 +46,7 @@ class NormalAbnormalEEG(nn.Module):
         return out
     
     def _init_weights(self, module):
+        """处理 init weights 相关逻辑。"""
         if isinstance(module, nn.Linear):
             std = 1 / math.sqrt(self.n_dim)
             if hasattr(module, 'SCALE'):
@@ -70,17 +73,18 @@ model_normalEEG.eval()
     }
 )
 def normalAbnormalModel(config):
+    """处理 normal Abnormal Model 相关逻辑。"""
     target_fs = 100
-    desired_length = 120000  # 20 minutes × 100 Hz
-    window_size = 1000        # 10 seconds per window
+    desired_length = 120000  # 保留的开发备注。
+    window_size = 1000        # 保留的开发备注。
     num_windows = desired_length // window_size  
 
-    data = getRegisteredData()  # shape: (C, T)
+    data = getRegisteredData()  # 张量形状说明。
     C, T = data.shape
     original_fs = config['fs']
 
     new_T = int(T * target_fs / original_fs)
-    resampled_data = signal.resample(data, num=new_T, axis=1)  # (C, new_T)
+    resampled_data = signal.resample(data, num=new_T, axis=1)  # 保留的开发备注。
 
     current_T = resampled_data.shape[1]
     if current_T < desired_length:
@@ -89,7 +93,7 @@ def normalAbnormalModel(config):
     else:
         padded_data = resampled_data[:, :desired_length]
 
-    # Step 3: construct mask
+    # 保留的开发备注。
     mask = torch.ones((1, num_windows+1), dtype=torch.int32)
     for i in range(num_windows):
         start = i * window_size
@@ -98,12 +102,12 @@ def normalAbnormalModel(config):
         if np.allclose(window, 0): # 默认阈值是1e-8
             mask[0, i+1] = 0
 
-    # Step 4: model inferring
+    # 保留的开发备注。
     data_tensor = torch.tensor(padded_data, dtype=torch.float32).unsqueeze(0)  # (1, C, T)
     logits = model_normalEEG(data_tensor, mask) 
     probs = torch.softmax(logits, dim=1)         
 
-    # Step 5: return prob
+    # 返回值说明。
     return {
         "normal Probability": round(probs[0, 0].item(),2),
         "abnormal Probability": round(probs[0, 1].item(),2)

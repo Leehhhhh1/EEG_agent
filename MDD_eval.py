@@ -15,7 +15,7 @@ data_dir = "./eval/MDD/raw"
 save_dir = "./eval/eval_logs"   
 os.makedirs(save_dir, exist_ok=True)
 
-# === file list ===
+# 保留的开发备注。
 subject_files = []
 for subj in test_subjects:
     group, sid = subj.split("_")
@@ -27,7 +27,7 @@ for subj in test_subjects:
         "label": label
     })
 
-# === evaluation ===
+# 评估流程。
 results = []
 question = "Determine whether the subject is a patient with MDD. Please respond with Yes or No."
 
@@ -35,7 +35,7 @@ for subj in subject_files:
     time.sleep(5)
     print(f"\nEvaluating {subj['name']} ...")
 
-    ### init EEGAgent ###
+    # 初始化 EEGAgent。
     agent = EEGAgent(
         config_path="config/config.json",
         file_name=subj["file"]
@@ -71,7 +71,7 @@ for subj in subject_files:
         json.dump(record, f, ensure_ascii=False, indent=2)
     print(f"Saved full conversation to {save_path}")
 
-### === summary === ###
+# 汇总区。
 summary_path = os.path.join(save_dir, "all_results_summary.json")
 with open(summary_path, "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)

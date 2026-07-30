@@ -10,6 +10,7 @@ from .register import function_register
 
 class SingleChannelEEG(nn.Module):
     def __init__(self, cls, embed_dim=128, num_heads=4, max_len=256):
+        """初始化对象状态。"""
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(1, 16, kernel_size=3, stride=1, padding=1),
@@ -43,8 +44,9 @@ class SingleChannelEEG(nn.Module):
         self.fc = nn.Linear(embed_dim, cls)
 
     def forward(self, x):
+        """执行模型前向计算。"""
         x = x.unsqueeze(1)
-        x = self.conv(x)  # [B, C=embed_dim, T']
+        x = self.conv(x)  # 保留的开发备注。
         x = x.transpose(1, 2)  # [B, T', C]
 
         for layer in self.attn_layers:
@@ -106,6 +108,7 @@ model_musle_eyem.eval()
     }
 )
 def eyemMuscleModel_OneSecond(name: List[str], start:int, end:int, config):
+    """处理 eyem Muscle Model  One Second 相关逻辑。"""
     if end - start > 10:
         raise ValueError("The time interval between start and end should not exceed 10 seconds.")
     
@@ -183,6 +186,7 @@ model_seiz_arti_bckg.eval()
     }
 )
 def seizureArtiBckgModel_OneSecond(name: List[str], start:int, end:int, config):
+    """处理 seizure Arti Bckg Model  One Second 相关逻辑。"""
     if end - start > 10:
         raise ValueError("The time interval between start and end should not exceed 10 seconds.")
     
@@ -252,6 +256,7 @@ model_seiz_normal.eval()
     }
 )
 def seizureNormalModel_OneSecond(name: List[str], start:int, end:int, config):
+    """处理 seizure Normal Model  One Second 相关逻辑。"""
     if end - start > 10:
         raise ValueError("The time interval between start and end should not exceed 10 seconds.")
     
@@ -282,11 +287,7 @@ def seizureNormalModel_OneSecond(name: List[str], start:int, end:int, config):
 
 
 def predict_seizure_normal(data):
-    """Return seizure/non-seizure probabilities for one second per input channel.
-
-    ``data`` is passed directly instead of using ``registerData`` so simultaneous
-    MCP sessions cannot overwrite each other's recording.
-    """
+    """预测 predict seizure normal 相关结果。"""
     if data.ndim != 2 or data.shape[1] != 256:
         raise ValueError("The fine detector requires data shaped (channels, 256) at 256 Hz.")
 
@@ -300,7 +301,7 @@ def predict_seizure_normal(data):
 
 
 def predict_seizure_artifact_background(data):
-    """Return background/artifact/seizure probabilities for one second per channel."""
+    """预测 predict seizure artifact background 相关结果。"""
     if data.ndim != 2 or data.shape[1] != 256:
         raise ValueError("The artifact detector requires data shaped (channels, 256) at 256 Hz.")
 

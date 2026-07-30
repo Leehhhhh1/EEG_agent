@@ -7,7 +7,7 @@ from tqdm import tqdm
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-# label mapping
+# 保留的开发备注。
 LABEL_MAP = {
     'Sleep stage W': 0,
     'Sleep stage 1': 1,
@@ -19,13 +19,15 @@ LABEL_MAP = {
 
 class SleepEDFDataset:
     def __init__(self, folder_path, eeg_channels=['EEG Fpz-Cz', 'EEG Pz-Oz'], epoch_length=30):
+        """初始化对象状态。"""
         self.folder_path = folder_path
         self.eeg_channels = eeg_channels
         self.epoch_length = epoch_length
-        self.subject_map = {}  # subject_id -> list of (psg,hyp)
+        self.subject_map = {}  # 保留的开发备注。
         self._build_file_pairs()
 
     def _build_file_pairs(self):
+        """构建 build file pairs 所需内容。"""
         files = os.listdir(self.folder_path)
         psg_files = sorted([f for f in files if f.endswith('-PSG.edf')])
         hyp_files = sorted([f for f in files if f.endswith('-Hypnogram.edf')])
@@ -43,7 +45,8 @@ class SleepEDFDataset:
                 print(f"Warning: Hypnogram file not found for {psg}, skipping...")
 
     def _get_sleep_range(self, annotations, raw, extend_wake=1800):
-        # find all wake
+        # 保留的开发备注。
+        """获取 get sleep range 相关信息。"""
         wake_onsets = [ann['onset'] for ann in annotations if ann['description'] == 'Sleep stage W']
         wake_durations = [ann['duration'] for ann in annotations if ann['description'] == 'Sleep stage W']
 
@@ -56,7 +59,7 @@ class SleepEDFDataset:
             sleep_start = wake_onsets[max_gap_idx] + wake_durations[max_gap_idx]
             sleep_end = wake_onsets[max_gap_idx+1]
 
-        # expand extend_wake second
+        # 保留的开发备注。
         sleep_start = max(0, sleep_start - extend_wake)
         sleep_end = sleep_end + extend_wake
 
@@ -65,6 +68,7 @@ class SleepEDFDataset:
         return sleep_start, sleep_end
 
     def _load_file_pair(self, psg_file, hyp_file):
+        """加载 load file pair 所需的数据。"""
         raw = mne.io.read_raw_edf(os.path.join(self.folder_path, psg_file), preload=True, verbose=False)
         raw.pick(picks=self.eeg_channels)
 
@@ -104,12 +108,14 @@ class SleepEDFDataset:
         return eeg_epochs[valid_idx], epoch_labels[valid_idx]
 
     def load_dataset(self, test_size=0.3, random_state=42):
+        """加载 load dataset 所需的数据。"""
         subjects = list(self.subject_map.keys())
         train_subjects, test_subjects = train_test_split(
             subjects, test_size=test_size, random_state=random_state
         )
 
         def _load_subjects(subject_list):
+            """加载 load subjects 所需的数据。"""
             epochs_list, labels_list, files_list = [], [], []
             subject_files = []
             for sub in tqdm(subject_list):
@@ -136,6 +142,7 @@ class SleepEDFDataset:
         return X_train, y_train, X_test, y_test, file_train, file_test
 
     def save_dataset(self, save_folder, X_train, y_train, X_test, y_test, file_train, file_test):
+        """处理 save dataset 相关逻辑。"""
         os.makedirs(save_folder, exist_ok=True)
         torch.save(X_train, os.path.join(save_folder, 'X_train.pt'))
         torch.save(y_train, os.path.join(save_folder, 'y_train.pt'))

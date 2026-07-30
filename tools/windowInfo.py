@@ -34,6 +34,7 @@ from skimage.metrics import structural_similarity as ssim
     }
 )
 def compute_amplitude(name: List[str], start: int, end: int, config):
+    """计算 compute amplitude 相关结果。"""
     if end - start > 60:
         raise ValueError("The time interval between start and end should not exceed 60 seconds.")
     data = getRegisteredData(start, end, config)
@@ -76,6 +77,7 @@ def compute_amplitude(name: List[str], start: int, end: int, config):
     }
 )
 def compute_psd(name: List[str], start: int, end: int, config):
+    """计算 compute psd 相关结果。"""
     if end - start > 60:
         raise ValueError("The time interval between start and end should not exceed 60 seconds.")
     data = getRegisteredData(start, end, config)
@@ -120,6 +122,7 @@ def compute_psd(name: List[str], start: int, end: int, config):
     }
 )
 def compute_symmetry(channel_pairs: List[Tuple[str, str]], start: int, end: int, config):
+    """计算 compute symmetry 相关结果。"""
     if end - start > 60:
         raise ValueError("The time interval between start and end should not exceed 60 seconds.")
     if channel_pairs is None:

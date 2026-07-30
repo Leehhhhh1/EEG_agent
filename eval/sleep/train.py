@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 # -----------------------------
-# 1. load Data
+# 加载数据。
 # -----------------------------
 save_folder = "./data"
 X_train = torch.load(f"{save_folder}/X_train.pt")
@@ -19,9 +19,10 @@ y_test = torch.load(f"{save_folder}/y_test.pt")
 
 
 # -----------------------------
-# 2. DataLoader
+# 加载数据。
 # -----------------------------
 def get_dataloader(X, y, batch_size=64, shuffle=True):
+    """获取 get dataloader 相关信息。"""
     dataset = TensorDataset(X, y)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
@@ -44,12 +45,14 @@ class SeparableConv2d(nn.Module):
       - pointwise: 1x1 conv to mix features
     """
     def __init__(self, in_ch, out_ch, kernel_size, padding=0, bias=False):
+        """初始化对象状态。"""
         super().__init__()
         self.depthwise = nn.Conv2d(in_ch, in_ch, kernel_size=kernel_size,
                                    padding=padding, groups=in_ch, bias=bias)
         self.pointwise = nn.Conv2d(in_ch, out_ch, kernel_size=(1,1),
                                    padding=0, bias=bias)
     def forward(self, x):
+        """执行模型前向计算。"""
         x = self.depthwise(x)
         x = self.pointwise(x)
         return x
@@ -64,13 +67,14 @@ class EEGNet(nn.Module):
                  n_channels,
                  n_samples,
                  n_classes,
-                 F1=32,         # number of temporal filters
-                 D=8,          # depth multiplier for spatial filters
-                 F2=None,      # number of pointwise filters (if None -> F1*D)
+                 F1=32,         # 保留的开发备注。
+                 D=8,          # 保留的开发备注。
+                 F2=None,      # 保留的开发备注。
                  kernel_length=75,
                  dropout=0.,
                  pool_kernel=5,
                  verbose=False):
+        """初始化对象状态。"""
         super().__init__()
         if F2 is None:
             F2 = F1 * D
@@ -80,11 +84,11 @@ class EEGNet(nn.Module):
         self.n_samples = n_samples
 
         self.conv1 = nn.Conv2d(1, F1, kernel_size=(1, kernel_length), bias=True)
-        # self.bn1 = nn.LayerNorm(normalized_shape=(n_channels, n_samples-kernel_length+1))
+        # 张量形状说明。
         self.bn1 = nn.InstanceNorm2d(F1, affine=True)
 
         self.depthwise = nn.Conv2d(F1, F1 * D, kernel_size=(n_channels, 1), groups=F1, bias=False)
-        # self.bn2 = nn.LayerNorm(normalized_shape=(1, n_samples-kernel_length+1))
+        # 张量形状说明。
         self.bn2 = nn.InstanceNorm2d(F1 * D, affine=True)
         self.activation = nn.ELU()
         self.pool1 = nn.MaxPool2d(kernel_size=(1, pool_kernel))
@@ -92,7 +96,7 @@ class EEGNet(nn.Module):
 
         sep_kernel_length = kernel_length // pool_kernel
         self.sep = SeparableConv2d(F1 * D, F2, kernel_size=(1, sep_kernel_length), bias=False)
-        # self.bn3 = nn.LayerNorm(normalized_shape=(1, (n_samples-kernel_length+1)//pool_kernel-sep_kernel_length+1))
+        # 张量形状说明。
         self.bn3 = nn.InstanceNorm2d(F2, affine=True)
         self.pool2 = nn.MaxPool2d(kernel_size=(1, pool_kernel))
         self.dropout2 = nn.Dropout(p=dropout)
@@ -104,7 +108,8 @@ class EEGNet(nn.Module):
         self._initialize_weights()
 
     def _forward_features(self, x):
-        # x: (B, 1, nch, ns)
+        # 保留的开发备注。
+        """处理 forward features 相关逻辑。"""
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.depthwise(x)
@@ -123,12 +128,14 @@ class EEGNet(nn.Module):
         return x
 
     def forward(self, x):
+        """执行模型前向计算。"""
         x = x.unsqueeze(1)
         x = self._forward_features(x).squeeze()
         x = self.classifier(x)
         return x
 
     def _initialize_weights(self):
+        """处理 initialize weights 相关逻辑。"""
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
                 nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
@@ -145,11 +152,12 @@ class EEGNet(nn.Module):
 # -----------------------------
 import time
 def train_model(model, train_loader, epochs=10, lr=1e-3, device='cpu'):
+    """处理 train model 相关逻辑。"""
     model.to(device)
-    # class_counts = np.bincount(y_train.numpy())
-    # weights = 1.0 / class_counts
+    # 保留的开发备注。
+    # 保留的开发备注。
     # weights = weights / weights.sum() * len(class_counts)  # 归一化
-    # class_weights = torch.tensor(weights, dtype=torch.float32).to(device)
+    # 保留的开发备注。
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=5e-4)
 
@@ -189,6 +197,7 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device='cpu'):
 best_f1 = 0
 
 def test_model(model, test_loader, device='cpu', class_names=None):
+    """处理 test model 相关逻辑。"""
     global best_f1  
     model.eval()
     all_preds, all_labels = [], []

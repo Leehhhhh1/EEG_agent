@@ -6,6 +6,7 @@ import scipy.signal as signal
 
 class SleepStage(nn.Module):
     def __init__(self, n_channels=2, n_classes=5):
+        """初始化对象状态。"""
         super().__init__()
         self.cnn = nn.Sequential(
             nn.Conv1d(n_channels, 24, kernel_size=31, stride=1),
@@ -32,10 +33,11 @@ class SleepStage(nn.Module):
             nn.Linear(16, n_classes)
             )
         
-        # self.apply(self.init_weights)
+        # 保留的开发备注。
 
     def forward(self, x):
-        # x: [batch, n_channels, time_samples]
+        # 保留的开发备注。
+        """执行模型前向计算。"""
         batch_size, n_channels, total_len = x.shape
         sec_len = total_len // 15
         x = x.view(batch_size, 15, n_channels, sec_len).flatten(0, 1)
@@ -43,7 +45,7 @@ class SleepStage(nn.Module):
         x = self.cnn(x)
         x = x.reshape(batch_size, 15, -1)
         
-        # GRU
+        # 保留的开发备注。
         out, _ = self.gru(x)
         out = out[:, -1, :]
         logits = self.fc(out)
@@ -61,12 +63,12 @@ model_sleepEEG.load_state_dict(
 model_sleepEEG.eval()
 
 # -------------------------
-# Label mapping
+# 保留的开发备注。
 # -------------------------
 SLEEP_LABELS = ["W", "N1", "N2", "N3", "R"]
 
 # -------------------------
-# Tool registration
+# 保留的开发备注。
 # -------------------------
 @function_register.register(
     description=(
@@ -98,13 +100,14 @@ SLEEP_LABELS = ["W", "N1", "N2", "N3", "R"]
     }
 )
 def sleepStageModel(start: int, end: int, config, segment_length=30):
+    """处理 sleep Stage Model 相关逻辑。"""
     if end - start < segment_length:
         return [{"warning": f"Data length {end-start:.2f}s is too short for a {segment_length}s prediction"}]
 
     data = getRegisteredData(start, end, config)  # [C, T]
     fs_target = config['fs']
     duration_sec = end - start
-    # Resample data to target sampling rate
+    # 保留的开发备注。
     data = signal.resample(data, num=int(duration_sec * fs_target), axis=1)
 
     n_samples = data.shape[1]

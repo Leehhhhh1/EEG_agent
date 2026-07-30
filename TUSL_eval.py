@@ -3,7 +3,7 @@ import pandas as pd
 import glob
 import os
 
-# ================= CONFIG =================
+# 配置区。
 IOU_THRESHOLD = 0.7
 MERGE_GAP_THRESHOLD = 1.0
 POSITIVE_CLASSES = [1, 2, 3]
@@ -19,6 +19,7 @@ CHANNEL_MAP = {
 # ==========================================
 
 def build_questions(folder):
+    """构建 build questions 所需内容。"""
     questions = []
     pairs = find_rec_edf_pairs(folder)
 
@@ -42,6 +43,7 @@ def build_questions(folder):
     return questions
 
 def find_rec_edf_pairs(folder):
+    """查找 find rec edf pairs 对应的数据。"""
     rec_files = glob.glob(os.path.join(folder, "**", "*.rec"), recursive=True)
     edf_files = glob.glob(os.path.join(folder, "**", "*.edf"), recursive=True)
     edf_dict = {os.path.basename(edf): edf for edf in edf_files}
@@ -55,14 +57,15 @@ def find_rec_edf_pairs(folder):
     return pairs
 
 def process_rec_annotations(input_file, output_dir='candidates', gap_threshold=1.0):
+    """处理 process rec annotations 相关数据。"""
     os.makedirs(output_dir, exist_ok=True)
 
-    ### Read original labels ###
+    # 保留的开发备注。
     df = pd.read_csv(input_file, header=None, names=['channel', 'start', 'end', 'class'])
     df['channel'] = df['channel'].astype(int)
     df['class'] = df['class'].astype(int)
 
-    ### Merge labels (by channel + class) ###
+    # 保留的开发备注。
     merged = []
     for (ch, cls), sub in df.groupby(['channel', 'class']):
         sub = sub.sort_values('start')
@@ -81,7 +84,7 @@ def process_rec_annotations(input_file, output_dir='candidates', gap_threshold=1
 
     merged_df = pd.DataFrame(merged, columns=['channel', 'start', 'end', 'class'])
 
-    ### Divide candidate intervals based on the merged labels ###
+    # 保留的开发备注。
     candidates = []
     curr_start, curr_end = None, None
     for s, e in merged_df[['start', 'end']].sort_values('start').values.tolist():
@@ -95,7 +98,7 @@ def process_rec_annotations(input_file, output_dir='candidates', gap_threshold=1
     if curr_start is not None:
         candidates.append((curr_start, curr_end))
 
-    ### Save each candidate interval, containing only the 'merged label' ###
+    # 保留的开发备注。
     for i, (s_win, e_win) in enumerate(candidates):
         subset = merged_df[(merged_df['end'] > s_win) & (merged_df['start'] < e_win)].sort_values(['channel', 'start'])
         file_path = os.path.join(output_dir, f'candidate_{i}.rec')
@@ -109,6 +112,7 @@ def process_rec_annotations(input_file, output_dir='candidates', gap_threshold=1
     return merged_df, candidates
 
 def calculate_iou(boxA, boxB):
+    """处理 calculate iou 相关逻辑。"""
     inter_start = max(boxA[0], boxB[0])
     inter_end = min(boxA[1], boxB[1])
     intersection = max(0, inter_end - inter_start)
@@ -116,6 +120,7 @@ def calculate_iou(boxA, boxB):
     return intersection / union if union > 0 else 0
 
 def merge_predictions(predictions, gap_threshold=MERGE_GAP_THRESHOLD):
+    """合并 merge predictions 相关结果。"""
     if not predictions: return []
     df = pd.DataFrame(predictions)
     df.rename(columns={'start_time': 'start', 'end_time': 'end'}, inplace=True)
@@ -137,6 +142,7 @@ def merge_predictions(predictions, gap_threshold=MERGE_GAP_THRESHOLD):
     return merged
 
 def process_and_merge_rec_file(input_file, gap_threshold=MERGE_GAP_THRESHOLD):
+    """处理 process and merge rec file 相关数据。"""
     df = pd.read_csv(input_file, header=None, names=['channel', 'start', 'end', 'class'])
     df['channel'] = df['channel'].astype(int)
     df['class'] = df['class'].astype(int)
@@ -158,6 +164,7 @@ def process_and_merge_rec_file(input_file, gap_threshold=MERGE_GAP_THRESHOLD):
     return pd.DataFrame(merged, columns=['channel', 'start', 'end', 'class'])
 
 def load_ground_truth(data_folder):
+    """加载 load ground truth 所需的数据。"""
     gt_data = defaultdict(list)
     rec_files = glob.glob(os.path.join(data_folder, "**", "*.rec"), recursive=True)
     for rec_path in rec_files:
@@ -170,7 +177,7 @@ def load_ground_truth(data_folder):
         gt_data[edf_path] = positive.to_dict('records')
     return gt_data
 
-# ==================== MAIN LOOP ====================
+# 主循环。
 from tqdm import tqdm
 results_storage = defaultdict(list)  
 questions = build_questions("./data/edf")
@@ -199,7 +206,7 @@ Each line should correspond to one seizure event. List all events for all channe
     except Exception as e:
         results_storage[q['edf']].append([])
 
-# ==================== ANALYSIS ====================
+# 分析区。
 total_preds, total_gt, hits = 0, 0, 0
 for edf_path, predictions_list in results_storage.items():
     gt_labels = ground_truth.get(edf_path, [])

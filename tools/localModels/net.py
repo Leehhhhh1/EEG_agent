@@ -4,6 +4,7 @@ from torch.nn import functional as F
 import math
 
 def Rope(x):
+    """处理 Rope 相关逻辑。"""
     B, T, C = x.shape
     # 计算theta角度
     theta = 10000 ** (-torch.arange(0, C, 2, device=x.device) / C) # （C//2）
@@ -24,6 +25,7 @@ def Rope(x):
 
 class MultiHeadSelfAttentionRoPE(nn.Module):
     def __init__(self, embed_dim, num_heads):
+        """初始化对象状态。"""
         super().__init__()
         assert embed_dim % num_heads == 0
         self.embed_dim = embed_dim
@@ -37,10 +39,11 @@ class MultiHeadSelfAttentionRoPE(nn.Module):
         self.out_proj.SCALE = 1 # 增益系数
 
     def forward(self, x, pad_mask=None):
-        # x: (batch, seq_len, embed_dim)
+        # 保留的开发备注。
+        """执行模型前向计算。"""
         B, T, _ = x.shape
 
-        q = self.q_proj(x).view(B, T, self.num_heads, self.head_dim).transpose(1, 2)  # (B, heads, T, head_dim)
+        q = self.q_proj(x).view(B, T, self.num_heads, self.head_dim).transpose(1, 2)  # 保留的开发备注。
         k = self.k_proj(x).view(B, T, self.num_heads, self.head_dim).transpose(1, 2)
         v = self.v_proj(x).view(B, T, self.num_heads, self.head_dim).transpose(1, 2)
 
@@ -55,21 +58,22 @@ class MultiHeadSelfAttentionRoPE(nn.Module):
         q = q.view(B, self.num_heads, T, self.head_dim)
         k = k.view(B, self.num_heads, T, self.head_dim)
 
-        # scaled dot product attention
-        attn_scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)  # (B, heads, T, T)
+        # 保留的开发备注。
+        attn_scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)  # 保留的开发备注。
         if pad_mask is not None: # (B, T)
             attn_scores = attn_scores.masked_fill(pad_mask[:, None, None, :] == 0, float("-inf"))
-        attn_probs = F.softmax(attn_scores, dim=-1)  # (B, heads, T, T)
+        attn_probs = F.softmax(attn_scores, dim=-1)  # 保留的开发备注。
 
-        out = torch.matmul(attn_probs, v)  # (B, heads, T, head_dim)
-        out = out.transpose(1, 2).contiguous().view(B, T, self.embed_dim)  # (B, T, embed_dim)
+        out = torch.matmul(attn_probs, v)  # 保留的开发备注。
+        out = out.transpose(1, 2).contiguous().view(B, T, self.embed_dim)  # 保留的开发备注。
 
 
-        out = self.out_proj(out)  # (B, T, embed_dim)
+        out = self.out_proj(out)  # 保留的开发备注。
         return out, attn_probs
     
 class FFN(nn.Module):
     def __init__(self, embed_dim, drop_p=0.1) -> None:
+        """初始化对象状态。"""
         super().__init__()
         self.c_fc = nn.Linear(embed_dim, 4 * embed_dim)
         self.GELU = nn.GELU(approximate='tanh')
@@ -78,6 +82,7 @@ class FFN(nn.Module):
         self.drop = nn.Dropout(drop_p)
     
     def forward(self, x):
+        """执行模型前向计算。"""
         x = self.c_fc(x)
         x = self.GELU(x)
         x = self.c_proj(x)
@@ -86,6 +91,7 @@ class FFN(nn.Module):
     
 class RoPETransformer(nn.Module):
     def __init__(self, embed_dim, num_heads) -> None:
+        """初始化对象状态。"""
         super().__init__()
         self.ln1 = nn.LayerNorm(embed_dim)
         self.RoPEAttention = MultiHeadSelfAttentionRoPE(embed_dim, num_heads)
@@ -93,6 +99,7 @@ class RoPETransformer(nn.Module):
         self.ffn = FFN(embed_dim)
     
     def forward(self, x, mask=None):
+        """执行模型前向计算。"""
         x1 = self.ln1(x)
         x1, attn = self.RoPEAttention(x1, pad_mask=mask)
         x = x + x1

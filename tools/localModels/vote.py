@@ -21,6 +21,6 @@ def multi_model_predict(models, data_tensor, mask=None):
             probs = torch.softmax(logits, dim=-1)
             all_probs.append(probs.cpu())
 
-    all_probs = torch.stack(all_probs)  # shape: (num_models, 1, num_classes)
-    avg_probs = all_probs.mean(dim=0)  # shape: (1, num_classes)
+    all_probs = torch.stack(all_probs)  # 张量形状说明。
+    avg_probs = all_probs.mean(dim=0)  # 张量形状说明。
     return avg_probs.numpy().flatten()

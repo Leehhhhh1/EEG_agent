@@ -72,6 +72,7 @@ def load_and_chunk(filepath, max_length=500):
     """
     def chunk_by_lines(text):
         # 去掉多余空行，并按段落切分
+        """处理 chunk by lines 相关逻辑。"""
         paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
         return paragraphs
 

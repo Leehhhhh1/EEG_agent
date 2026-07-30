@@ -4,6 +4,7 @@ from .register import function_register
 
 # 自动导入当前包下的所有子模块
 def import_all_modules(package):
+    """处理 import all modules 相关逻辑。"""
     for _, module_name, _ in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
         importlib.import_module(module_name)
 

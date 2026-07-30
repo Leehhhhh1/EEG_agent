@@ -1,5 +1,5 @@
 # ==========================
-# Sleep EEGAgent 
+# 保留的开发备注。
 # ==========================
 import os
 import json
@@ -16,14 +16,14 @@ import mne
 import regex as re
 
 # ==========================
-# Basic Configuration
+# 配置区。
 # ==========================
 DATA_PATH = "./eval/sleep/data/file_test.npy"
 EEG_DIR = "./eval/sleep/sleep-cassette"  # EDF文件所在文件夹
 SAVE_DIR = "./eval/eval_logs/Sleep"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# read test files
+# 读取文件。
 files = np.load(DATA_PATH)
 print(f"Loaded {len(files)} test subjects.")
 
@@ -38,7 +38,7 @@ LABEL_MAP = {
 }
 
 # ==========================
-# experiment setup
+# 保留的开发备注。
 # ==========================
 SEGMENT_DURATION = 1800 
 QUESTION_TEMPLATE = (
@@ -56,6 +56,7 @@ QUESTION_TEMPLATE = (
 # ==========================
 
 def extract_range(hyp_file, extend_wake=1800, random_pick=True):
+    """处理 extract range 相关逻辑。"""
     annots = mne.read_annotations(hyp_file)
 
     wake_onsets = [a['onset'] for a in annots if a['description'] == 'Sleep stage W']
@@ -94,11 +95,12 @@ def extract_range(hyp_file, extend_wake=1800, random_pick=True):
             start = max(sleep_start, end - SEGMENT_DURATION)
 
     # debug 打印（运行一次看下输出）
-    # print(f"[DEBUG] sleep_start={sleep_start:.1f}, sleep_end={sleep_end:.1f}, pick={start:.1f}-{end:.1f}, total_end={total_end:.1f}")
+    # 保留的开发备注。
     return start, end
 
 
 def load_ground_truth(hyp_file, start_time, end_time, epoch_len=30):
+    """加载 load ground truth 所需的数据。"""
     annotations = mne.read_annotations(hyp_file)
 
     labels = []
@@ -106,12 +108,12 @@ def load_ground_truth(hyp_file, start_time, end_time, epoch_len=30):
     offset_arr = np.array([a['onset'] + a['duration'] for a in annotations])
     desc_arr = np.array([a['description'] for a in annotations])
 
-    # Divide from start_time to end_time every 30 seconds
+    # 保留的开发备注。
     n_epochs = int(np.floor((end_time - start_time) / epoch_len))
     for i in range(n_epochs):
         epoch_start = start_time + i * epoch_len
 
-        # find epoch in which annotation 
+        # 保留的开发备注。
         idx = np.where((onset_arr <= epoch_start) & (epoch_start < offset_arr))[0]
         if len(idx) > 0:
             desc = desc_arr[idx[0]]
@@ -120,7 +122,7 @@ def load_ground_truth(hyp_file, start_time, end_time, epoch_len=30):
             else:
                 stage = 'W'
         else:
-            stage = 'W'  # fallback
+            stage = 'W'  # 保留的开发备注。
 
         labels.append(stage)
 
@@ -128,7 +130,7 @@ def load_ground_truth(hyp_file, start_time, end_time, epoch_len=30):
 
 
 # ==========================
-# main loop
+# 主循环。
 # ==========================
 all_true, all_pred = [], []
 results = []
@@ -151,7 +153,7 @@ for i, (psg_file, hyp_file) in enumerate(files):
     result = agent.run(question)
     response = result["response"]
 
-    # Ground truth
+    # 评估流程。
     gt_segment = load_ground_truth(hyp_path, start_time=start_t, end_time=end_t)
     n_epochs = len(gt_segment)
     
@@ -205,10 +207,10 @@ for i, (psg_file, hyp_file) in enumerate(files):
     save_path = os.path.join(SAVE_DIR, f"{psg_file[:-4]}_{timestamp}.json")
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(record, f, ensure_ascii=False, indent=2)
-    # print(f"  Saved log to {save_path}")
+    # 保留的开发备注。
 
 # ==========================
-# summary
+# 汇总区。
 # ==========================
 if all_true:
     cm_total = confusion_matrix(all_true, all_pred, labels=STAGE_LABELS)

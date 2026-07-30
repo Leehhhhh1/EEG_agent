@@ -6,6 +6,7 @@ import scipy.signal as signal
 
 class healthMDD(nn.Module):
     def __init__(self, n_channels=19, n_samples=1280, hidden=64, p=0.):
+        """初始化对象状态。"""
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(n_channels, 24, 75, 1),
@@ -26,6 +27,7 @@ class healthMDD(nn.Module):
         self.fc = nn.Linear(hidden, 2)
 
     def forward(self, x):
+        """执行模型前向计算。"""
         x = self.conv(x).flatten(1) # (32, 48, 49)
         return self.fc(x)
     
@@ -62,10 +64,11 @@ model_normalEEG.eval()
     }
 )
 def healthMDDModel(start: int, end: int, config, segment_length=5):
+    """处理 health M D D Model 相关逻辑。"""
     if end - start < segment_length:
         return [{"warning": f"data length {end-start:.2f}s < {segment_length}s"}]
 
-    data = getRegisteredData(start, end, config)  # shape: [C, T]
+    data = getRegisteredData(start, end, config)  # 张量形状说明。
     fs_target = config['fs']
     duration_sec = end - start
     data = signal.resample(data, num=int(duration_sec * config['fs']), axis=1)

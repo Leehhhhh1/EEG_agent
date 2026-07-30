@@ -1,4 +1,4 @@
-"""Evidence-linked screening report generation and lightweight export."""
+"""生成带证据来源的筛查报告，并提供轻量导出能力。"""
 
 import json
 from datetime import datetime, timezone
@@ -10,10 +10,12 @@ from eeg_core.report_schema import DIAGNOSTIC_STATUS, REPORT_TYPE, validate_lang
 
 
 def _findings_for_skill(session: Any, skill: str) -> list[dict[str, Any]]:
+    """查找 findings for skill 对应的数据。"""
     return [entry["result"] for entry in session.findings if entry.get("skill") == skill and "result" in entry]
 
 
 def _exploration_section(results: list[dict[str, Any]], language: str) -> dict[str, Any]:
+    """处理 exploration section 相关逻辑。"""
     screens = []
     for result in results:
         findings = result.get("abnormality_screen", {}).get("findings", [])
@@ -34,6 +36,7 @@ def _exploration_section(results: list[dict[str, Any]], language: str) -> dict[s
 
 
 def _detection_section(results: list[dict[str, Any]], language: str) -> dict[str, Any]:
+    """处理 detection section 相关逻辑。"""
     events = []
     for result in results:
         for event in result.get("events", []):
@@ -55,6 +58,7 @@ def _detection_section(results: list[dict[str, Any]], language: str) -> dict[str
 
 
 def _impression(exploration: dict[str, Any], detection: dict[str, Any], language: str) -> str:
+    """处理 impression 相关逻辑。"""
     event_count = len(detection["events"])
     screen_count = sum(len(screen["findings"]) for screen in exploration["screens"])
     if language == "zh-CN":
@@ -77,7 +81,7 @@ def generate_report(
     include_detection: bool = True,
     language: str = "zh-CN",
 ) -> dict[str, Any]:
-    """Create an evidence-linked report draft only from recorded session findings."""
+    """处理 generate report 相关逻辑。"""
     validate_language(language)
     exploration_results = _findings_for_skill(session, "exploration") if include_exploration else []
     detection_results = _findings_for_skill(session, "detection") if include_detection else []
@@ -123,6 +127,7 @@ def generate_report(
 
 
 def _get_report(session: Any, report_id: str) -> dict[str, Any]:
+    """获取 get report 相关信息。"""
     for report in reversed(session.reports):
         if report.get("report_id") == report_id:
             return report
@@ -130,6 +135,7 @@ def _get_report(session: Any, report_id: str) -> dict[str, Any]:
 
 
 def _render_markdown(report: dict[str, Any]) -> str:
+    """处理 render markdown 相关逻辑。"""
     recording = report.get("recording_information", {})
     patient = report.get("patient_information", {})
     lines = [
@@ -168,7 +174,7 @@ def _render_markdown(report: dict[str, Any]) -> str:
 
 
 def export_report(session: Any, report_id: str, output_path: str, format: str = "json") -> dict[str, Any]:
-    """Export a session report as JSON or Markdown after explicit user request."""
+    """导出 export report 相关结果。"""
     if format not in {"json", "markdown"}:
         raise ValueError("Only json and markdown exports are available in this version.")
     report = _get_report(session, report_id)

@@ -27,6 +27,7 @@ SYMMETRY_PAIRS = [
 
 
 def _select_channels(available: list[str], requested: list[str] | None) -> list[str]:
+    """处理 select channels 相关逻辑。"""
     if requested is None:
         return available
     invalid = sorted(set(requested) - set(available))
@@ -36,6 +37,7 @@ def _select_channels(available: list[str], requested: list[str] | None) -> list[
 
 
 def _amplitude_features(data: np.ndarray, channels: list[str]) -> dict[str, dict[str, float]]:
+    """处理 amplitude features 相关逻辑。"""
     microvolts = data * 1_000_000
     return {
         channel: {
@@ -49,6 +51,7 @@ def _amplitude_features(data: np.ndarray, channels: list[str]) -> dict[str, dict
 
 
 def _band_power(data: np.ndarray, channels: list[str], fs: float, bands: dict[str, list[float]]) -> dict[str, dict[str, float]]:
+    """处理 band power 相关逻辑。"""
     result = {}
     for channel, signal in zip(channels, data):
         frequencies, power = welch(signal, fs=fs, nperseg=min(256, signal.size))
@@ -61,6 +64,7 @@ def _band_power(data: np.ndarray, channels: list[str], fs: float, bands: dict[st
 
 
 def _symmetry_features(data: np.ndarray, channels: list[str]) -> dict[str, float]:
+    """处理 symmetry features 相关逻辑。"""
     indexes = {channel: index for index, channel in enumerate(channels)}
     result = {}
     for left, right in SYMMETRY_PAIRS:
@@ -71,6 +75,7 @@ def _symmetry_features(data: np.ndarray, channels: list[str]) -> dict[str, float
 
 
 def _screen_findings(band_power: dict[str, dict[str, float]], symmetry: dict[str, float]) -> list[str]:
+    """处理 screen findings 相关逻辑。"""
     findings = []
     for pair, correlation in symmetry.items():
         if correlation < 0.5:
@@ -84,6 +89,7 @@ def _screen_findings(band_power: dict[str, dict[str, float]], symmetry: dict[str
 
 
 def _summary(focus: str, findings: list[str], start: float, end: float) -> str:
+    """处理 summary 相关逻辑。"""
     prefix = f"Exploration of {start:g}-{end:g} seconds ({focus})."
     if findings:
         return f"{prefix} Screening findings: {' '.join(findings)} This is not an event diagnosis."
@@ -91,7 +97,7 @@ def _summary(focus: str, findings: list[str], start: float, end: float) -> str:
 
 
 def explore_segment(session: Any, start: float, end: float, focus: str = "overview", channels: list[str] | None = None) -> dict[str, Any]:
-    """Run deterministic exploration features for a short EEG time window."""
+    """处理 explore segment 相关逻辑。"""
     if focus not in VALID_FOCUSES:
         raise ValueError(f"Unsupported focus '{focus}'. Choose from: {', '.join(sorted(VALID_FOCUSES))}.")
     if start < 0 or end <= start:

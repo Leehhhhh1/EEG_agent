@@ -28,6 +28,7 @@ from .registerData import getRegisteredData
     }
 )
 def reflectData(name: List[str], start: int, end: int, config):
+    """处理 reflect Data 相关逻辑。"""
     if end - start > 1:
         raise ValueError("The time interval between start and end should not exceed 10 seconds.")
     data = getRegisteredData()

@@ -13,6 +13,7 @@ class MCPClientBridge:
     """Keep one EEG MCP server process alive for the desktop application's lifetime."""
 
     def __init__(self, project_root: Path):
+        """初始化对象状态。"""
         self.project_root = project_root
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: Thread | None = None
@@ -23,6 +24,7 @@ class MCPClientBridge:
         self._tools: list[Any] = []
 
     def start(self) -> None:
+        """启动当前流程。"""
         if self._thread is not None:
             if self._startup_error:
                 raise RuntimeError("Unable to start the local MCP EEG server.") from self._startup_error
@@ -36,11 +38,12 @@ class MCPClientBridge:
             raise RuntimeError("Unable to start the local MCP EEG server.") from self._startup_error
 
     def _run_loop(self) -> None:
+        """处理 run loop 相关逻辑。"""
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         try:
             self._loop.run_until_complete(self._connect())
-        except Exception as exc:  # Stored so the UI can show the root cause.
+        except Exception as exc:  # 保存中间状态。
             self._startup_error = exc
             self._ready.set()
             return
@@ -50,6 +53,7 @@ class MCPClientBridge:
         self._loop.close()
 
     async def _connect(self) -> None:
+        """处理 connect 相关逻辑。"""
         try:
             from mcp import ClientSession, StdioServerParameters
             from mcp.client.stdio import stdio_client
@@ -68,6 +72,7 @@ class MCPClientBridge:
         self._tools = list((await self._session.list_tools()).tools)
 
     async def _disconnect(self) -> None:
+        """处理 disconnect 相关逻辑。"""
         if self._stack is not None:
             await self._stack.aclose()
         self._stack = None
@@ -75,19 +80,23 @@ class MCPClientBridge:
         self._tools = []
 
     def _submit(self, coroutine):
+        """处理 submit 相关逻辑。"""
         self.start()
         if self._loop is None:
             raise RuntimeError("The MCP event loop is unavailable.")
         return asyncio.run_coroutine_threadsafe(coroutine, self._loop).result(timeout=180)
 
     def list_tools(self) -> list[Any]:
+        """处理 list tools 相关逻辑。"""
         self.start()
         return list(self._tools)
 
     def call_tool(self, name: str, arguments: dict[str, Any]) -> Any:
+        """处理 call tool 相关逻辑。"""
         return self._submit(self._call_tool(name, arguments))
 
     async def _call_tool(self, name: str, arguments: dict[str, Any]) -> Any:
+        """处理 call tool 相关逻辑。"""
         if self._session is None:
             raise RuntimeError("The MCP session is not connected.")
         result = await self._session.call_tool(name, arguments=arguments)
@@ -95,6 +104,7 @@ class MCPClientBridge:
 
     @staticmethod
     def _normalize_result(result: Any) -> dict[str, Any]:
+        """处理 normalize result 相关逻辑。"""
         structured = getattr(result, "structuredContent", None)
         if structured is None:
             structured = getattr(result, "structured_content", None)
@@ -103,7 +113,7 @@ class MCPClientBridge:
             text = getattr(block, "text", None)
             if text is not None:
                 content.append(text)
-        # Older MCP 1.x servers may put a JSON tool result only in TextContent.
+        # 兼容旧版 MCP 服务可能只在文本内容中返回 JSON 结果。
         if structured is None and len(content) == 1:
             try:
                 structured = json.loads(content[0])
@@ -116,6 +126,7 @@ class MCPClientBridge:
         }
 
     def close(self) -> None:
+        """关闭并移除 EEG 会话。"""
         if self._loop is None or self._thread is None:
             return
         self._loop.call_soon_threadsafe(self._loop.stop)
@@ -126,7 +137,7 @@ class MCPClientBridge:
 
 
 def result_for_model(result: dict[str, Any]) -> str:
-    """Use structured MCP output where available, preserving tool errors for model recovery."""
+    """处理 result for model 相关逻辑。"""
     if result["structured_content"] is not None:
         return json.dumps(result["structured_content"], ensure_ascii=False)
     if result["content"]:

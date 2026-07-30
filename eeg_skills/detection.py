@@ -18,6 +18,7 @@ MAX_ANALYSIS_SECONDS = 600
 
 
 def _select_channels(available: list[str], requested: list[str] | None) -> list[str]:
+    """处理 select channels 相关逻辑。"""
     if requested is None:
         return available
     invalid = sorted(set(requested) - set(available))
@@ -27,6 +28,7 @@ def _select_channels(available: list[str], requested: list[str] | None) -> list[
 
 
 def _merge_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """合并 merge candidates 相关结果。"""
     events: list[dict[str, Any]] = []
     for candidate in candidates:
         if events and events[-1]["channel"] == candidate["channel"] and abs(events[-1]["end_seconds"] - candidate["start_seconds"]) < 1e-6:
@@ -47,10 +49,7 @@ def detect_events(
     channels: list[str] | None = None,
     sensitivity: str = "balanced",
 ) -> dict[str, Any]:
-    """Screen a bounded recording window for seizure-like events.
-
-    This does not diagnose epilepsy or replace review by a qualified clinician.
-    """
+    """处理 detect events 相关逻辑。"""
     requested_types = set(event_types or ["seizure"])
     unsupported = requested_types - VALID_EVENT_TYPES
     if unsupported:
@@ -74,7 +73,7 @@ def detect_events(
     end_second = int(np.ceil(end))
     coarse_threshold, fine_threshold = SENSITIVITY_THRESHOLDS[sensitivity]
 
-    # Import lazily: opening/basic-information MCP tools should not force model inference.
+    # 延迟导入，避免基础信息工具强制触发模型推理。
     from tools.singleChannel import predict_seizure_artifact_background, predict_seizure_normal
     from tools.slowSeizBckg import predict_slow_seizure_background
 

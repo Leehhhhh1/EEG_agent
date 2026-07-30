@@ -8,6 +8,7 @@ import os
 import torch.nn.init as init
 
 def init_weights_health(m):
+    """处理 init weights health 相关逻辑。"""
     if isinstance(m, nn.Conv1d):
         init.kaiming_normal_(m.weight, nonlinearity='relu')
         if m.bias is not None:
@@ -24,6 +25,7 @@ def init_weights_health(m):
 
 class healthMDD(nn.Module):
     def __init__(self, n_channels=19, n_samples=1280, hidden=64, p=0.):
+        """初始化对象状态。"""
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(n_channels, 24, 75, 1),
@@ -44,10 +46,12 @@ class healthMDD(nn.Module):
         self.fc = nn.Linear(hidden, 2)
 
     def forward(self, x):
+        """执行模型前向计算。"""
         x = self.conv(x).flatten(1) # (32, 48, 49)
         return self.fc(x)
 
 def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cpu'):
+    """处理 train model 相关逻辑。"""
     model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=lr)
@@ -85,6 +89,7 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cp
 best_f1 = 0
 
 def test_model(model, test_loader, device='cpu', class_names=None):
+    """处理 test model 相关逻辑。"""
     global best_f1  
     model.eval()
     all_preds, all_labels = [], []

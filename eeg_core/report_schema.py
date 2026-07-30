@@ -6,6 +6,7 @@ SUPPORTED_REPORT_LANGUAGES = {"zh-CN", "en"}
 
 
 def validate_language(language: str) -> None:
+    """校验 validate language 参数是否合法。"""
     if language not in SUPPORTED_REPORT_LANGUAGES:
         supported = ", ".join(sorted(SUPPORTED_REPORT_LANGUAGES))
         raise ValueError(f"Unsupported report language '{language}'. Choose from: {supported}.")

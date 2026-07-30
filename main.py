@@ -14,6 +14,7 @@ import time
 
 class EEGAgent:
     def __init__(self, config_path: str, file_name: str):
+        """初始化对象状态。"""
         load_dotenv()
         api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("api_key")
         base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
@@ -29,24 +30,24 @@ class EEGAgent:
             report_template = yaml.safe_load(file)
         self.file_path = os.path.join(self.config['dataPath'], file_name)
 
-        ### Load Data... ###
-        # data = load_MDD_edf(self.file_path, self.config)
+        # 加载数据。
+        # 配置区。
         data = dataLoad(self.file_path, self.config)
-        # data = load_Sleep_edf(self.file_path, self.config)
+        # 配置区。
         registerData(data)
 
-        ### generate baseInfo ###
+        # 保留的开发备注。
         self.info = baseInfo(self.file_path)
         self.tool_schemas = function_register.export_tool_schemas()
 
-        ### init ###
+        # 保留的开发备注。
         self.client = OpenAI(
             api_key=api_key,
             base_url=base_url,
         )
         self.model = model
 
-        ### construct system prompt ###
+        # 保留的开发备注。
         prior_knowlwdge = self.config['prior knowledge'].copy()
         if 'age' in self.info.keys():
             age_factor = get_age_factor(self.info['age'], self.config['prior knowledge']['Age factor'])
@@ -55,13 +56,15 @@ class EEGAgent:
         self.messages = [{'role': 'system', 'content': self.system_prompt}]
     
     def prepare_user_message(self, user_query: str):
+        """处理 prepare user message 相关逻辑。"""
         self.messages.append({'role': 'user', 'content': user_query})
 
     def call_model(self):
+        """处理 call model 相关逻辑。"""
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=self.messages,
-            # extra_body={"enable_thinking": False},
+            # 保留的开发备注。
             timeout=60
         )
         response = completion.choices[0].message.content
@@ -72,6 +75,7 @@ class EEGAgent:
         return response
 
     def handle_tool_calls(self, response, on_tool_start=None, on_tool_end=None):
+        """处理 handle tool calls 相关逻辑。"""
         calls = extract_tool_calls(response)
         if not calls:
             return False 
@@ -85,7 +89,7 @@ class EEGAgent:
                 print(f"No function named {function_name}")
                 continue
 
-            ### automated import config parameters ###
+            # 配置区。
             if has_config_parameter(function) and 'config' not in args:
                 args['config'] = self.config
 
@@ -107,10 +111,11 @@ class EEGAgent:
         return True  
 
     def run(self, user_query):
+        """执行当前任务流程。"""
         from RAG.embedder import BGEEmbedder
         from RAG.searcher import FaissSearcher
         
-        # RAG
+        # 保留的开发备注。
         embedder = BGEEmbedder()
         searcher = FaissSearcher("RAG/faiss.index", "RAG/chunks.pkl")
         query_vector = embedder.encode([user_query])[0]
@@ -152,6 +157,7 @@ class EEGAgent:
         }
 
     def call_model_stream(self, on_delta=None):
+        """处理 call model stream 相关逻辑。"""
         stream = self.client.chat.completions.create(
             model=self.model,
             messages=self.messages,
@@ -174,6 +180,7 @@ class EEGAgent:
 
     def run_stream(self, user_query, on_delta=None, on_tool_start=None,
                    on_tool_end=None, on_tool_call_detected=None):
+        """以流式方式执行当前任务流程。"""
         from RAG.embedder import BGEEmbedder
         from RAG.searcher import FaissSearcher
 

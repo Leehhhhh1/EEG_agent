@@ -6,7 +6,7 @@ from typing import Any
 
 @dataclass
 class EEGSession:
-    """In-memory state for one opened EEG recording."""
+    """保存单个已打开 EEG 记录的内存状态。"""
 
     session_id: str
     file_path: Path
@@ -21,10 +21,12 @@ class EEGSession:
 
     @property
     def recording_name(self) -> str:
+        """返回当前记录文件名。"""
         return self.file_path.name
 
     @classmethod
     def now(cls, session_id: str, file_path: Path, raw: Any, basic_info: dict[str, Any], config: dict[str, Any]):
+        """使用当前时间创建 EEG 会话对象。"""
         return cls(
             session_id=session_id,
             file_path=file_path,

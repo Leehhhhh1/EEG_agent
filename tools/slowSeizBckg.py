@@ -6,13 +6,10 @@ from .localModels.vote import multi_model_predict
 from tools import function_register
 
 def compute_stft_spectrogram(x, n_fft=256, hop_length=128):
-    """
-    x: Tensor of shape (B, 22, T=2560)
-    returns: Tensor of shape (B, 22, F=n_fft//2+1, T'=~20)
-    """
+    """计算输入 EEG 片段的短时傅里叶谱图。"""
     B, C, T = x.shape
     x = x.view(B * C, T)
-    # STFT: (B*C, F, T') with complex numbers
+    # 保留的开发备注。
     spec = torch.stft(
         x, n_fft=n_fft, hop_length=hop_length,
         return_complex=True, window=torch.hann_window(n_fft, device=x.device)
@@ -20,10 +17,11 @@ def compute_stft_spectrogram(x, n_fft=256, hop_length=128):
     mag = spec.abs()
     mag = mag.view(B, C, *mag.shape[1:])  # (B, 22, F, T')
     
-    return mag  # shape: (B, 22, F, T')
+    return mag  # 张量形状说明。
 
 class slowSeizureBckgEEG(nn.Module):
     def __init__(self, cls=3, embed_dim=128, num_heads=4):
+        """初始化慢波、发作和背景分类模型。"""
         super().__init__()
         self.embed_dim = embed_dim
         self.conv = nn.Sequential(
@@ -47,6 +45,7 @@ class slowSeizureBckgEEG(nn.Module):
         self.apply(self._init_weights)
 
     def forward(self, x):
+        """执行模型前向计算。"""
         B, _, _ = x.shape
         x = compute_stft_spectrogram(x).permute(0,3,1,2).flatten(0, 1) # B*T, 22, F
         x = self.conv(x).squeeze(2).reshape(B, -1, self.embed_dim)
@@ -58,6 +57,7 @@ class slowSeizureBckgEEG(nn.Module):
         return x
     
     def _init_weights(self, module):
+        """初始化模型层权重。"""
         if isinstance(module, nn.Linear):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.08)
             if module.bias is not None:
@@ -107,9 +107,10 @@ for i, path in enumerate(slowSeizBckgEEGModel_paths):
     }
 )
 def slowSeizBckgModel_TenSeconds(start: int, end: int, config):
+    """使用多模型投票预测 10 秒 EEG 片段的类别概率。"""
     fs = config['fs']
     N = (end- start) // 10
-    data = getRegisteredData(start, start+10*N, config) # shape: (C, T)
+    data = getRegisteredData(start, start+10*N, config) # 张量形状说明。
 
     infos = []
     for i in range(N):
@@ -133,11 +134,7 @@ def slowSeizBckgModel_TenSeconds(start: int, end: int, config):
 
 
 def predict_slow_seizure_background(data):
-    """Return background/slow/seizure probabilities for one 10-second window.
-
-    Unlike the legacy registered tool above, this helper receives data explicitly.
-    It is intended for session-isolated callers such as the MCP skills.
-    """
+    """返回单个 10 秒时间窗的背景、慢波和发作概率。"""
     if data.ndim != 2 or data.shape[0] != 22 or data.shape[1] != 2560:
         raise ValueError("The coarse detector requires data shaped (22, 2560) at 256 Hz.")
 

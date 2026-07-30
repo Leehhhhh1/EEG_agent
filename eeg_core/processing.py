@@ -7,6 +7,7 @@ from tools.preprocessing import preprocessing
 
 
 def find_raw_channel(prefix: str, channel_names: list[str]) -> str | None:
+    """查找 find raw channel 对应的数据。"""
     expected = f"EEG {prefix}".upper()
     for name in channel_names:
         if name.upper().startswith(expected):
@@ -15,7 +16,7 @@ def find_raw_channel(prefix: str, channel_names: list[str]) -> str | None:
 
 
 def ensure_processed_data(session: Any) -> tuple[np.ndarray, list[str], float]:
-    """Lazily preprocess one session and build the supported bipolar montage."""
+    """处理 ensure processed data 相关逻辑。"""
     if session.processed_data is not None:
         return session.processed_data, session.bipolar_channels, session.config["fs"]
 

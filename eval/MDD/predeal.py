@@ -24,7 +24,7 @@ print(len(all_files))
 subjects = {}
 
 for f in all_files:
-    prefix = f.split(' ')[0]  # 'H' or 'MDD'
+    prefix = f.split(' ')[0]  # 保留的开发备注。
     s_number = f.split(' ')[1] 
     subject_id = f"{prefix}_{s_number}"
     if subject_id not in subjects:
@@ -35,6 +35,7 @@ subject_ids = list(subjects.keys())
 train_ids, test_ids = train_test_split(subject_ids, test_size=0.3, random_state=42)
 
 def slice_eeg(raw, epoch_length=EPOCH_LENGTH, stride=STRIDE):
+    """处理 slice eeg 相关逻辑。"""
     sfreq = int(raw.info['sfreq'])
     data = raw.get_data(picks=EEG_CHANNELS)
     n_samples = data.shape[1]
@@ -48,6 +49,7 @@ def slice_eeg(raw, epoch_length=EPOCH_LENGTH, stride=STRIDE):
 
 
 def process_subject(subject_id, file_name):
+    """处理 process subject 相关数据。"""
     label = 0 if subject_id.startswith("H") else 1
     raw = mne.io.read_raw_edf(os.path.join(RAW_FOLDER, file_name), preload=True, verbose=False)
     raw.pick(EEG_CHANNELS)

@@ -8,7 +8,7 @@ from .processing import find_raw_channel
 
 
 def build_basic_information(file_path: Path, raw: Any) -> dict[str, Any]:
-    """Build a JSON-safe summary without returning the raw signal."""
+    """构建 build basic information 所需内容。"""
     header = baseInfo(str(file_path))
     channel_names = list(raw.ch_names)
     available_bipolar_channels = []

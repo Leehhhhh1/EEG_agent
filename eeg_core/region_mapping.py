@@ -11,4 +11,5 @@ CHANNEL_REGIONS = {
 
 
 def region_for_channel(channel: str) -> str:
+    """处理 region for channel 相关逻辑。"""
     return CHANNEL_REGIONS.get(channel, "unmapped")

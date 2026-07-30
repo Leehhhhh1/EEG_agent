@@ -40,11 +40,13 @@ class AgentLoader(QObject):
     failed = Signal(str)
 
     def __init__(self, bridge: MCPClientBridge, file_path: str):
+        """初始化对象状态。"""
         super().__init__()
         self.bridge = bridge
         self.file_path = file_path
 
     def run(self):
+        """执行当前任务流程。"""
         try:
             self.bridge.start()
             opened = self.bridge.call_tool("open_eeg_session", {"file_path": self.file_path})
@@ -57,11 +59,12 @@ class AgentLoader(QObject):
             basic = self.bridge.call_tool("get_eeg_basic_information", {"session_id": session_id})
             if basic["is_error"]:
                 raise RuntimeError("读取脑电基本信息失败：" + ("\n".join(basic["content"]) or "MCP Server 未返回具体错误。"))
+            basic_info = basic["structured_content"] or {}
             self.finished.emit({
-                "agent": MCPChatAgent(self.bridge, session_id),
+                "agent": MCPChatAgent(self.bridge, session_id, basic_info),
                 "session_id": session_id,
                 "summary": session_info,
-                "basic_info": basic["structured_content"] or {},
+                "basic_info": basic_info,
             })
         except Exception as exc:
             self.failed.emit(f"加载 EEG 会话失败：{exc}")
@@ -69,6 +72,7 @@ class AgentLoader(QObject):
 
 class DirectChatAgent:
     def __init__(self):
+        """初始化对象状态。"""
         load_dotenv()
         api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("api_key")
         if not api_key:
@@ -82,12 +86,14 @@ class DirectChatAgent:
         self.reset()
 
     def reset(self):
+        """重置当前对象的内部状态。"""
         self.messages = [{
             "role": "system",
             "content": "你是 EEGAgent 的通用会话助手。请用清晰、谨慎的中文回答。"
         }]
 
     def run(self, user_query: str):
+        """执行当前任务流程。"""
         self.messages.append({"role": "user", "content": user_query})
         started_at = time.time()
         completion = self.client.chat.completions.create(
@@ -107,6 +113,7 @@ class DirectChatAgent:
         }
 
     def run_stream(self, user_query: str, on_delta=None, **_callbacks):
+        """以流式方式执行当前任务流程。"""
         self.messages.append({"role": "user", "content": user_query})
         started_at = time.time()
         stream = self.client.chat.completions.create(
@@ -138,6 +145,7 @@ class DirectChatAgent:
 
 class Spinner(QWidget):
     def __init__(self):
+        """初始化对象状态。"""
         super().__init__()
         self._step = 0
         self._timer = QTimer(self)
@@ -146,18 +154,22 @@ class Spinner(QWidget):
         self.hide()
 
     def start(self):
+        """启动当前流程。"""
         self.show()
         self._timer.start(80)
 
     def stop(self):
+        """停止当前流程。"""
         self._timer.stop()
         self.hide()
 
     def _advance(self):
+        """处理 advance 相关逻辑。"""
         self._step = (self._step + 1) % 12
         self.update()
 
     def paintEvent(self, _event):
+        """绘制当前控件。"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.translate(self.width() / 2, self.height() / 2)
@@ -181,11 +193,13 @@ class ChatWorker(QObject):
     tool_call_detected = Signal()
 
     def __init__(self, agent, prompt: str):
+        """初始化对象状态。"""
         super().__init__()
         self.agent = agent
         self.prompt = prompt
 
     def run(self):
+        """执行当前任务流程。"""
         try:
             self.finished.emit(self.agent.run_stream(
                 self.prompt,
@@ -202,16 +216,19 @@ class MessageComposer(QPlainTextEdit):
     send_requested = Signal()
 
     def focusInEvent(self, event):
-        # IME pre-edit text does not emit textChanged, so hide the placeholder on focus.
+        # 输入法预编辑文本不会触发 textChanged，因此获得焦点时隐藏占位提示。
+        """处理输入框获得焦点事件。"""
         self.setPlaceholderText("")
         super().focusInEvent(event)
 
     def focusOutEvent(self, event):
+        """处理输入框失去焦点事件。"""
         super().focusOutEvent(event)
         if not self.toPlainText():
             self.setPlaceholderText(PROMPT_PLACEHOLDER)
 
     def keyPressEvent(self, event: QKeyEvent):
+        """处理键盘输入事件。"""
         if event.key() in (Qt.Key_Return, Qt.Key_Enter) and event.modifiers() == Qt.ControlModifier:
             self.send_requested.emit()
             return
@@ -220,6 +237,7 @@ class MessageComposer(QPlainTextEdit):
 
 class EEGAgentWindow(QMainWindow):
     def __init__(self):
+        """初始化对象状态。"""
         super().__init__()
         self.agent = None
         self.eeg_session_id = None
@@ -238,6 +256,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("请选择 EDF 脑电文件以开始分析。")
 
     def _build_menu(self):
+        """构建 build menu 所需内容。"""
         file_menu = self.menuBar().addMenu("文件")
         open_action = QAction("打开 EDF 文件...", self)
         open_action.triggered.connect(self.choose_edf)
@@ -258,6 +277,7 @@ class EEGAgentWindow(QMainWindow):
         session_menu.addAction(clear_action)
 
     def _build_ui(self):
+        """构建 build ui 所需内容。"""
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_recording_panel())
         splitter.addWidget(self._build_chat_panel())
@@ -275,6 +295,7 @@ class EEGAgentWindow(QMainWindow):
         )
 
     def _build_recording_panel(self):
+        """构建 build recording panel 所需内容。"""
         panel = QWidget()
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(16, 16, 16, 16)
@@ -312,6 +333,7 @@ class EEGAgentWindow(QMainWindow):
         return panel
 
     def _build_chat_panel(self):
+        """构建 build chat panel 所需内容。"""
         panel = QWidget()
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(16, 16, 16, 16)
@@ -351,6 +373,7 @@ class EEGAgentWindow(QMainWindow):
         return panel
 
     def _build_details_panel(self):
+        """构建 build details panel 所需内容。"""
         panel = QWidget()
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(16, 16, 16, 16)
@@ -388,6 +411,7 @@ class EEGAgentWindow(QMainWindow):
         return panel
 
     def choose_edf(self):
+        """打开文件选择器以选择 EDF 脑电文件。"""
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "选择脑电记录",
@@ -401,6 +425,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("已选择脑电记录，请加载后将其附加到当前会话。")
 
     def load_selected_edf(self):
+        """加载当前选择的 EDF 文件并创建分析会话。"""
         file_path = self.file_input.text().strip()
         if not file_path:
             return
@@ -409,6 +434,7 @@ class EEGAgentWindow(QMainWindow):
         self._run_worker(worker, worker.finished, self._agent_loaded, worker.failed, self._job_failed)
 
     def send_message(self):
+        """发送用户输入并启动后台回答任务。"""
         prompt = self.prompt_input.toPlainText().strip()
         if not prompt or self.active_thread is not None:
             return
@@ -429,6 +455,7 @@ class EEGAgentWindow(QMainWindow):
         self._run_worker(worker, worker.finished, self._chat_finished, worker.failed, self._job_failed)
 
     def _run_worker(self, worker, success_signal, success_handler, failure_signal, failure_handler):
+        """处理 run worker 相关逻辑。"""
         thread = QThread(self)
         worker.moveToThread(thread)
         thread.started.connect(worker.run)
@@ -445,11 +472,12 @@ class EEGAgentWindow(QMainWindow):
         thread.finished.connect(thread.deleteLater)
         thread.finished.connect(self._worker_finished)
         self.active_thread = thread
-        # Keep the Python wrapper alive until the worker thread has fully exited.
+        # 保持 Python 包装对象存活，直到工作线程完全退出。
         self.active_worker = worker
         thread.start()
 
     def _agent_loaded(self, loaded):
+        """处理 agent loaded 相关逻辑。"""
         self.agent = loaded["agent"]
         self.eeg_session_id = loaded["session_id"]
         self.recording_info.setPlainText(json.dumps(loaded["basic_info"], ensure_ascii=False, indent=2))
@@ -460,6 +488,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("脑电记录加载完成，已附加到当前会话。")
 
     def _chat_finished(self, result):
+        """处理 chat finished 相关逻辑。"""
         response = result.get("response", "未返回分析结果。")
         if self.streaming_label is not None:
             self._set_message_text(self.streaming_label, "EEGAgent", response)
@@ -478,6 +507,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("分析完成。")
 
     def _job_failed(self, message):
+        """处理 job failed 相关逻辑。"""
         if self.streaming_label is not None:
             self._set_message_text(self.streaming_label, "系统", f"发生错误：{message}")
         else:
@@ -488,6 +518,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("操作未能完成。")
 
     def _worker_finished(self):
+        """处理 worker finished 相关逻辑。"""
         self.active_thread = None
         self.active_worker = None
         self.open_button.setEnabled(True)
@@ -498,6 +529,7 @@ class EEGAgentWindow(QMainWindow):
         self.spinner.stop()
 
     def _set_busy(self, busy: bool, status: str):
+        """处理 set busy 相关逻辑。"""
         self._set_status(status)
         self.open_button.setEnabled(not busy)
         self.load_button.setEnabled(not busy and bool(self.file_input.text().strip()))
@@ -506,40 +538,48 @@ class EEGAgentWindow(QMainWindow):
         self.prompt_input.setEnabled(not busy)
 
     def _set_status(self, status: str):
+        """处理 set status 相关逻辑。"""
         self.status_label.setText(status)
         self.statusBar().showMessage(status)
 
     def _update_prompt_placeholder(self):
+        """处理 update prompt placeholder 相关逻辑。"""
         if self.prompt_input.toPlainText() or self.prompt_input.hasFocus():
             self.prompt_input.setPlaceholderText("")
         else:
             self.prompt_input.setPlaceholderText(PROMPT_PLACEHOLDER)
 
     def _append_stream_delta(self, delta: str):
+        """处理 append stream delta 相关逻辑。"""
         if self.streaming_label is None:
             return
         self.streaming_response += delta
         self._set_message_text(self.streaming_label, "EEGAgent", self.streaming_response)
 
     def _reset_stream_response(self):
+        """处理 reset stream response 相关逻辑。"""
         self.streaming_response = ""
         if self.streaming_label is not None:
             self._set_message_text(self.streaming_label, "EEGAgent", "正在准备调用本地分析工具...")
 
     def _tool_started(self, tool_name: str):
+        """处理 tool started 相关逻辑。"""
         self.spinner.start()
         self._set_status(f"正在调用本地工具：{tool_name}")
         if self.streaming_label is not None:
             self._set_message_text(self.streaming_label, "EEGAgent", f"正在调用工具：{tool_name}")
 
     def _tool_finished(self, tool_name: str):
+        """处理 tool finished 相关逻辑。"""
         self.spinner.stop()
         self._set_status(f"工具调用完成：{tool_name}，正在继续生成回答...")
 
     def _set_message_text(self, label: QLabel, speaker: str, text: str):
+        """处理 set message text 相关逻辑。"""
         label.setText(f"<b>{html.escape(speaker)}</b><br>{html.escape(text).replace(chr(10), '<br>')}")
 
     def _add_message(self, speaker: str, text: str, is_user: bool):
+        """处理 add message 相关逻辑。"""
         frame = QFrame()
         frame.setObjectName("messageUser" if is_user else "messageAssistant")
         frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -557,6 +597,7 @@ class EEGAgentWindow(QMainWindow):
         return label
 
     def clear_conversation(self):
+        """清空当前聊天记录并重置对话上下文。"""
         if self.active_thread is not None:
             return
         while self.chat_layout.count() > 1:
@@ -576,6 +617,7 @@ class EEGAgentWindow(QMainWindow):
             self._add_message("系统", "对话已清空，可以直接开始会话或选择脑电数据。", False)
 
     def _current_agent(self):
+        """处理 current agent 相关逻辑。"""
         if self.agent is not None:
             return self.agent
         if self.direct_agent is None:
@@ -583,6 +625,7 @@ class EEGAgentWindow(QMainWindow):
         return self.direct_agent
 
     def detach_recording(self):
+        """移除当前 EEG 数据会话并回到普通对话。"""
         if self.active_thread is not None:
             return
         if self.agent is None:
@@ -604,10 +647,12 @@ class EEGAgentWindow(QMainWindow):
         self._set_status("脑电数据已移除，当前可直接对话。")
 
     def closeEvent(self, event):
+        """处理 close Event 相关逻辑。"""
         self.mcp_bridge.close()
         super().closeEvent(event)
 
     def export_conversation(self):
+        """导出 export conversation 相关结果。"""
         if not self.transcript:
             self._set_status("当前没有可导出的对话内容。")
             return
@@ -625,6 +670,7 @@ class EEGAgentWindow(QMainWindow):
 
 
 def main():
+    """启动程序入口。"""
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     window = EEGAgentWindow()

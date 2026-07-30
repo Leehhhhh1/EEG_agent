@@ -2,7 +2,7 @@ from typing import Callable, Dict, Any, Optional, List, get_type_hints
 import inspect
 import json
 
-# Type mapping from Python types to JSON Schema types
+# 保留的开发备注。
 TYPE_MAP = {
     int: "integer",
     float: "number",
@@ -20,96 +20,80 @@ class FunctionRegistry:
     for use with large language models (LLMs).
     """
     def __init__(self):
-        # Store registered function objects, keyed by function name
+        # 保存中间状态。
+        """初始化对象状态。"""
         self.functions: Dict[str, Callable] = {}
-        # Store metadata for each function, including parameters, return type, description, etc.
+        # 保存中间状态。
         self.metadata: Dict[str, dict] = {}
 
     def register(self,
-                 name: Optional[str] = None,          # Optional registration name for the function
-                 description: str = "",               # Function description
-                 parameters: Optional[List[Dict]] = None,  # List of parameter dicts
-                 constraints: str = "",               # Parameter constraints or notes
-                 returns: Optional[Dict] = None):    # Return value schema
-        """
-        Decorator method for registering a function and its metadata.
-        """
+                 name: Optional[str] = None,          # 保留的开发备注。
+                 description: str = "",               # 保留的开发备注。
+                 parameters: Optional[List[Dict]] = None,  # 参数说明。
+                 constraints: str = "",               # 参数说明。
+                 returns: Optional[Dict] = None):    # 返回值说明。
+        """处理 register 相关逻辑。"""
         def decorator(func: Callable):
+            """处理 decorator 相关逻辑。"""
             nonlocal name
             if name is None:
-                name = func.__name__  # Default to function's actual name
+                name = func.__name__  # 默认值说明。
 
-            # Build the parameters JSON Schema
-            properties = {}  # Dict to store parameter type and description
-            required = []    # List of required parameter names
+            # 构建中间结果。
+            properties = {}  # 保存中间状态。
+            required = []    # 参数说明。
             for p in parameters:
                 param_name = p["name"]
                 properties[param_name] = {
-                    "type": p["type"],                # Parameter type
-                    "description": p.get("description"),  # Parameter description
+                    "type": p["type"],                # 参数说明。
+                    "description": p.get("description"),  # 参数说明。
                 }
-                if p.get("required", True):  # Default is required
+                if p.get("required", True):  # 默认值说明。
                     required.append(param_name)
 
             schema = {
-                "type": "object",     # Parameters are represented as an object
+                "type": "object",     # 参数说明。
                 "properties": properties,
                 "required": required
             }
 
-            # Handle return value information
+            # 返回值说明。
             if returns:
-                return_info = returns  # Use user-provided return info if available
+                return_info = returns  # 返回值说明。
             else:
-                # Infer return type from type hints
+                # 返回值说明。
                 return_type = TYPE_MAP.get(get_type_hints(func).get('return'), 'object')
                 return_info = {
                     "type": return_type
                 }
 
-            # Register the function object
+            # 保留的开发备注。
             self.functions[name] = func
-            # Register the function metadata
+            # 保留的开发备注。
             self.metadata[name] = {
-                "name": name,              # Function name
-                "description": description,  # Description
-                "parameters": schema,        # Parameter JSON Schema
-                "constraints": constraints,  # Constraints or additional notes
-                "returns": return_info       # Return value schema
+                "name": name,              # 保留的开发备注。
+                "description": description,  # 保留的开发备注。
+                "parameters": schema,        # 参数说明。
+                "constraints": constraints,  # 保留的开发备注。
+                "returns": return_info       # 返回值说明。
             }
-            return func  # Return the original function
+            return func  # 返回值说明。
         return decorator
 
     def get_function(self, name: str) -> Callable:
-        """Get the function object by name"""
+        """获取 get function 相关信息。"""
         return self.functions.get(name)
 
     def get_metadata(self, name: str) -> dict:
-        """Get the metadata for a function by name"""
+        """获取 get metadata 相关信息。"""
         return self.metadata.get(name)
 
     def list_functions(self) -> list:
-        """List all registered function names"""
+        """处理 list functions 相关逻辑。"""
         return list(self.functions.keys())
 
     def export_tool_schemas(self) -> list:
-        """
-        Export all registered functions in the "tool_call" format for LLMs.
-        Returns a list of dicts like:
-        [
-            {
-                "type": "function",
-                "function": {
-                    "name": ...,
-                    "description": ...,
-                    "constraints": ...,
-                    "parameters": {...},
-                    "returns": {...}
-                }
-            },
-            ...
-        ]
-        """
+        """导出 export tool schemas 相关结果。"""
         return [
             {
                 "type": "function",
@@ -124,5 +108,5 @@ class FunctionRegistry:
             for meta in self.metadata.values()
         ]
 
-# Instantiate the function registry
+# 保留的开发备注。
 function_register = FunctionRegistry()
