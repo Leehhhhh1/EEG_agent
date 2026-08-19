@@ -8,6 +8,11 @@ from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
 from .mcp_client import MCPClientBridge, result_for_model
+from .token_budget import (
+    DEFAULT_SHORT_TERM_TOKEN_LIMIT,
+    DeepSeekV4TokenCounter,
+    trim_messages_to_token_limit,
+)
 
 
 ROUTES = {
@@ -24,7 +29,6 @@ ROUTES = {
 }
 
 
-MAX_HISTORY_TURNS = 8
 MAX_MEMORY_ITEMS = 12
 MAX_TOOL_ROUNDS = 6
 
@@ -69,6 +73,13 @@ class MCPChatAgent:
             raise ValueError("Missing DeepSeek API key. Set DEEPSEEK_API_KEY in .env.")
         self.client = OpenAI(api_key=api_key, base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"))
         self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
+        self.short_term_token_limit = int(
+            os.getenv("SHORT_TERM_MEMORY_TOKENS", str(DEFAULT_SHORT_TERM_TOKEN_LIMIT))
+        )
+        self.token_counter = DeepSeekV4TokenCounter(
+            thinking_mode=os.getenv("DEEPSEEK_THINKING_MODE", "thinking")
+        )
+        self.last_prompt_token_count = 0
         self.bridge = bridge
         self.session_id = session_id
         self.system_message = {
@@ -178,19 +189,15 @@ class MCPChatAgent:
         else:
             self.messages[1] = self._session_summary_message()
 
-    def _trim_messages(self) -> None:
-        """裁剪对话历史，控制发送给模型的上下文长度。"""
+    def _trim_messages(self, tools: list[dict[str, Any]]) -> None:
+        """按 DeepSeek-V4 token 数裁剪最早的完整对话轮次。"""
         self._refresh_session_summary_message()
-        preserved = self.messages[:2]
-        history = self.messages[2:]
-        user_indexes = [
-            index for index, message in enumerate(history)
-            if message.get("role") == "user"
-        ]
-        if len(user_indexes) <= MAX_HISTORY_TURNS:
-            return
-        keep_from = user_indexes[-MAX_HISTORY_TURNS]
-        self.messages = preserved + history[keep_from:]
+        self.messages, self.last_prompt_token_count = trim_messages_to_token_limit(
+            self.messages,
+            tools,
+            self.token_counter,
+            token_limit=self.short_term_token_limit,
+        )
 
     def _remember_tool_result(self, tool_name: str, result: dict[str, Any]) -> None:
         """记录工具返回的摘要，供后续轮次复用。"""
@@ -270,6 +277,7 @@ class MCPChatAgent:
 
     def _stream_completion(self, tools: list[dict[str, Any]], on_delta=None) -> tuple[str, list[dict[str, Any]]]:
         """流式调用大模型并收集文本与工具调用。"""
+        self._trim_messages(tools)
         request = {
             "model": self.model,
             "messages": self.messages,
@@ -337,7 +345,6 @@ class MCPChatAgent:
                 calls = []
             if not calls:
                 self.messages.append({"role": "assistant", "content": response})
-                self._trim_messages()
                 return {
                     "response": response,
                     "rounds": rounds,

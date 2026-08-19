@@ -12,6 +12,7 @@ scikit-learn
 torch
 tqdm==4.67.1
 transformers
+tokenizers
 PyYAML
 python-dotenv>=1.0.0
 PySide6
