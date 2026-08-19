@@ -34,7 +34,6 @@ Desktop.ini
 
 # Local configuration and credentials
 .env
-.env.*
 !.env.example
 config/config.local.json
 **/*secret*.json

@@ -5,10 +5,8 @@ import json
 import os
 import time
 from typing import Any
-
 from dotenv import load_dotenv
 from openai import OpenAI
-
 from .mcp_client import MCPClientBridge, result_for_model
 
 
@@ -28,6 +26,7 @@ ROUTES = {
 
 MAX_HISTORY_TURNS = 8
 MAX_MEMORY_ITEMS = 12
+MAX_TOOL_ROUNDS = 6
 
 
 def _select_route(question: str) -> str:
@@ -62,7 +61,7 @@ def _limit_items(items: list[Any], limit: int = MAX_MEMORY_ITEMS) -> list[Any]:
 
 
 class MCPChatAgent:
-    def __init__(self, bridge: MCPClientBridge, session_id: str, initial_basic_info: dict[str, Any] | None = None):
+    def __init__(self, bridge: MCPClientBridge, session_id: str | None = None, initial_basic_info: dict[str, Any] | None = None):
         """初始化对象状态。"""
         load_dotenv()
         api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("api_key")
@@ -75,7 +74,8 @@ class MCPChatAgent:
         self.system_message = {
             "role": "system",
             "content": (
-                "你是 EEGAgent 脑电图辅助分析助手。请使用中文回答，并且仅根据 MCP 工具结果描述 EEG 发现。"
+                "你是 EEGAgent 脑电图辅助分析助手，请使用中文回答。未绑定 EEG 记录时，可以回答一般 EEG 知识问题，"
+                "但必须明确说明无法分析具体记录。绑定 EEG 记录后，仅根据 MCP 工具结果描述该记录的 EEG 发现。"
                 "自动筛查不是临床诊断；涉及异常、发作或癫痫样活动时，必须说明需要由合格脑电图专业人员复核。"
                 "不要编造工具未提供的时间、导联、脑区、置信度或诊断结论。"
             ),
@@ -93,6 +93,45 @@ class MCPChatAgent:
                 "get_eeg_basic_information",
                 {"is_error": False, "structured_content": initial_basic_info, "content": []},
             )
+
+    def attach_session(self, session_id: str, basic_info: dict[str, Any] | None = None) -> None:
+        """Attach an EEG recording without discarding conversation history."""
+        self._discard_tool_messages()
+        self.session_id = session_id
+        self.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": [],
+            "findings": [],
+            "reports": [],
+        }
+        if basic_info:
+            self._remember_tool_result(
+                "get_eeg_basic_information",
+                {"is_error": False, "structured_content": basic_info, "content": []},
+            )
+        else:
+            self._refresh_session_summary_message()
+
+    def detach_session(self) -> None:
+        """Remove EEG-specific state while preserving conversation history."""
+        self._discard_tool_messages()
+        self.session_id = None
+        self.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": [],
+            "findings": [],
+            "reports": [],
+        }
+        self._refresh_session_summary_message()
+
+    def _discard_tool_messages(self) -> None:
+        """Drop session-bound tool exchanges while retaining ordinary chat."""
+        self.messages = [
+            message for message in self.messages
+            if message.get("role") != "tool" and not message.get("tool_calls")
+        ]
 
     def reset(self) -> None:
         """重置当前对象的内部状态。"""
@@ -129,7 +168,7 @@ class MCPChatAgent:
         if reports:
             lines.append("- 已生成报告：" + "；".join(reports[-MAX_MEMORY_ITEMS:]))
         if len(lines) == 1:
-            lines.append("- 暂无工具结果摘要。")
+            lines.append("- 当前未绑定 EEG 记录，不提供 EEG 分析工具。")
         return "\n".join(lines)
 
     def _refresh_session_summary_message(self) -> None:
@@ -207,6 +246,8 @@ class MCPChatAgent:
 
     def _tool_schemas(self, route: str) -> list[dict[str, Any]]:
         """按当前路由生成可暴露给模型的工具 schema。"""
+        if self.session_id is None:
+            return []
         allowed = ROUTES[route]
         schemas = []
         for tool in self.bridge.list_tools():
@@ -229,14 +270,16 @@ class MCPChatAgent:
 
     def _stream_completion(self, tools: list[dict[str, Any]], on_delta=None) -> tuple[str, list[dict[str, Any]]]:
         """流式调用大模型并收集文本与工具调用。"""
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            messages=self.messages,
-            tools=tools,
-            tool_choice="auto",
-            stream=True,
-            timeout=90,
-        )
+        request = {
+            "model": self.model,
+            "messages": self.messages,
+            "stream": True,
+            "timeout": 90,
+        }
+        if tools:
+            request["tools"] = tools
+            request["tool_choice"] = "auto"
+        stream = self.client.chat.completions.create(**request)
         text_parts: list[str] = []
         calls: dict[int, dict[str, Any]] = {}
         for chunk in stream:
@@ -267,12 +310,31 @@ class MCPChatAgent:
         model_time = 0.0
         tool_time = 0.0
         rounds = 0
+        tool_rounds = 0
 
         while True:
             rounds += 1
+            force_final_answer = tool_rounds >= MAX_TOOL_ROUNDS
+            if force_final_answer:
+                self.messages.append({
+                    "role": "system",
+                    "content": (
+                        f"已达到 {MAX_TOOL_ROUNDS} 轮工具调用上限。不要再调用工具，"
+                        "请仅根据现有对话和工具结果直接给出最终答案。"
+                    ),
+                })
             model_started = time.time()
-            response, calls = self._stream_completion(tools, on_delta=on_delta)
-            model_time += time.time() - model_started
+            try:
+                response, calls = self._stream_completion(
+                    [] if force_final_answer else tools,
+                    on_delta=on_delta,
+                )
+            finally:
+                model_time += time.time() - model_started
+                if force_final_answer:
+                    self.messages.pop()
+            if force_final_answer:
+                calls = []
             if not calls:
                 self.messages.append({"role": "assistant", "content": response})
                 self._trim_messages()
@@ -285,6 +347,7 @@ class MCPChatAgent:
                     "route": route,
                 }
 
+            tool_rounds += 1
             if on_tool_call_detected:
                 on_tool_call_detected()
             assistant_message = {
@@ -297,6 +360,8 @@ class MCPChatAgent:
             }
             self.messages.append(assistant_message)
             for call in calls:
+                if self.session_id is None:
+                    raise RuntimeError("An EEG session is required before calling EEG tools.")
                 try:
                     arguments = json.loads(call["arguments"] or "{}")
                 except json.JSONDecodeError:

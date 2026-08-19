@@ -1,12 +1,9 @@
 import html
 import json
-import os
 import sys
 import time
 from pathlib import Path
 
-from dotenv import load_dotenv
-from openai import OpenAI
 from PySide6.QtCore import QObject, QThread, Qt, Signal, QTimer
 from PySide6.QtGui import QAction, QColor, QKeyEvent, QPainter, QPen
 from PySide6.QtWidgets import (
@@ -61,86 +58,12 @@ class AgentLoader(QObject):
                 raise RuntimeError("读取脑电基本信息失败：" + ("\n".join(basic["content"]) or "MCP Server 未返回具体错误。"))
             basic_info = basic["structured_content"] or {}
             self.finished.emit({
-                "agent": MCPChatAgent(self.bridge, session_id, basic_info),
                 "session_id": session_id,
                 "summary": session_info,
                 "basic_info": basic_info,
             })
         except Exception as exc:
             self.failed.emit(f"加载 EEG 会话失败：{exc}")
-
-
-class DirectChatAgent:
-    def __init__(self):
-        """初始化对象状态。"""
-        load_dotenv()
-        api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("api_key")
-        if not api_key:
-            raise ValueError("未找到 DeepSeek API 密钥，请在 .env 中设置 DEEPSEEK_API_KEY。")
-
-        self.client = OpenAI(
-            api_key=api_key,
-            base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-        )
-        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
-        self.reset()
-
-    def reset(self):
-        """重置当前对象的内部状态。"""
-        self.messages = [{
-            "role": "system",
-            "content": "你是 EEGAgent 的通用会话助手。请用清晰、谨慎的中文回答。"
-        }]
-
-    def run(self, user_query: str):
-        """执行当前任务流程。"""
-        self.messages.append({"role": "user", "content": user_query})
-        started_at = time.time()
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=self.messages,
-            timeout=60,
-        )
-        response = completion.choices[0].message.content
-        self.messages.append({"role": "assistant", "content": response})
-        elapsed = time.time() - started_at
-        return {
-            "response": response,
-            "rounds": 1,
-            "model_time": elapsed,
-            "local_tool_time": 0.0,
-            "total_time": elapsed,
-        }
-
-    def run_stream(self, user_query: str, on_delta=None, **_callbacks):
-        """以流式方式执行当前任务流程。"""
-        self.messages.append({"role": "user", "content": user_query})
-        started_at = time.time()
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            messages=self.messages,
-            timeout=60,
-            stream=True,
-        )
-        response_parts = []
-        for chunk in stream:
-            if not chunk.choices:
-                continue
-            content = chunk.choices[0].delta.content
-            if content:
-                response_parts.append(content)
-                if on_delta:
-                    on_delta(content)
-        response = "".join(response_parts)
-        self.messages.append({"role": "assistant", "content": response})
-        elapsed = time.time() - started_at
-        return {
-            "response": response,
-            "rounds": 1,
-            "model_time": elapsed,
-            "local_tool_time": 0.0,
-            "total_time": elapsed,
-        }
 
 
 class Spinner(QWidget):
@@ -242,7 +165,6 @@ class EEGAgentWindow(QMainWindow):
         self.agent = None
         self.eeg_session_id = None
         self.mcp_bridge = MCPClientBridge(PROJECT_ROOT)
-        self.direct_agent = None
         self.active_thread = None
         self.active_worker = None
         self.transcript = []
@@ -447,7 +369,7 @@ class EEGAgentWindow(QMainWindow):
         self.prompt_input.clear()
         self._add_message("你", prompt, True)
         self.transcript.append(("你", prompt))
-        has_recording = self.agent is not None
+        has_recording = self.eeg_session_id is not None
         self._set_busy(True, "正在分析脑电并生成回答..." if has_recording else "正在生成回答...")
         self.streaming_response = ""
         self.streaming_label = self._add_message("EEGAgent", "正在生成回答...", False)
@@ -478,8 +400,24 @@ class EEGAgentWindow(QMainWindow):
 
     def _agent_loaded(self, loaded):
         """处理 agent loaded 相关逻辑。"""
-        self.agent = loaded["agent"]
-        self.eeg_session_id = loaded["session_id"]
+        new_session_id = loaded["session_id"]
+        try:
+            if self.agent is None:
+                self.agent = MCPChatAgent(self.mcp_bridge)
+        except Exception as exc:
+            try:
+                self.mcp_bridge.call_tool("close_eeg_session", {"session_id": new_session_id})
+            except Exception:
+                pass
+            self._job_failed(str(exc))
+            return
+        if self.eeg_session_id is not None:
+            try:
+                self.mcp_bridge.call_tool("close_eeg_session", {"session_id": self.eeg_session_id})
+            except Exception:
+                pass
+        self.eeg_session_id = new_session_id
+        self.agent.attach_session(new_session_id, loaded["basic_info"])
         self.recording_info.setPlainText(json.dumps(loaded["basic_info"], ensure_ascii=False, indent=2))
         self.detach_button.setEnabled(True)
         file_name = loaded["summary"]["recording_name"]
@@ -523,7 +461,7 @@ class EEGAgentWindow(QMainWindow):
         self.active_worker = None
         self.open_button.setEnabled(True)
         self.load_button.setEnabled(bool(self.file_input.text().strip()))
-        self.detach_button.setEnabled(self.agent is not None)
+        self.detach_button.setEnabled(self.eeg_session_id is not None)
         self.send_button.setEnabled(True)
         self.prompt_input.setEnabled(True)
         self.spinner.stop()
@@ -533,7 +471,7 @@ class EEGAgentWindow(QMainWindow):
         self._set_status(status)
         self.open_button.setEnabled(not busy)
         self.load_button.setEnabled(not busy and bool(self.file_input.text().strip()))
-        self.detach_button.setEnabled(not busy and self.agent is not None)
+        self.detach_button.setEnabled(not busy and self.eeg_session_id is not None)
         self.send_button.setEnabled(not busy)
         self.prompt_input.setEnabled(not busy)
 
@@ -609,26 +547,22 @@ class EEGAgentWindow(QMainWindow):
         self.metrics.clear()
         if self.agent is not None:
             self.agent.reset()
-        if self.direct_agent is not None:
-            self.direct_agent.reset()
-        if self.agent is not None:
+        if self.eeg_session_id is not None:
             self._add_message("系统", "对话已清空，当前脑电数据仍保持加载。", False)
         else:
             self._add_message("系统", "对话已清空，可以直接开始会话或选择脑电数据。", False)
 
     def _current_agent(self):
         """处理 current agent 相关逻辑。"""
-        if self.agent is not None:
-            return self.agent
-        if self.direct_agent is None:
-            self.direct_agent = DirectChatAgent()
-        return self.direct_agent
+        if self.agent is None:
+            self.agent = MCPChatAgent(self.mcp_bridge)
+        return self.agent
 
     def detach_recording(self):
         """移除当前 EEG 数据会话并回到普通对话。"""
         if self.active_thread is not None:
             return
-        if self.agent is None:
+        if self.eeg_session_id is None:
             return
         file_name = Path(self.file_input.text()).name
         if self.eeg_session_id:
@@ -636,7 +570,7 @@ class EEGAgentWindow(QMainWindow):
                 self.mcp_bridge.call_tool("close_eeg_session", {"session_id": self.eeg_session_id})
             except Exception:
                 pass
-        self.agent = None
+        self.agent.detach_session()
         self.eeg_session_id = None
         self.file_input.clear()
         self.recording_info.clear()
