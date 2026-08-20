@@ -80,6 +80,7 @@ class MCPChatAgent:
             thinking_mode=os.getenv("DEEPSEEK_THINKING_MODE", "thinking")
         )
         self.last_prompt_token_count = 0
+        self.rag_retriever = None
         self.bridge = bridge
         self.session_id = session_id
         self.system_message = {
@@ -308,10 +309,43 @@ class MCPChatAgent:
                     entry["arguments"] += tool_call.function.arguments
         return "".join(text_parts), [calls[index] for index in sorted(calls)]
 
+    def _retrieve_eeg_knowledge(self, user_query: str) -> tuple[str, list[dict[str, Any]]]:
+        """Build current-turn-only RAG context without changing the system prompt."""
+        from RAG.retriever import EEGRetriever, format_temporary_context
+
+        if self.rag_retriever is None:
+            self.rag_retriever = EEGRetriever()
+        results = self.rag_retriever.retrieve(user_query)
+        return format_temporary_context(user_query, results), results
+
     def run_stream(self, user_query: str, on_delta=None, on_tool_start=None, on_tool_end=None, on_tool_call_detected=None) -> dict[str, Any]:
         """执行一轮流式对话，必要时循环调用本地 EEG 工具。"""
         self._refresh_session_summary_message()
-        self.messages.append({"role": "user", "content": user_query})
+        temporary_content, retrieval_results = self._retrieve_eeg_knowledge(user_query)
+        user_message = {"role": "user", "content": temporary_content}
+        self.messages.append(user_message)
+        try:
+            return self._run_stream_with_temporary_context(
+                user_query,
+                retrieval_results,
+                on_delta=on_delta,
+                on_tool_start=on_tool_start,
+                on_tool_end=on_tool_end,
+                on_tool_call_detected=on_tool_call_detected,
+            )
+        finally:
+            # Retrieved passages are intentionally limited to this request.
+            user_message["content"] = user_query
+
+    def _run_stream_with_temporary_context(
+        self,
+        user_query: str,
+        retrieval_results: list[dict[str, Any]],
+        on_delta=None,
+        on_tool_start=None,
+        on_tool_end=None,
+        on_tool_call_detected=None,
+    ) -> dict[str, Any]:
         route = _select_route(user_query)
         tools = self._tool_schemas(route)
         started = time.time()
@@ -352,6 +386,7 @@ class MCPChatAgent:
                     "local_tool_time": tool_time,
                     "total_time": time.time() - started,
                     "route": route,
+                    "retrieved_sources": [item["source"] for item in retrieval_results],
                 }
 
             tool_rounds += 1

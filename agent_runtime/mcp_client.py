@@ -19,6 +19,7 @@ class MCPClientBridge:
         self._thread: Thread | None = None
         self._ready = Event()
         self._startup_error: Exception | None = None
+        self._shutdown_event: asyncio.Event | None = None
         self._stack: AsyncExitStack | None = None
         self._session: Any = None
         self._tools: list[Any] = []
@@ -42,15 +43,30 @@ class MCPClientBridge:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         try:
-            self._loop.run_until_complete(self._connect())
+            self._loop.run_until_complete(self._connection_lifecycle())
         except Exception as exc:  # 保存中间状态。
+            if not self._ready.is_set():
+                self._startup_error = exc
+                self._ready.set()
+        finally:
+            self._loop.close()
+
+    async def _connection_lifecycle(self) -> None:
+        """Enter and exit MCP's AnyIO contexts in the same asyncio task."""
+        self._shutdown_event = asyncio.Event()
+        try:
+            await self._connect()
+        except Exception as exc:
+            await self._disconnect()
             self._startup_error = exc
             self._ready.set()
             return
+
         self._ready.set()
-        self._loop.run_forever()
-        self._loop.run_until_complete(self._disconnect())
-        self._loop.close()
+        try:
+            await self._shutdown_event.wait()
+        finally:
+            await self._disconnect()
 
     async def _connect(self) -> None:
         """处理 connect 相关逻辑。"""
@@ -129,10 +145,17 @@ class MCPClientBridge:
         """关闭并移除 EEG 会话。"""
         if self._loop is None or self._thread is None:
             return
-        self._loop.call_soon_threadsafe(self._loop.stop)
-        self._thread.join(timeout=10)
+        thread = self._thread
+        shutdown_event = self._shutdown_event
+        if shutdown_event is not None and not self._loop.is_closed():
+            self._loop.call_soon_threadsafe(shutdown_event.set)
+        thread.join(timeout=10)
+        if thread.is_alive():
+            return
         self._thread = None
         self._loop = None
+        self._shutdown_event = None
+        self._startup_error = None
         self._ready.clear()
 
 

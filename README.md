@@ -101,6 +101,27 @@ A simple example can be found in tools/windowInfo.py.
 You may add PDF or TXT files directly to the folder:RAG/docs/
 They will automatically be ingested by the RAG module.
 
+## RAG retrieval pipeline
+
+The desktop MCP agent uses a two-stage local retrieval pipeline for each user
+request:
+
+1. BGE-M3 embeds the query and FAISS retrieves the top 20 chunks.
+2. `bge-reranker-v2-m3` reranks those candidates.
+3. The final score is `0.2 * normalized_faiss + 0.8 * reranker`.
+4. Results are deduplicated by source document and the top 3 are attached only
+   to the current user message. Retrieved text is never appended to the system
+   prompt or retained in later conversation turns.
+
+The local reranker must be present at
+`RAG/sentenceModel/bge-reranker-v2-m3`. The model directory is intentionally
+excluded from Git because the weights are approximately 2.27 GB.
+
+```powershell
+huggingface-cli download BAAI/bge-reranker-v2-m3 `
+  --local-dir RAG/sentenceModel/bge-reranker-v2-m3
+```
+
 # Citation
 If you find this work helpful, please consider citing:
 @misc{zhao2025eegagentunifiedframeworkautomated,

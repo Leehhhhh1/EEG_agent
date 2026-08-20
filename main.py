@@ -46,6 +46,7 @@ class EEGAgent:
             base_url=base_url,
         )
         self.model = model
+        self.rag_retriever = None
 
         # 保留的开发备注。
         prior_knowlwdge = self.config['prior knowledge'].copy()
@@ -58,6 +59,20 @@ class EEGAgent:
     def prepare_user_message(self, user_query: str):
         """处理 prepare user message 相关逻辑。"""
         self.messages.append({'role': 'user', 'content': user_query})
+
+    def prepare_rag_user_message(self, user_query: str):
+        """Add retrieval evidence to only the current user turn."""
+        from RAG.retriever import EEGRetriever, format_temporary_context
+
+        if self.rag_retriever is None:
+            self.rag_retriever = EEGRetriever()
+        results = self.rag_retriever.retrieve(user_query)
+        message = {
+            "role": "user",
+            "content": format_temporary_context(user_query, results),
+        }
+        self.messages.append(message)
+        return message, results
 
     def call_model(self):
         """处理 call model 相关逻辑。"""
@@ -112,49 +127,37 @@ class EEGAgent:
 
     def run(self, user_query):
         """执行当前任务流程。"""
-        from RAG.embedder import BGEEmbedder
-        from RAG.searcher import FaissSearcher
-        
-        # 保留的开发备注。
-        embedder = BGEEmbedder()
-        searcher = FaissSearcher("RAG/faiss.index", "RAG/chunks.pkl")
-        query_vector = embedder.encode([user_query])[0]
-        threshold = self.config.get("similarity_threshold")
-        results = searcher.search(query_vector, top_k=3)
-        for rank, (text, score) in enumerate(results, 1):
-            if score >= threshold:
-                self.messages[0]['content'] += f"{rank}. {text}\n"
-        
-        self.prepare_user_message(user_query)
+        user_message, retrieval_results = self.prepare_rag_user_message(user_query)
+        try:
+            total_rounds = 0
+            total_time = 0.0
+            local_tool_time = 0.0
 
-        total_rounds = 0
-        total_time = 0.0
-        local_tool_time = 0.0
+            start_total = time.time()
+            while True:
+                round_start = time.time()
+                response = self.call_model()
+                round_end = time.time()
+                total_rounds += 1
+                total_time += (round_end - round_start)
 
-        start_total = time.time()
-        while True:
-            round_start = time.time()
-            response = self.call_model()
-            round_end = time.time()
-            total_rounds += 1
-            total_time += (round_end - round_start)
+                tool_start = time.time()
+                has_more_tools = self.handle_tool_calls(response)
+                local_tool_time += (time.time() - tool_start)
 
-            tool_start = time.time()
-            has_more_tools = self.handle_tool_calls(response)
-            local_tool_time += (time.time() - tool_start)
+                if not has_more_tools:
+                    break
 
-            if not has_more_tools:
-                break
-
-        total_duration = time.time() - start_total
-
-        return {
-            "response": response,
-            "rounds": total_rounds,
-            "model_time": total_time,
-            "local_tool_time": local_tool_time,
-            "total_time": total_duration
-        }
+            return {
+                "response": response,
+                "rounds": total_rounds,
+                "model_time": total_time,
+                "local_tool_time": local_tool_time,
+                "total_time": time.time() - start_total,
+                "retrieved_sources": [item["source"] for item in retrieval_results],
+            }
+        finally:
+            user_message["content"] = user_query
 
     def call_model_stream(self, on_delta=None):
         """处理 call model stream 相关逻辑。"""
@@ -181,50 +184,42 @@ class EEGAgent:
     def run_stream(self, user_query, on_delta=None, on_tool_start=None,
                    on_tool_end=None, on_tool_call_detected=None):
         """以流式方式执行当前任务流程。"""
-        from RAG.embedder import BGEEmbedder
-        from RAG.searcher import FaissSearcher
+        user_message, retrieval_results = self.prepare_rag_user_message(user_query)
+        try:
+            total_rounds = 0
+            total_time = 0.0
+            local_tool_time = 0.0
+            start_total = time.time()
 
-        embedder = BGEEmbedder()
-        searcher = FaissSearcher("RAG/faiss.index", "RAG/chunks.pkl")
-        query_vector = embedder.encode([user_query])[0]
-        threshold = self.config.get("similarity_threshold")
-        results = searcher.search(query_vector, top_k=3)
-        for rank, (text, score) in enumerate(results, 1):
-            if score >= threshold:
-                self.messages[0]['content'] += f"{rank}. {text}\n"
+            while True:
+                round_start = time.time()
+                response = self.call_model_stream(on_delta=on_delta)
+                total_time += time.time() - round_start
+                total_rounds += 1
 
-        self.prepare_user_message(user_query)
-        total_rounds = 0
-        total_time = 0.0
-        local_tool_time = 0.0
-        start_total = time.time()
+                if extract_tool_calls(response) and on_tool_call_detected:
+                    on_tool_call_detected()
 
-        while True:
-            round_start = time.time()
-            response = self.call_model_stream(on_delta=on_delta)
-            total_time += time.time() - round_start
-            total_rounds += 1
+                tool_start = time.time()
+                has_more_tools = self.handle_tool_calls(
+                    response,
+                    on_tool_start=on_tool_start,
+                    on_tool_end=on_tool_end,
+                )
+                local_tool_time += time.time() - tool_start
+                if not has_more_tools:
+                    break
 
-            if extract_tool_calls(response) and on_tool_call_detected:
-                on_tool_call_detected()
-
-            tool_start = time.time()
-            has_more_tools = self.handle_tool_calls(
-                response,
-                on_tool_start=on_tool_start,
-                on_tool_end=on_tool_end,
-            )
-            local_tool_time += time.time() - tool_start
-            if not has_more_tools:
-                break
-
-        return {
-            "response": response,
-            "rounds": total_rounds,
-            "model_time": total_time,
-            "local_tool_time": local_tool_time,
-            "total_time": time.time() - start_total,
-        }
+            return {
+                "response": response,
+                "rounds": total_rounds,
+                "model_time": total_time,
+                "local_tool_time": local_tool_time,
+                "total_time": time.time() - start_total,
+                "retrieved_sources": [item["source"] for item in retrieval_results],
+            }
+        finally:
+            user_message["content"] = user_query
         
 
 if __name__ == "__main__":

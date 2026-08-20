@@ -9,6 +9,7 @@ regex==2024.11.6
 scipy==1.10.1
 scikit-image
 scikit-learn
+faiss-cpu==1.7.4
 torch
 tqdm==4.67.1
 transformers

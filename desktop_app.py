@@ -29,7 +29,7 @@ from agent_runtime.mcp_client import MCPClientBridge
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = PROJECT_ROOT / "config" / "config.json"
-PROMPT_PLACEHOLDER = "输入有关当前脑电记录的问题，按 Ctrl+Enter 发送。"
+PROMPT_PLACEHOLDER = "输入有关当前脑电记录的问题，按 Enter 发送，Shift+Enter 换行。"
 
 
 class AgentLoader(QObject):
@@ -135,6 +135,20 @@ class ChatWorker(QObject):
             self.failed.emit(str(exc))
 
 
+class RAGPreloader(QObject):
+    finished = Signal(object)
+    failed = Signal(str)
+
+    def run(self):
+        """Load both local retrieval models before the first user request."""
+        try:
+            from RAG.retriever import EEGRetriever
+
+            self.finished.emit(EEGRetriever())
+        except Exception as exc:
+            self.failed.emit(f"本地检索模型初始化失败：{exc}")
+
+
 class MessageComposer(QPlainTextEdit):
     send_requested = Signal()
 
@@ -152,8 +166,13 @@ class MessageComposer(QPlainTextEdit):
 
     def keyPressEvent(self, event: QKeyEvent):
         """处理键盘输入事件。"""
-        if event.key() in (Qt.Key_Return, Qt.Key_Enter) and event.modifiers() == Qt.ControlModifier:
-            self.send_requested.emit()
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            if event.modifiers() & Qt.ShiftModifier:
+                super().keyPressEvent(event)
+            else:
+                # Enter sends all text currently in the composer; Shift+Enter
+                # remains available for composing a multi-line message.
+                self.send_requested.emit()
             return
         super().keyPressEvent(event)
 
@@ -163,6 +182,8 @@ class EEGAgentWindow(QMainWindow):
         """初始化对象状态。"""
         super().__init__()
         self.agent = None
+        self.preloaded_rag_retriever = None
+        self.rag_ready = False
         self.eeg_session_id = None
         self.mcp_bridge = MCPClientBridge(PROJECT_ROOT)
         self.active_thread = None
@@ -175,7 +196,7 @@ class EEGAgentWindow(QMainWindow):
         self.resize(1280, 820)
         self._build_menu()
         self._build_ui()
-        self._set_status("请选择 EDF 脑电文件以开始分析。")
+        self._start_rag_preload()
 
     def _build_menu(self):
         """构建 build menu 所需内容。"""
@@ -334,6 +355,9 @@ class EEGAgentWindow(QMainWindow):
 
     def choose_edf(self):
         """打开文件选择器以选择 EDF 脑电文件。"""
+        if self.active_thread is not None:
+            self._set_status("后台初始化尚未完成，请稍候。")
+            return
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "选择脑电记录",
@@ -348,6 +372,8 @@ class EEGAgentWindow(QMainWindow):
 
     def load_selected_edf(self):
         """加载当前选择的 EDF 文件并创建分析会话。"""
+        if self.active_thread is not None:
+            return
         file_path = self.file_input.text().strip()
         if not file_path:
             return
@@ -355,10 +381,40 @@ class EEGAgentWindow(QMainWindow):
         worker = AgentLoader(self.mcp_bridge, file_path)
         self._run_worker(worker, worker.finished, self._agent_loaded, worker.failed, self._job_failed)
 
+    def _start_rag_preload(self):
+        """Preload the embedding and reranking models on a worker thread."""
+        self.spinner.start()
+        self._set_busy(True, "正在后台加载 BGE-M3 和重排模型...")
+        worker = RAGPreloader()
+        self._run_worker(
+            worker,
+            worker.finished,
+            self._rag_preloaded,
+            worker.failed,
+            self._rag_preload_failed,
+        )
+
+    def _rag_preloaded(self, retriever):
+        """Keep the loaded models alive for every subsequent chat turn."""
+        self.preloaded_rag_retriever = retriever
+        self.rag_ready = True
+        if self.agent is not None:
+            self.agent.rag_retriever = retriever
+        self.spinner.stop()
+        self._set_status("本地检索模型加载完成，可以开始对话或加载脑电记录。")
+
+    def _rag_preload_failed(self, message):
+        """Report startup model failures without retrying on the first prompt."""
+        self.rag_ready = False
+        self._job_failed(message)
+
     def send_message(self):
         """发送用户输入并启动后台回答任务。"""
         prompt = self.prompt_input.toPlainText().strip()
         if not prompt or self.active_thread is not None:
+            return
+        if not self.rag_ready:
+            self._set_status("本地检索模型尚未加载完成，暂时不能发送消息。")
             return
         try:
             agent = self._current_agent()
@@ -371,6 +427,10 @@ class EEGAgentWindow(QMainWindow):
         self.transcript.append(("你", prompt))
         has_recording = self.eeg_session_id is not None
         self._set_busy(True, "正在分析脑电并生成回答..." if has_recording else "正在生成回答...")
+        # Keep composing available while the current answer streams. Sending
+        # remains blocked by active_thread until this worker has finished.
+        self.prompt_input.setEnabled(True)
+        self.prompt_input.setFocus()
         self.streaming_response = ""
         self.streaming_label = self._add_message("EEGAgent", "正在生成回答...", False)
         worker = ChatWorker(agent, prompt)
@@ -402,8 +462,7 @@ class EEGAgentWindow(QMainWindow):
         """处理 agent loaded 相关逻辑。"""
         new_session_id = loaded["session_id"]
         try:
-            if self.agent is None:
-                self.agent = MCPChatAgent(self.mcp_bridge)
+            self._current_agent()
         except Exception as exc:
             try:
                 self.mcp_bridge.call_tool("close_eeg_session", {"session_id": new_session_id})
@@ -462,8 +521,8 @@ class EEGAgentWindow(QMainWindow):
         self.open_button.setEnabled(True)
         self.load_button.setEnabled(bool(self.file_input.text().strip()))
         self.detach_button.setEnabled(self.eeg_session_id is not None)
-        self.send_button.setEnabled(True)
-        self.prompt_input.setEnabled(True)
+        self.send_button.setEnabled(self.rag_ready)
+        self.prompt_input.setEnabled(self.rag_ready)
         self.spinner.stop()
 
     def _set_busy(self, busy: bool, status: str):
@@ -472,8 +531,8 @@ class EEGAgentWindow(QMainWindow):
         self.open_button.setEnabled(not busy)
         self.load_button.setEnabled(not busy and bool(self.file_input.text().strip()))
         self.detach_button.setEnabled(not busy and self.eeg_session_id is not None)
-        self.send_button.setEnabled(not busy)
-        self.prompt_input.setEnabled(not busy)
+        self.send_button.setEnabled(not busy and self.rag_ready)
+        self.prompt_input.setEnabled(not busy and self.rag_ready)
 
     def _set_status(self, status: str):
         """处理 set status 相关逻辑。"""
@@ -556,6 +615,8 @@ class EEGAgentWindow(QMainWindow):
         """处理 current agent 相关逻辑。"""
         if self.agent is None:
             self.agent = MCPChatAgent(self.mcp_bridge)
+        if self.preloaded_rag_retriever is not None:
+            self.agent.rag_retriever = self.preloaded_rag_retriever
         return self.agent
 
     def detach_recording(self):
