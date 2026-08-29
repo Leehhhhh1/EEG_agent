@@ -17,7 +17,7 @@ from .token_budget import (
 
 
 MAX_MEMORY_ITEMS = 12
-MAX_TOOL_ROUNDS = 6
+MAX_TOOL_ROUNDS = 8
 
 
 def _as_structured_result(result: dict[str, Any]) -> Any:
