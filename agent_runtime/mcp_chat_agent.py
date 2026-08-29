@@ -59,6 +59,23 @@ def _as_structured_result(result: dict[str, Any]) -> Any:
     return None
 
 
+def _tool_exception_result(tool_name: str, exc: Exception) -> dict[str, Any]:
+    """Convert a transport/runtime exception into a model-visible tool result."""
+    message = str(exc).strip() or exc.__class__.__name__
+    retryable = isinstance(exc, (TimeoutError, ConnectionError))
+    details = {
+        "ok": False,
+        "error_type": exc.__class__.__name__,
+        "message": f"工具 {tool_name} 调用失败：{message}",
+        "retryable": retryable,
+    }
+    return {
+        "is_error": True,
+        "structured_content": details,
+        "content": [details["message"]],
+    }
+
+
 def _limit_items(items: list[Any], limit: int = MAX_MEMORY_ITEMS) -> list[Any]:
     """限制列表长度，避免摘要内容过长。"""
     return items[-limit:]
@@ -312,14 +329,34 @@ class MCPChatAgent:
     def _retrieve_eeg_knowledge(self, user_query: str) -> tuple[str, list[dict[str, Any]]]:
         """Build current-turn-only RAG context without changing the system prompt."""
         from RAG.retriever import EEGRetriever, format_temporary_context
+        from RAG.retrieval_policy import decide_retrieval
+
+        previous_user_query = next(
+            (
+                str(message.get("content", ""))
+                for message in reversed(self.messages)
+                if message.get("role") == "user" and message.get("content")
+            ),
+            None,
+        )
+        decision = decide_retrieval(
+            user_query,
+            has_eeg_session=self.session_id is not None,
+            previous_user_query=previous_user_query,
+        )
+        if decision.mode == "skip":
+            return user_query, []
 
         if self.rag_retriever is None:
             self.rag_retriever = EEGRetriever()
-        results = self.rag_retriever.retrieve(user_query)
+        results = self.rag_retriever.retrieve(
+            decision.retrieval_query,
+            require_faiss_probe=decision.mode == "probe",
+        )
         return format_temporary_context(user_query, results), results
 
     def run_stream(self, user_query: str, on_delta=None, on_tool_start=None, on_tool_end=None, on_tool_call_detected=None) -> dict[str, Any]:
-        """执行一轮流式对话，必要时循环调用本地 EEG 工具。"""
+        """执行一轮流式React对话，必要时循环调用本地 EEG 工具。"""
         self._refresh_session_summary_message()
         temporary_content, retrieval_results = self._retrieve_eeg_knowledge(user_query)
         user_message = {"role": "user", "content": temporary_content}
@@ -414,6 +451,8 @@ class MCPChatAgent:
                     on_tool_start(call["name"])
                 try:
                     result = self.bridge.call_tool(call["name"], arguments)
+                except Exception as exc:
+                    result = _tool_exception_result(call["name"], exc)
                 finally:
                     if on_tool_end:
                         on_tool_end(call["name"])

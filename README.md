@@ -106,12 +106,23 @@ They will automatically be ingested by the RAG module.
 The desktop MCP agent uses a two-stage local retrieval pipeline for each user
 request:
 
-1. BGE-M3 embeds the query and FAISS retrieves the top 20 chunks.
-2. `bge-reranker-v2-m3` reranks those candidates.
-3. The final score is `0.2 * normalized_faiss + 0.8 * reranker`.
-4. Results are deduplicated by source document and the top 3 are attached only
-   to the current user message. Retrieved text is never appended to the system
+1. Deterministic rules skip RAG for conversation/UI requests and
+   recording-specific tool requests, while knowledge/guideline requests go
+   directly to retrieval. Ambiguous requests must pass a FAISS Top-1 probe.
+2. Clear follow-ups are searched as the previous user question plus the
+   current question; the original chat messages are not changed.
+3. BGE-M3 embeds the retrieval query and FAISS retrieves the top 20 chunks.
+4. `bge-reranker-v2-m3` reranks those candidates and filters results below the
+   configured relevance threshold.
+5. The final score is `0.2 * normalized_faiss + 0.8 * reranker`.
+6. Zero to three chunks by fused score are attached only to the current user
+   message, including multiple chunks from the same source when they rank highly.
+   Retrieved text is never appended to the system
    prompt or retained in later conversation turns.
+
+The default thresholds are `0.35` for the ambiguous-query FAISS probe and
+`0.5` for reranker filtering. They can be changed with
+`RAG_FAISS_PROBE_THRESHOLD` and `RAG_RERANK_THRESHOLD`.
 
 The local reranker must be present at
 `RAG/sentenceModel/bge-reranker-v2-m3`. The model directory is intentionally

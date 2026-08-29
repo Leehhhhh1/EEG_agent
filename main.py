@@ -63,10 +63,30 @@ class EEGAgent:
     def prepare_rag_user_message(self, user_query: str):
         """Add retrieval evidence to only the current user turn."""
         from RAG.retriever import EEGRetriever, format_temporary_context
+        from RAG.retrieval_policy import decide_retrieval
 
-        if self.rag_retriever is None:
-            self.rag_retriever = EEGRetriever()
-        results = self.rag_retriever.retrieve(user_query)
+        previous_user_query = next(
+            (
+                str(message.get("content", ""))
+                for message in reversed(self.messages)
+                if message.get("role") == "user" and message.get("content")
+            ),
+            None,
+        )
+        decision = decide_retrieval(
+            user_query,
+            has_eeg_session=True,
+            previous_user_query=previous_user_query,
+        )
+
+        results = []
+        if decision.mode != "skip":
+            if self.rag_retriever is None:
+                self.rag_retriever = EEGRetriever()
+            results = self.rag_retriever.retrieve(
+                decision.retrieval_query,
+                require_faiss_probe=decision.mode == "probe",
+            )
         message = {
             "role": "user",
             "content": format_temporary_context(user_query, results),

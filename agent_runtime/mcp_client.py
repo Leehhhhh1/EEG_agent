@@ -161,6 +161,22 @@ class MCPClientBridge:
 
 def result_for_model(result: dict[str, Any]) -> str:
     """处理 result for model 相关逻辑。"""
+    if result.get("is_error"):
+        structured = result.get("structured_content")
+        if isinstance(structured, dict):
+            error = dict(structured)
+        elif structured is not None:
+            error = {"details": structured}
+        else:
+            error = {}
+        error["ok"] = False
+        error["is_error"] = True
+        content = result.get("content") or []
+        if content and not error.get("message"):
+            error["message"] = "\n".join(content)
+        if not error.get("message"):
+            error["message"] = "The tool call failed without an error message."
+        return json.dumps(error, ensure_ascii=False)
     if result["structured_content"] is not None:
         return json.dumps(result["structured_content"], ensure_ascii=False)
     if result["content"]:

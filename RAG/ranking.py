@@ -3,7 +3,29 @@
 from typing import Any, Sequence
 
 
-def fuse_scores_and_deduplicate_sources(
+def passes_faiss_probe(
+    candidates: list[dict[str, Any]],
+    threshold: float,
+) -> bool:
+    """Return whether the best FAISS candidate is relevant enough to rerank."""
+    return bool(candidates) and float(candidates[0]["coarse_score"]) >= threshold
+
+
+def filter_by_rerank_threshold(
+    ranked: list[dict[str, Any]],
+    threshold: float,
+    top_k: int,
+) -> list[dict[str, Any]]:
+    """Produce dynamic Top-0..K output after reranker relevance filtering."""
+    if top_k <= 0:
+        return []
+    return [
+        item for item in ranked
+        if float(item["rerank_score"]) >= threshold
+    ][:top_k]
+
+
+def fuse_scores_and_select_top_k(
     candidates: list[dict[str, Any]],
     rerank_scores: Sequence[float],
     coarse_weight: float = 0.2,
@@ -28,14 +50,4 @@ def fuse_scores_and_deduplicate_sources(
         ranked.append(item)
 
     ranked.sort(key=lambda item: item["combined_score"], reverse=True)
-    deduplicated = []
-    seen_sources = set()
-    for item in ranked:
-        source_key = item["source"].casefold()
-        if source_key in seen_sources:
-            continue
-        seen_sources.add(source_key)
-        deduplicated.append(item)
-        if len(deduplicated) == top_k:
-            break
-    return deduplicated
+    return ranked[:top_k]
