@@ -10,6 +10,7 @@ if "openai" not in sys.modules:
 
 from agent_runtime.mcp_chat_agent import MCPChatAgent
 from agent_runtime.mcp_client import result_for_model
+from agent_runtime.skills import SkillRegistry
 
 
 class FailingBridge:
@@ -42,11 +43,15 @@ class ToolFailureResultTests(unittest.TestCase):
             ("工具执行失败，无法完成本次分析。", []),
         ])
         agent._stream_completion = types.MethodType(
-            lambda self, _tools, on_delta=None: next(completions),
+            lambda self, _tools, on_delta=None, transient_system_messages=None: next(completions),
             agent,
         )
 
-        result = agent._run_stream_with_temporary_context("analyze", [])
+        result = agent._run_stream_with_temporary_context(
+            "analyze",
+            [],
+            SkillRegistry.load_default().get("detection"),
+        )
 
         tool_message = next(message for message in agent.messages if message["role"] == "tool")
         error = json.loads(tool_message["content"])

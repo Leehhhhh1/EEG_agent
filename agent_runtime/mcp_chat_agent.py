@@ -8,6 +8,7 @@ from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
 from .mcp_client import MCPClientBridge, result_for_model
+from .skills import SkillRegistry, SkillSpec
 from .token_budget import (
     DEFAULT_SHORT_TERM_TOKEN_LIMIT,
     DeepSeekV4TokenCounter,
@@ -15,34 +16,8 @@ from .token_budget import (
 )
 
 
-ROUTES = {
-    "basic_information": {"get_eeg_basic_information"},
-    "exploration": {"explore_eeg_segment", "get_eeg_basic_information"},
-    "detection": {"detect_eeg_events", "get_eeg_basic_information"},
-    "reporting": {"generate_eeg_report", "get_eeg_basic_information"},
-    "general_eeg": {
-        "get_eeg_basic_information",
-        "explore_eeg_segment",
-        "detect_eeg_events",
-        "generate_eeg_report",
-    },
-}
-
-
 MAX_MEMORY_ITEMS = 12
 MAX_TOOL_ROUNDS = 6
-
-
-def _select_route(question: str) -> str:
-    """根据用户问题选择可用的 EEG 工具路由。"""
-    text = question.lower()
-    if any(word in text for word in ("report", "报告", "总结", "summary")):
-        return "reporting"
-    if any(word in text for word in ("seizure", "epilep", "discharge", "发作", "癫痫", "放电", "定位", "where")):
-        return "detection"
-    if any(word in text for word in ("rhythm", "amplitude", "symmetry", "background", "频率", "振幅", "节律", "对称", "背景")):
-        return "exploration"
-    return "general_eeg"
 
 
 def _as_structured_result(result: dict[str, Any]) -> Any:
@@ -99,6 +74,8 @@ class MCPChatAgent:
         self.last_prompt_token_count = 0
         self.rag_retriever = None
         self.bridge = bridge
+        self.skill_registry = SkillRegistry.load_default()
+        self.skill_registry.validate_tools(tool.name for tool in self.bridge.list_tools())
         self.session_id = session_id
         self.system_message = {
             "role": "system",
@@ -207,15 +184,25 @@ class MCPChatAgent:
         else:
             self.messages[1] = self._session_summary_message()
 
-    def _trim_messages(self, tools: list[dict[str, Any]]) -> None:
-        """按 DeepSeek-V4 token 数裁剪最早的完整对话轮次。"""
+    def _prepare_request_messages(
+        self,
+        tools: list[dict[str, Any]],
+        transient_system_messages: list[dict[str, Any]] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Trim history while preserving request-scoped system instructions."""
         self._refresh_session_summary_message()
-        self.messages, self.last_prompt_token_count = trim_messages_to_token_limit(
-            self.messages,
+        transient = list(transient_system_messages or [])
+        request_messages = self.messages[:2] + transient + self.messages[2:]
+        trimmed, self.last_prompt_token_count = trim_messages_to_token_limit(
+            request_messages,
             tools,
             self.token_counter,
             token_limit=self.short_term_token_limit,
+            preserved_message_count=2 + len(transient),
         )
+        transient_ids = {id(message) for message in transient}
+        self.messages = [message for message in trimmed if id(message) not in transient_ids]
+        return trimmed
 
     def _remember_tool_result(self, tool_name: str, result: dict[str, Any]) -> None:
         """记录工具返回的摘要，供后续轮次复用。"""
@@ -269,14 +256,13 @@ class MCPChatAgent:
         self.session_summary["reports"] = _limit_items(self.session_summary["reports"])
         self._refresh_session_summary_message()
 
-    def _tool_schemas(self, route: str) -> list[dict[str, Any]]:
-        """按当前路由生成可暴露给模型的工具 schema。"""
+    def _tool_schemas(self, allowed_tools: frozenset[str]) -> list[dict[str, Any]]:
+        """Expose only the MCP tools allowed by the active runtime skill."""
         if self.session_id is None:
             return []
-        allowed = ROUTES[route]
         schemas = []
         for tool in self.bridge.list_tools():
-            if tool.name not in allowed:
+            if tool.name not in allowed_tools:
                 continue
             input_schema = copy.deepcopy(getattr(tool, "inputSchema", getattr(tool, "input_schema", {})))
             properties = input_schema.get("properties", {})
@@ -293,12 +279,62 @@ class MCPChatAgent:
             })
         return schemas
 
-    def _stream_completion(self, tools: list[dict[str, Any]], on_delta=None) -> tuple[str, list[dict[str, Any]]]:
+    def _select_skill_by_description(
+        self,
+        user_query: str,
+        skills: tuple[SkillSpec, ...],
+    ) -> str | None:
+        """Ask DeepSeek to choose one registered skill without exposing tools."""
+        candidates = "\n".join(
+            f"- {skill.name}: {skill.description}"
+            for skill in skills
+        )
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "你是 EEGAgent 的 Skill 路由器。根据用户问题，从候选 Skill 中选择唯一一个最匹配的 name。"
+                        "只能返回候选列表中的名称；不要回答问题，不要调用工具。"
+                        "无法明确分类或存在多个可能选项时，返回 general_eeg。"
+                        "严格返回 JSON，格式为：{\"skill\": \"skill_name\"}。"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"用户问题：\n{user_query}\n\n候选 Skill：\n{candidates}",
+                },
+            ],
+            temperature=0,
+            stream=False,
+            timeout=20,
+        )
+        if not response.choices:
+            return None
+        content = response.choices[0].message.content
+        if not isinstance(content, str):
+            return None
+        try:
+            result = json.loads(content)
+        except json.JSONDecodeError:
+            return None
+        if not isinstance(result, dict) or set(result) != {"skill"}:
+            return None
+        skill_name = result.get("skill")
+        return skill_name if isinstance(skill_name, str) else None
+
+    def _stream_completion(
+        self,
+        tools: list[dict[str, Any]],
+        on_delta=None,
+        transient_system_messages: list[dict[str, Any]] | None = None,
+    ) -> tuple[str, list[dict[str, Any]]]:
         """流式调用大模型并收集文本与工具调用。"""
-        self._trim_messages(tools)
+        request_messages = self._prepare_request_messages(tools, transient_system_messages)
         request = {
             "model": self.model,
-            "messages": self.messages,
+            "messages": request_messages,
             "stream": True,
             "timeout": 90,
         }
@@ -358,6 +394,10 @@ class MCPChatAgent:
     def run_stream(self, user_query: str, on_delta=None, on_tool_start=None, on_tool_end=None, on_tool_call_detected=None) -> dict[str, Any]:
         """执行一轮流式React对话，必要时循环调用本地 EEG 工具。"""
         self._refresh_session_summary_message()
+        skill = self.skill_registry.select(
+            user_query,
+            description_selector=self._select_skill_by_description,
+        )
         temporary_content, retrieval_results = self._retrieve_eeg_knowledge(user_query)
         user_message = {"role": "user", "content": temporary_content}
         self.messages.append(user_message)
@@ -365,6 +405,7 @@ class MCPChatAgent:
             return self._run_stream_with_temporary_context(
                 user_query,
                 retrieval_results,
+                skill,
                 on_delta=on_delta,
                 on_tool_start=on_tool_start,
                 on_tool_end=on_tool_end,
@@ -378,13 +419,14 @@ class MCPChatAgent:
         self,
         user_query: str,
         retrieval_results: list[dict[str, Any]],
+        skill: SkillSpec,
         on_delta=None,
         on_tool_start=None,
         on_tool_end=None,
         on_tool_call_detected=None,
     ) -> dict[str, Any]:
-        route = _select_route(user_query)
-        tools = self._tool_schemas(route)
+        tools = self._tool_schemas(skill.allowed_tools)
+        skill_message = skill.as_system_message()
         started = time.time()
         model_time = 0.0
         tool_time = 0.0
@@ -407,6 +449,7 @@ class MCPChatAgent:
                 response, calls = self._stream_completion(
                     [] if force_final_answer else tools,
                     on_delta=on_delta,
+                    transient_system_messages=[skill_message],
                 )
             finally:
                 model_time += time.time() - model_started
@@ -422,7 +465,8 @@ class MCPChatAgent:
                     "model_time": model_time,
                     "local_tool_time": tool_time,
                     "total_time": time.time() - started,
-                    "route": route,
+                    "route": skill.name,
+                    "skill": skill.name,
                     "retrieved_sources": [item["source"] for item in retrieval_results],
                 }
 
@@ -441,6 +485,19 @@ class MCPChatAgent:
             for call in calls:
                 if self.session_id is None:
                     raise RuntimeError("An EEG session is required before calling EEG tools.")
+                if call["name"] not in skill.allowed_tools:
+                    result = _tool_exception_result(
+                        call["name"],
+                        PermissionError(
+                            f"Tool '{call['name']}' is not allowed by runtime skill '{skill.name}'."
+                        ),
+                    )
+                    self.messages.append({
+                        "role": "tool",
+                        "tool_call_id": call["id"],
+                        "content": result_for_model(result),
+                    })
+                    continue
                 try:
                     arguments = json.loads(call["arguments"] or "{}")
                 except json.JSONDecodeError:

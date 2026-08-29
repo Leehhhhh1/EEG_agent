@@ -88,6 +88,20 @@ Install the project dependencies, including the MCP 1.x SDK, then start the clie
 
 The desktop client starts `mcp_server.server` automatically. Do not start a second MCP server manually for the normal desktop workflow.
 
+### 运行时 EEG Skill
+
+桌面端 Agent 从 `agent_runtime/skills/definitions/*/SKILL.md` 加载应用运行时
+Skill。每次请求只选择一个 Skill：先使用 `trigger_keywords` 和 `priority`
+进行确定性关键词匹配；没有命中时，由 DeepSeek 根据各 Skill 的
+`description` 进行一次不开放工具的轻量分类；当模型返回 `general_eeg`、
+非法名称、非法 JSON、超时或发生异常时，统一回退到 `general_eeg`。
+
+选中的 Markdown 正文只注入当前一次 DeepSeek 请求，并且这一轮只会开放和
+执行该 Skill 在 `allowed_tools` 中声明的 MCP 工具。
+
+这些运行时 Skill 与 `.agents/skills` 中供 Codex 使用的仓库 Skill 相互独立；
+桌面端 EEGAgent 不会加载 Codex Skill。
+
 ## Adding New Tools
 Model-based tools
 Add the .pth weight files under tools/localModels/, and create a corresponding Python file in /tools/ containing the tool description and model implementation.
