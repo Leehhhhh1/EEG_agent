@@ -1,116 +1,135 @@
-# 索引器模块。
-import faiss
-import pickle
-import numpy as np
-import os
+"""Build versioned parent/child dense and sparse RAG indexes."""
+
+from __future__ import annotations
+
 import json
+from pathlib import Path
+import pickle
+
+import faiss
+import numpy as np
+
 from .chunker import load_and_chunk
+from .docling_parser import SUPPORTED_DOCUMENT_EXTENSIONS
 from .embedder import BGEEmbedder
+
+
+INDEX_VERSION = 3
+PARSER_CONFIG = {
+    "engine": "docling",
+    "heading_hierarchy": True,
+    "ocr": True,
+    "table_structure": True,
+}
+CHUNKING_CONFIG = {
+    "parent_target_tokens": 900,
+    "parent_max_tokens": 1400,
+    "child_target_tokens": 280,
+    "child_max_tokens": 400,
+    "child_overlap_tokens": 50,
+}
+
 
 class FaissIndexer:
     def __init__(self, dim: int):
-        """初始化对象状态。"""
         self.index = faiss.IndexFlatIP(dim)
-        self.records = []
+        self.records: list[dict] = []
 
     def add(self, vectors, records):
-        """处理 add 相关逻辑。"""
-        self.index.add(np.array(vectors).astype('float32'))
+        self.index.add(np.asarray(vectors, dtype="float32"))
         self.records.extend(records)
 
-    def save(self, index_path: str, text_path: str):
-        """处理 save 相关逻辑。"""
+    def save(self, index_path: str):
         faiss.write_index(self.index, index_path)
-        with open(text_path, 'wb') as f:
-            pickle.dump(self.records, f)
 
-    def load(self, index_path: str, text_path: str):
-        """加载 load 所需的数据。"""
-        self.index = faiss.read_index(index_path)
-        with open(text_path, 'rb') as f:
-            self.records = pickle.load(f)
 
-    def reset(self):
-        """重置当前对象的内部状态。"""
-        self.index = faiss.IndexFlatIP(self.index.d)
-        self.records = []
-
-def _document_registry(docs_dir: str) -> dict[str, float]:
-    """Return a stable registry keyed by source filename."""
+def _document_registry(docs_dir: Path) -> dict:
+    files = {}
+    for path in sorted(docs_dir.iterdir()):
+        if path.is_file() and path.suffix.lower() in SUPPORTED_DOCUMENT_EXTENSIONS:
+            stat = path.stat()
+            files[path.name] = {"mtime_ns": stat.st_mtime_ns, "size": stat.st_size}
     return {
-        filename: os.path.getmtime(os.path.join(docs_dir, filename))
-        for filename in sorted(os.listdir(docs_dir))
-        if os.path.isfile(os.path.join(docs_dir, filename))
-        and filename.lower().endswith((".pdf", ".txt"))
+        "index_version": INDEX_VERSION,
+        "model": "bge-m3-dense+sparse",
+        "parser": PARSER_CONFIG,
+        "chunking": CHUNKING_CONFIG,
+        "files": files,
     }
 
 
-def _has_metadata_records(text_path: str) -> bool:
-    if not os.path.exists(text_path):
-        return False
+def _load_registry(path: Path) -> dict:
+    if not path.exists():
+        return {}
     try:
-        with open(text_path, "rb") as file:
-            records = pickle.load(file)
-        return bool(records) and all(
-            isinstance(record, dict) and {"text", "source"} <= record.keys()
-            for record in records
-        )
-    except (OSError, pickle.PickleError, EOFError):
-        return False
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _save_pickle(path: Path, value) -> None:
+    with path.open("wb") as file:
+        pickle.dump(value, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def _build_sparse_index(sparse_vectors: list[dict[int, float]]) -> dict[int, list[tuple[int, float]]]:
+    inverted: dict[int, list[tuple[int, float]]] = {}
+    for child_index, weights in enumerate(sparse_vectors):
+        for token_id, weight in weights.items():
+            inverted.setdefault(int(token_id), []).append((child_index, float(weight)))
+    return inverted
 
 
 def update_index(
-    docs_dir="docs",
-    index_path="faiss.index",
-    text_path="chunks.pkl",
-    registry_path="registered_files.json",
+    docs_dir: str = "docs",
+    index_path: str = "faiss.index",
+    children_path: str = "children.pkl",
+    parents_path: str = "parents.pkl",
+    sparse_path: str = "sparse_index.pkl",
+    registry_path: str = "registered_files.json",
     embedder=None,
-):
-    """处理 update index 相关逻辑。"""
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    docs_dir = os.path.join(CURRENT_DIR, docs_dir)
-    index_path = os.path.join(CURRENT_DIR, index_path)
-    text_path = os.path.join(CURRENT_DIR, text_path)
-    registry_path = os.path.join(CURRENT_DIR, registry_path)
-
-    current_registry = _document_registry(docs_dir)
-    if os.path.exists(registry_path):
-        with open(registry_path, "r", encoding="utf-8") as f:
-            registered_files = json.load(f)
-    else:
-        registered_files = {}
-
-    if (
-        registered_files == current_registry
-        and os.path.exists(index_path)
-        and _has_metadata_records(text_path)
-    ):
+) -> bool:
+    rag_dir = Path(__file__).resolve().parent
+    docs = rag_dir / docs_dir
+    paths = {
+        "index": rag_dir / index_path,
+        "children": rag_dir / children_path,
+        "parents": rag_dir / parents_path,
+        "sparse": rag_dir / sparse_path,
+        "registry": rag_dir / registry_path,
+    }
+    current_registry = _document_registry(docs)
+    required = [paths["index"], paths["children"], paths["parents"], paths["sparse"]]
+    if _load_registry(paths["registry"]) == current_registry and all(path.exists() for path in required):
         return False
 
     embedder = embedder or BGEEmbedder()
-    indexer = FaissIndexer(dim=1024)
-    for filename in sorted(current_registry):
-        filepath = os.path.join(docs_dir, filename)
-        print(f"Processing new file: {filepath}")
-        chunks = load_and_chunk(filepath)
-        if not chunks:
-            continue
-        vectors = embedder.encode(chunks)
-        records = [
-            {
-                "text": text,
-                "source": filename,
-                "chunk_id": f"{filename}:{chunk_index}",
-            }
-            for chunk_index, text in enumerate(chunks)
-        ]
-        indexer.add(vectors, records)
+    parents: list[dict] = []
+    children: list[dict] = []
+    for filename in sorted(current_registry["files"]):
+        filepath = docs / filename
+        print(f"Processing knowledge file: {filepath}")
+        document_parents, document_children = load_and_chunk(
+            str(filepath), tokenizer=embedder.tokenizer
+        )
+        parents.extend(document_parents)
+        children.extend(document_children)
 
-    if not indexer.records:
-        raise ValueError(f"No PDF or TXT chunks were found in {docs_dir}.")
-    indexer.save(index_path, text_path)
-    with open(registry_path, "w", encoding="utf-8") as f:
-        json.dump(current_registry, f, ensure_ascii=False, indent=2)
+    if not children:
+        raise ValueError(f"No Docling-supported knowledge documents were found in {docs}.")
+    retrieval_texts = [child["retrieval_text"] for child in children]
+    encoded = embedder.encode_hybrid(retrieval_texts)
+    dense_vectors = encoded["dense_vecs"]
+    sparse_vectors = encoded["lexical_weights"]
 
-    print("Index update complete.")
+    indexer = FaissIndexer(dim=len(dense_vectors[0]))
+    indexer.add(dense_vectors, children)
+    indexer.save(str(paths["index"]))
+    _save_pickle(paths["children"], children)
+    _save_pickle(paths["parents"], {parent["parent_id"]: parent for parent in parents})
+    _save_pickle(paths["sparse"], _build_sparse_index(sparse_vectors))
+    paths["registry"].write_text(
+        json.dumps(current_registry, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"Index update complete: {len(parents)} parents, {len(children)} children.")
     return True

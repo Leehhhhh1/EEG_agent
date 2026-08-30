@@ -63,6 +63,9 @@ RAG/sentenceModel/
 # Generated RAG artifacts
 RAG/chunks.pkl
 RAG/faiss.index
+RAG/children.pkl
+RAG/parents.pkl
+RAG/sparse_index.pkl
 RAG/registered_files.json
 
 # Large local EEG recordings (keep small curated examples explicitly if needed)

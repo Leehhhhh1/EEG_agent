@@ -42,7 +42,8 @@ EEGAgent/
 │  ├─ indexer.py
 │  ├─ searcher.py
 │  ├─ txtDealer.py
-│  ├─ chunks.pkl, faiss.index
+│  ├─ children.pkl, parents.pkl
+│  ├─ faiss.index, sparse_index.pkl
 │  ├─ docs/
 │  └─ sentenceModel/
 │     └─ bge-m3/
@@ -112,8 +113,11 @@ Create a Python script directly under /tools/ containing the tool logic.
 A simple example can be found in tools/windowInfo.py.
 
 ## Adding New Knowledge Base Files
-You may add PDF or TXT files directly to the folder:RAG/docs/
-They will automatically be ingested by the RAG module.
+You may add PDF, DOCX, Markdown, TXT, HTML, or XHTML files directly to
+`RAG/docs/`. Docling converts each source into structured headings, paragraphs,
+lists, tables, and page metadata. EEGAgent then applies its own parent/child
+chunking and automatically rebuilds the RAG index when source files or parser
+settings change.
 
 ## RAG retrieval pipeline
 
@@ -125,18 +129,27 @@ request:
    directly to retrieval. Ambiguous requests must pass a FAISS Top-1 probe.
 2. Clear follow-ups are searched as the previous user question plus the
    current question; the original chat messages are not changed.
-3. BGE-M3 embeds the retrieval query and FAISS retrieves the top 20 chunks.
-4. `bge-reranker-v2-m3` reranks those candidates and filters results below the
+3. Docling maps supported documents into headings, paragraphs, lists, tables,
+   and page metadata. EEGAgent then creates section-oriented parent chunks and
+   smaller child chunks. BGE-M3 Dense/FAISS and BGE-M3 Sparse retrieval each recall 20 children.
+   BGE-M3 ColBERT scores their merged candidates, and three-way rank fusion keeps
+   the best 15.
+4. `bge-reranker-v2-m3` reranks those children and filters results below the
    configured relevance threshold.
-5. The final score is `0.2 * normalized_faiss + 0.8 * reranker`.
-6. Zero to three chunks by fused score are attached only to the current user
-   message, including multiple chunks from the same source when they rank highly.
+5. The final score is `0.2 * normalized_three_way_rrf + 0.8 * reranker`.
+6. Results are deduplicated by parent. Each matched child is expanded with its
+   previous and next sibling before zero to three passages are attached only to
+   the current user message.
    Retrieved text is never appended to the system
    prompt or retained in later conversation turns.
 
 The default thresholds are `0.35` for the ambiguous-query FAISS probe and
 `0.5` for reranker filtering. They can be changed with
 `RAG_FAISS_PROBE_THRESHOLD` and `RAG_RERANK_THRESHOLD`.
+
+The versioned registry automatically rebuilds legacy indexes into
+`parents.pkl`, `children.pkl`, `faiss.index`, and `sparse_index.pkl` on the
+first startup after this upgrade.
 
 The local reranker must be present at
 `RAG/sentenceModel/bge-reranker-v2-m3`. The model directory is intentionally

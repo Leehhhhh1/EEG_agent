@@ -1,5 +1,5 @@
 bs4
-PyMuPDF
+docling==2.123.1
 mne==1.6.1
 nltk
 numpy==1.24.4

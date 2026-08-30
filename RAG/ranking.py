@@ -1,6 +1,77 @@
-"""Pure ranking helpers for the two-stage RAG pipeline."""
+"""Pure ranking helpers for the multi-stage RAG pipeline."""
 
 from typing import Any, Sequence
+
+
+def reciprocal_rank_fusion(
+    dense_results: list[dict[str, Any]],
+    sparse_results: list[dict[str, Any]],
+    *,
+    dense_weight: float = 0.6,
+    sparse_weight: float = 0.4,
+    rank_constant: int = 60,
+    top_k: int = 40,
+) -> list[dict[str, Any]]:
+    """Fuse dense/sparse ranks without assuming their raw scores share a scale."""
+    if top_k <= 0:
+        return []
+    fused: dict[str, dict[str, Any]] = {}
+    maximum = (dense_weight + sparse_weight) / (rank_constant + 1)
+    for result_name, results, weight in (
+        ("dense", dense_results, dense_weight),
+        ("sparse", sparse_results, sparse_weight),
+    ):
+        for rank, result in enumerate(results, 1):
+            chunk_id = str(result["chunk_id"])
+            item = fused.setdefault(chunk_id, dict(result))
+            item.update(result)
+            item["hybrid_score"] = float(item.get("hybrid_score", 0.0)) + weight / (rank_constant + rank)
+            item[f"{result_name}_rank"] = rank
+    for item in fused.values():
+        hybrid = item["hybrid_score"] / maximum if maximum else 0.0
+        item["hybrid_score"] = max(0.0, min(1.0, hybrid))
+        item["coarse_score"] = 2.0 * item["hybrid_score"] - 1.0
+    return sorted(fused.values(), key=lambda item: item["hybrid_score"], reverse=True)[:top_k]
+
+
+def fuse_three_way_ranks(
+    candidates: list[dict[str, Any]],
+    colbert_scores: Sequence[float],
+    *,
+    dense_weight: float = 0.35,
+    sparse_weight: float = 0.20,
+    colbert_weight: float = 0.45,
+    rank_constant: int = 60,
+    top_k: int = 15,
+) -> list[dict[str, Any]]:
+    """Fuse Dense, Sparse, and ColBERT ranks into one normalized score."""
+    if len(candidates) != len(colbert_scores):
+        raise ValueError("Each recalled candidate must have one ColBERT score.")
+    if top_k <= 0:
+        return []
+    colbert_order = sorted(
+        range(len(candidates)),
+        key=lambda index: float(colbert_scores[index]),
+        reverse=True,
+    )
+    colbert_ranks = {candidate_index: rank for rank, candidate_index in enumerate(colbert_order, 1)}
+    maximum = (dense_weight + sparse_weight + colbert_weight) / (rank_constant + 1)
+    ranked: list[dict[str, Any]] = []
+    for candidate_index, candidate in enumerate(candidates):
+        item = dict(candidate)
+        item["colbert_score"] = float(colbert_scores[candidate_index])
+        item["colbert_rank"] = colbert_ranks[candidate_index]
+        score = colbert_weight / (rank_constant + item["colbert_rank"])
+        if "dense_rank" in item:
+            score += dense_weight / (rank_constant + int(item["dense_rank"]))
+        if "sparse_rank" in item:
+            score += sparse_weight / (rank_constant + int(item["sparse_rank"]))
+        three_way = score / maximum if maximum else 0.0
+        item["three_way_score"] = max(0.0, min(1.0, three_way))
+        item["coarse_score"] = 2.0 * item["three_way_score"] - 1.0
+        ranked.append(item)
+    ranked.sort(key=lambda item: item["three_way_score"], reverse=True)
+    return ranked[:top_k]
 
 
 def passes_faiss_probe(
