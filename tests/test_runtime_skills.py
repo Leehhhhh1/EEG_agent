@@ -24,11 +24,11 @@ class RuntimeSkillTests(unittest.TestCase):
             {"basic_information", "detection", "exploration", "general_eeg", "reporting"},
         )
 
-    def test_selector_returns_exactly_one_best_skill(self):
+    def test_keyword_selector_returns_specialized_skill_and_unmatched_returns_none(self):
         self.assertEqual(self.registry.select("检查前30秒有没有发作").name, "detection")
         self.assertEqual(self.registry.select("分析背景节律和振幅").name, "exploration")
         self.assertEqual(self.registry.select("生成筛查报告").name, "reporting")
-        self.assertEqual(self.registry.select("这是一条没有专用关键词的问题").name, "general_eeg")
+        self.assertIsNone(self.registry.select("这是一条没有专用关键词的问题"))
 
     def test_specialized_skills_have_semantic_examples(self):
         for skill in self.registry.all():
@@ -59,7 +59,7 @@ class RuntimeSkillTests(unittest.TestCase):
         self.assertEqual(selection.source, "embedding")
         self.assertAlmostEqual(selection.top_score, 0.82)
 
-    def test_low_confidence_semantic_result_uses_general_fallback(self):
+    def test_medium_confidence_semantic_result_uses_restricted_general_skill(self):
         semantic_result = SemanticSelection(
             accepted_name=None,
             candidates=(SemanticCandidate("exploration", 0.51, ("查看波形",)),),
@@ -71,17 +71,28 @@ class RuntimeSkillTests(unittest.TestCase):
         )
 
         self.assertEqual(selection.skill.name, "general_eeg")
-        self.assertEqual(selection.source, "fallback")
+        self.assertEqual(selection.source, "general")
         self.assertAlmostEqual(selection.top_score, 0.51)
 
-    def test_failed_semantic_selection_falls_back(self):
+    def test_low_confidence_semantic_result_selects_no_skill(self):
+        semantic_result = SemanticSelection(
+            accepted_name=None,
+            candidates=(SemanticCandidate("exploration", 0.44, ("查看波形",)),),
+            top_score=0.44,
+            margin=0.01,
+        )
+        selection = self.registry.select_with_details(
+            "我想了解一下这个问题", lambda query, skills: semantic_result
+        )
+
+        self.assertIsNone(selection.skill)
+        self.assertEqual(selection.source, "no_skill")
+
+    def test_failed_semantic_selection_selects_no_skill(self):
         def failed_selector(query, skills):
             raise TimeoutError("router timed out")
 
-        self.assertEqual(
-            self.registry.select("还是没有关键词", failed_selector).name,
-            "general_eeg",
-        )
+        self.assertIsNone(self.registry.select("还是没有关键词", failed_selector))
 
     def test_bge_semantic_selector_uses_score_and_margin_thresholds(self):
         class FakeEmbedder:

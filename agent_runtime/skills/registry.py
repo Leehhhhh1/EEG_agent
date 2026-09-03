@@ -1,6 +1,7 @@
 """Registry and validation for EEGAgent runtime skills."""
 
 from collections.abc import Callable, Iterable
+import os
 from pathlib import Path
 
 from .loader import load_skills
@@ -10,6 +11,7 @@ from .selector import matched_keywords, select_by_keywords
 
 DEFAULT_DEFINITIONS_DIR = Path(__file__).resolve().parent / "definitions"
 FALLBACK_SKILL_NAME = "general_eeg"
+DEFAULT_GENERAL_MIN_SCORE = 0.45
 SemanticSelector = Callable[[str, tuple[SkillSpec, ...]], SemanticSelection]
 
 
@@ -40,8 +42,8 @@ class SkillRegistry:
         self,
         query: str,
         semantic_selector: SemanticSelector | None = None,
-    ) -> SkillSpec:
-        """Compatibility wrapper returning only the selected Skill."""
+    ) -> SkillSpec | None:
+        """Compatibility wrapper returning the selected Skill, if any."""
         return self.select_with_details(query, semantic_selector).skill
 
     def select_with_details(
@@ -49,7 +51,7 @@ class SkillRegistry:
         query: str,
         semantic_selector: SemanticSelector | None = None,
     ) -> SkillSelection:
-        """Select one Skill by keywords, local semantic routing, then fallback."""
+        """Route to a specialized Skill, a restricted general Skill, or no Skill."""
         keyword_match = select_by_keywords(query, self._skills.values())
         if keyword_match is not None:
             return SkillSelection(
@@ -80,9 +82,21 @@ class SkillRegistry:
                     margin=semantic_result.margin,
                 )
 
+        general_min_score = float(
+            os.getenv("SKILL_ROUTE_GENERAL_MIN_SCORE", DEFAULT_GENERAL_MIN_SCORE)
+        )
+        if semantic_result is not None and semantic_result.top_score >= general_min_score:
+            return SkillSelection(
+                skill=self._skills[FALLBACK_SKILL_NAME],
+                source="general",
+                candidates=semantic_result.candidates,
+                top_score=semantic_result.top_score,
+                margin=semantic_result.margin,
+            )
+
         return SkillSelection(
-            skill=self._skills[FALLBACK_SKILL_NAME],
-            source="fallback",
+            skill=None,
+            source="no_skill",
             candidates=semantic_result.candidates if semantic_result else (),
             top_score=semantic_result.top_score if semantic_result else 0.0,
             margin=semantic_result.margin if semantic_result else 0.0,

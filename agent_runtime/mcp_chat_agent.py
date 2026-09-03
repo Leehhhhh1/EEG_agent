@@ -18,6 +18,14 @@ from .token_budget import (
 
 MAX_MEMORY_ITEMS = 12
 MAX_TOOL_ROUNDS = 8
+NO_SKILL_SYSTEM_MESSAGE = {
+    "role": "system",
+    "content": (
+        "当前请求未匹配可安全执行的 EEG 分析任务。不要调用 EEG 工具，也不要对当前记录作出推断。"
+        "若用户可能在询问当前记录，请要求其明确分析目标、时间范围，以及必要时的导联。"
+        "若是一般 EEG 知识问题，可根据当前轮检索到的参考资料回答。"
+    ),
+}
 
 
 def _as_structured_result(result: dict[str, Any]) -> Any:
@@ -405,7 +413,11 @@ class MCPChatAgent:
         on_tool_call_detected=None,
     ) -> dict[str, Any]:
         tools = self._tool_schemas(skill.allowed_tools) if skill is not None else []
-        transient_messages = [skill.as_system_message()] if skill is not None else []
+        transient_messages = (
+            [skill.as_system_message()]
+            if skill is not None
+            else ([NO_SKILL_SYSTEM_MESSAGE] if self.session_id is not None else [])
+        )
         started = time.time()
         model_time = 0.0
         tool_time = 0.0
@@ -439,7 +451,8 @@ class MCPChatAgent:
             if not calls:
                 self.messages.append({"role": "assistant", "content": response})
                 routing = {
-                    "enabled": skill is not None,
+                    "enabled": selection is not None,
+                    "skill_selected": skill is not None,
                     "skill": skill.name if skill is not None else None,
                     "source": selection.source if selection is not None else "no_eeg_session",
                     "keyword_matches": list(selection.keyword_matches) if selection else [],

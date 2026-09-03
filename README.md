@@ -92,11 +92,12 @@ The desktop client starts `mcp_server.server` automatically. Do not start a seco
 ### 运行时 EEG Skill
 
 桌面端 Agent 从 `agent_runtime/skills/definitions/*/SKILL.md` 加载应用运行时
-Skill。仅在已加载 EDF 并建立会话时进行路由，每次请求只选择一个 Skill：
-先使用 `trigger_keywords` 和 `priority` 进行高精度关键词匹配；没有命中时，
-复用 RAG 的 BGE-M3，对用户问题与各 Skill 的多条 `routing_examples` 做本地
-语义匹配；最高分或候选分差不足时回退到 `general_eeg`。桌面端会展示路由
-方式、关键词命中、语义候选分数、候选分差以及最终开放的工具列表。
+Skill。仅在已加载 EDF 并建立会话时进行路由：先使用 `trigger_keywords` 和
+`priority` 进行高精度关键词匹配；没有命中时，复用 RAG 的 BGE-M3，对用户问题
+与各专用 Skill 的多条 `routing_examples` 做本地语义匹配。高置信度结果选择专用
+Skill；分数达到 `SKILL_ROUTE_GENERAL_MIN_SCORE` 但未达到专用 Skill 阈值时选择
+受限的 `general_eeg`；分数更低时不选择 Skill，也不开放 EEG 工具。桌面端会展示
+路由方式、关键词命中、语义候选分数、候选分差以及最终开放的工具列表。
 
 选中的 Markdown 正文只注入当前一次 DeepSeek 请求，并且这一轮只会开放和
 执行该 Skill 在 `allowed_tools` 中声明的 MCP 工具。

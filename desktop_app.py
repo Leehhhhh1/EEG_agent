@@ -507,17 +507,19 @@ class EEGAgentWindow(QMainWindow):
             source_labels = {
                 "keyword": "关键词匹配",
                 "embedding": "BGE-M3 语义匹配",
-                "fallback": "语义低置信度兜底",
+                "general": "中等置信度通用路由",
+                "no_skill": "低置信度，不开放 EEG 工具",
             }
             route_processes = {
                 "keyword": "EDF 会话就绪 → 关键词命中 → 选择 Skill",
                 "embedding": "EDF 会话就绪 → 关键词未命中 → BGE-M3 语义匹配 → 选择 Skill",
-                "fallback": "EDF 会话就绪 → 关键词未命中 → 语义置信度不足 → general_eeg",
+                "general": "EDF 会话就绪 → 未达到专用 Skill 阈值 → general_eeg（仅基础信息/澄清）",
+                "no_skill": "EDF 会话就绪 → 语义相似度过低 → 不选择 Skill、不开放 EEG 工具",
             }
             source = routing.get("source")
             routing_lines = [
                 f"路由过程：{route_processes.get(source, 'EDF 会话就绪 → 选择 Skill')}",
-                f"Skill：{routing.get('skill', 'unknown')}",
+                f"Skill：{routing.get('skill') or '未选择'}",
                 f"路由方式：{source_labels.get(source, source or 'unknown')}",
             ]
             keyword_matches = routing.get("keyword_matches") or []

@@ -54,8 +54,8 @@ class SemanticSelection:
 class SkillSelection:
     """Selected Skill plus the route details shown by the desktop client."""
 
-    skill: SkillSpec
-    source: Literal["keyword", "embedding", "fallback"]
+    skill: SkillSpec | None
+    source: Literal["keyword", "embedding", "general", "no_skill"]
     keyword_matches: tuple[str, ...] = ()
     candidates: tuple[SemanticCandidate, ...] = ()
     top_score: float = 0.0
