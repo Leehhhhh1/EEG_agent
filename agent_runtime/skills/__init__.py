@@ -1,6 +1,7 @@
 """Single-skill runtime routing for EEGAgent."""
 
-from .models import SkillSpec
+from .models import SkillSelection, SkillSpec
 from .registry import SkillRegistry
+from .semantic_selector import SemanticSkillSelector
 
-__all__ = ["SkillRegistry", "SkillSpec"]
+__all__ = ["SemanticSkillSelector", "SkillRegistry", "SkillSelection", "SkillSpec"]

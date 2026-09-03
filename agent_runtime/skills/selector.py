@@ -22,3 +22,12 @@ def select_by_keywords(
         matches.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
         return matches[0][3]
     return None
+
+
+def matched_keywords(query: str, skill: SkillSpec) -> tuple[str, ...]:
+    """Return the configured keywords responsible for one deterministic match."""
+    lowered = query.strip().lower()
+    return tuple(
+        keyword for keyword in skill.trigger_keywords
+        if keyword.lower() in lowered
+    )

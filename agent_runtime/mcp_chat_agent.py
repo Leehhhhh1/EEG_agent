@@ -8,7 +8,7 @@ from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
 from .mcp_client import MCPClientBridge, result_for_model
-from .skills import SkillRegistry, SkillSpec
+from .skills import SemanticSkillSelector, SkillRegistry, SkillSelection, SkillSpec
 from .token_budget import (
     DEFAULT_SHORT_TERM_TOKEN_LIMIT,
     DeepSeekV4TokenCounter,
@@ -73,6 +73,7 @@ class MCPChatAgent:
         )
         self.last_prompt_token_count = 0
         self.rag_retriever = None
+        self.semantic_skill_selector = None
         self.bridge = bridge
         self.skill_registry = SkillRegistry.load_default()
         self.skill_registry.validate_tools(tool.name for tool in self.bridge.list_tools())
@@ -99,6 +100,13 @@ class MCPChatAgent:
                 "get_eeg_basic_information",
                 {"is_error": False, "structured_content": initial_basic_info, "content": []},
             )
+
+    def set_rag_retriever(self, retriever) -> None:
+        """Attach the shared RAG runtime and reuse its BGE-M3 embedder for Skill routing."""
+        if self.rag_retriever is retriever and self.semantic_skill_selector is not None:
+            return
+        self.rag_retriever = retriever
+        self.semantic_skill_selector = SemanticSkillSelector(retriever.embedder)
 
     def attach_session(self, session_id: str, basic_info: dict[str, Any] | None = None) -> None:
         """Attach an EEG recording without discarding conversation history."""
@@ -279,51 +287,6 @@ class MCPChatAgent:
             })
         return schemas
 
-    def _select_skill_by_description(
-        self,
-        user_query: str,
-        skills: tuple[SkillSpec, ...],
-    ) -> str | None:
-        """Ask DeepSeek to choose one registered skill without exposing tools."""
-        candidates = "\n".join(
-            f"- {skill.name}: {skill.description}"
-            for skill in skills
-        )
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "你是 EEGAgent 的 Skill 路由器。根据用户问题，从候选 Skill 中选择唯一一个最匹配的 name。"
-                        "只能返回候选列表中的名称；不要回答问题，不要调用工具。"
-                        "无法明确分类或存在多个可能选项时，返回 general_eeg。"
-                        "严格返回 JSON，格式为：{\"skill\": \"skill_name\"}。"
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": f"用户问题：\n{user_query}\n\n候选 Skill：\n{candidates}",
-                },
-            ],
-            temperature=0,
-            stream=False,
-            timeout=20,
-        )
-        if not response.choices:
-            return None
-        content = response.choices[0].message.content
-        if not isinstance(content, str):
-            return None
-        try:
-            result = json.loads(content)
-        except json.JSONDecodeError:
-            return None
-        if not isinstance(result, dict) or set(result) != {"skill"}:
-            return None
-        skill_name = result.get("skill")
-        return skill_name if isinstance(skill_name, str) else None
-
     def _stream_completion(
         self,
         tools: list[dict[str, Any]],
@@ -384,7 +347,7 @@ class MCPChatAgent:
             return user_query, []
 
         if self.rag_retriever is None:
-            self.rag_retriever = EEGRetriever()
+            self.set_rag_retriever(EEGRetriever())
         results = self.rag_retriever.retrieve(
             decision.retrieval_query,
             require_faiss_probe=decision.mode == "probe",
@@ -394,10 +357,24 @@ class MCPChatAgent:
     def run_stream(self, user_query: str, on_delta=None, on_tool_start=None, on_tool_end=None, on_tool_call_detected=None) -> dict[str, Any]:
         """执行一轮流式React对话，必要时循环调用本地 EEG 工具。"""
         self._refresh_session_summary_message()
-        skill = self.skill_registry.select(
-            user_query,
-            description_selector=self._select_skill_by_description,
-        )
+        selection: SkillSelection | None = None
+        skill: SkillSpec | None = None
+        if self.session_id is not None:
+            def semantic_route(query: str, skills: tuple[SkillSpec, ...]):
+                if self.semantic_skill_selector is None:
+                    if self.rag_retriever is None:
+                        from RAG.retriever import EEGRetriever
+
+                        self.set_rag_retriever(EEGRetriever())
+                    else:
+                        self.set_rag_retriever(self.rag_retriever)
+                return self.semantic_skill_selector.select(query, skills)
+
+            selection = self.skill_registry.select_with_details(
+                user_query,
+                semantic_selector=semantic_route,
+            )
+            skill = selection.skill
         temporary_content, retrieval_results = self._retrieve_eeg_knowledge(user_query)
         user_message = {"role": "user", "content": temporary_content}
         self.messages.append(user_message)
@@ -406,6 +383,7 @@ class MCPChatAgent:
                 user_query,
                 retrieval_results,
                 skill,
+                selection,
                 on_delta=on_delta,
                 on_tool_start=on_tool_start,
                 on_tool_end=on_tool_end,
@@ -419,14 +397,15 @@ class MCPChatAgent:
         self,
         user_query: str,
         retrieval_results: list[dict[str, Any]],
-        skill: SkillSpec,
+        skill: SkillSpec | None,
+        selection: SkillSelection | None = None,
         on_delta=None,
         on_tool_start=None,
         on_tool_end=None,
         on_tool_call_detected=None,
     ) -> dict[str, Any]:
-        tools = self._tool_schemas(skill.allowed_tools)
-        skill_message = skill.as_system_message()
+        tools = self._tool_schemas(skill.allowed_tools) if skill is not None else []
+        transient_messages = [skill.as_system_message()] if skill is not None else []
         started = time.time()
         model_time = 0.0
         tool_time = 0.0
@@ -449,7 +428,7 @@ class MCPChatAgent:
                 response, calls = self._stream_completion(
                     [] if force_final_answer else tools,
                     on_delta=on_delta,
-                    transient_system_messages=[skill_message],
+                    transient_system_messages=transient_messages,
                 )
             finally:
                 model_time += time.time() - model_started
@@ -459,14 +438,32 @@ class MCPChatAgent:
                 calls = []
             if not calls:
                 self.messages.append({"role": "assistant", "content": response})
+                routing = {
+                    "enabled": skill is not None,
+                    "skill": skill.name if skill is not None else None,
+                    "source": selection.source if selection is not None else "no_eeg_session",
+                    "keyword_matches": list(selection.keyword_matches) if selection else [],
+                    "top_score": selection.top_score if selection else 0.0,
+                    "margin": selection.margin if selection else 0.0,
+                    "candidates": [
+                        {
+                            "name": candidate.name,
+                            "score": candidate.score,
+                            "matched_examples": list(candidate.matched_examples),
+                        }
+                        for candidate in (selection.candidates[:2] if selection else ())
+                    ],
+                    "allowed_tools": [schema["function"]["name"] for schema in tools],
+                }
                 return {
                     "response": response,
                     "rounds": rounds,
                     "model_time": model_time,
                     "local_tool_time": tool_time,
                     "total_time": time.time() - started,
-                    "route": skill.name,
-                    "skill": skill.name,
+                    "route": skill.name if skill is not None else "direct_rag",
+                    "skill": skill.name if skill is not None else None,
+                    "routing": routing,
                     "retrieved_sources": [item["source"] for item in retrieval_results],
                 }
 
@@ -485,11 +482,11 @@ class MCPChatAgent:
             for call in calls:
                 if self.session_id is None:
                     raise RuntimeError("An EEG session is required before calling EEG tools.")
-                if call["name"] not in skill.allowed_tools:
+                if skill is None or call["name"] not in skill.allowed_tools:
                     result = _tool_exception_result(
                         call["name"],
                         PermissionError(
-                            f"Tool '{call['name']}' is not allowed by runtime skill '{skill.name}'."
+                            f"Tool '{call['name']}' is not allowed by the active runtime Skill."
                         ),
                     )
                     self.messages.append({

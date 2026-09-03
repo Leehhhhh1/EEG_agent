@@ -14,6 +14,12 @@ trigger_keywords:
   - sampling rate
   - channel count
   - montage
+routing_examples:
+  - 这份脑电记录有多长
+  - 当前记录的采样率是多少
+  - 查看原始通道数量和通道名称
+  - 当前脑电可以组成哪些双极导联
+  - 显示这份记录的基础元数据
 allowed_tools:
   - get_eeg_basic_information
 ---

@@ -399,7 +399,7 @@ class EEGAgentWindow(QMainWindow):
         self.preloaded_rag_retriever = retriever
         self.rag_ready = True
         if self.agent is not None:
-            self.agent.rag_retriever = retriever
+            self.agent.set_rag_retriever(retriever)
         self.spinner.stop()
         self._set_status("本地检索模型加载完成，可以开始对话或加载脑电记录。")
 
@@ -495,7 +495,49 @@ class EEGAgentWindow(QMainWindow):
         self.streaming_label = None
         self.streaming_response = ""
         self.spinner.stop()
+        routing = result.get("routing") or {}
+        if not routing.get("enabled"):
+            routing_lines = [
+                "处理模式：普通 RAG 问答",
+                "路由过程：未加载 EDF → 跳过 Skill 路由 → 不开放 EEG 工具",
+                "Skill 路由：未启用（未加载 EDF）",
+                "开放工具：0 个",
+            ]
+        else:
+            source_labels = {
+                "keyword": "关键词匹配",
+                "embedding": "BGE-M3 语义匹配",
+                "fallback": "语义低置信度兜底",
+            }
+            route_processes = {
+                "keyword": "EDF 会话就绪 → 关键词命中 → 选择 Skill",
+                "embedding": "EDF 会话就绪 → 关键词未命中 → BGE-M3 语义匹配 → 选择 Skill",
+                "fallback": "EDF 会话就绪 → 关键词未命中 → 语义置信度不足 → general_eeg",
+            }
+            source = routing.get("source")
+            routing_lines = [
+                f"路由过程：{route_processes.get(source, 'EDF 会话就绪 → 选择 Skill')}",
+                f"Skill：{routing.get('skill', 'unknown')}",
+                f"路由方式：{source_labels.get(source, source or 'unknown')}",
+            ]
+            keyword_matches = routing.get("keyword_matches") or []
+            if keyword_matches:
+                routing_lines.append("命中关键词：" + "、".join(keyword_matches))
+            candidates = routing.get("candidates") or []
+            if candidates:
+                routing_lines.append(
+                    "语义候选：" + "；".join(
+                        f"{candidate.get('name')} {candidate.get('score', 0):.3f}"
+                        for candidate in candidates
+                    )
+                )
+                routing_lines.append(f"候选分差：{routing.get('margin', 0):.3f}")
+            allowed_tools = routing.get("allowed_tools") or []
+            routing_lines.append(
+                "开放工具：" + ("、".join(allowed_tools) if allowed_tools else "无")
+            )
         self.metrics.setPlainText(
+            "\n".join(routing_lines) + "\n\n"
             f"交互轮数：{result.get('rounds', 0)}\n"
             f"模型耗时：{result.get('model_time', 0):.2f} 秒\n"
             f"本地工具耗时：{result.get('local_tool_time', 0):.2f} 秒\n"
@@ -616,7 +658,7 @@ class EEGAgentWindow(QMainWindow):
         if self.agent is None:
             self.agent = MCPChatAgent(self.mcp_bridge)
         if self.preloaded_rag_retriever is not None:
-            self.agent.rag_retriever = self.preloaded_rag_retriever
+            self.agent.set_rag_retriever(self.preloaded_rag_retriever)
         return self.agent
 
     def detach_recording(self):

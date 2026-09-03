@@ -4,13 +4,23 @@ description: 筛查当前脑电记录中的发作样活动、癫痫样放电及�
 priority: 220
 requires_session: true
 trigger_keywords:
-  - seizure
-  - epilep
-  - discharge
-  - 发作
-  - 癫痫
-  - 放电
-  - 定位
+  - detect seizure
+  - detect discharge
+  - seizure detection
+  - 检测发作
+  - 有没有发作
+  - 检测癫痫样放电
+  - 有没有放电
+  - 查找尖波
+  - 查找棘波
+  - 事件检测
+routing_examples:
+  - 检测当前脑电有没有癫痫样放电
+  - 查找这份记录中的发作事件
+  - 检查前十分钟有没有尖波或棘波
+  - 定位可疑事件出现的时间和导联
+  - 筛查当前记录中的异常放电事件
+  - 检测这段脑电有没有发作样活动
 allowed_tools:
   - get_eeg_basic_information
   - detect_eeg_events

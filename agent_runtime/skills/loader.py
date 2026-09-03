@@ -65,6 +65,7 @@ def load_skill(path: Path) -> SkillSpec:
         priority=priority,
         requires_session=requires_session,
         trigger_keywords=_string_list(metadata, "trigger_keywords", path),
+        routing_examples=_string_list(metadata, "routing_examples", path),
         allowed_tools=frozenset(_string_list(metadata, "allowed_tools", path)),
         instructions=instructions,
         path=path.resolve(),

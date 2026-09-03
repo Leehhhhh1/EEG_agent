@@ -78,7 +78,7 @@ EEGAgent/
 
 # note
 ## Desktop MCP mode
-The desktop client now starts the local EEG MCP server over stdio when an EDF file is loaded. It opens an EEG session, keeps the returned session ID in the active chat, and uses DeepSeek native Function Calling to invoke only the MCP tools allowed by the selected skill route.
+The desktop client starts the local EEG MCP server over stdio when an EDF file is loaded. It opens an EEG session, keeps the returned session ID in the active chat, and uses DeepSeek native Function Calling to invoke only the MCP tools allowed by the selected Skill route. Without an active EDF session, Skill routing and all EEG tools remain disabled; the request follows the ordinary RAG conversation path.
 
 Install the project dependencies, including the MCP 1.x SDK, then start the client:
 
@@ -92,10 +92,11 @@ The desktop client starts `mcp_server.server` automatically. Do not start a seco
 ### 运行时 EEG Skill
 
 桌面端 Agent 从 `agent_runtime/skills/definitions/*/SKILL.md` 加载应用运行时
-Skill。每次请求只选择一个 Skill：先使用 `trigger_keywords` 和 `priority`
-进行确定性关键词匹配；没有命中时，由 DeepSeek 根据各 Skill 的
-`description` 进行一次不开放工具的轻量分类；当模型返回 `general_eeg`、
-非法名称、非法 JSON、超时或发生异常时，统一回退到 `general_eeg`。
+Skill。仅在已加载 EDF 并建立会话时进行路由，每次请求只选择一个 Skill：
+先使用 `trigger_keywords` 和 `priority` 进行高精度关键词匹配；没有命中时，
+复用 RAG 的 BGE-M3，对用户问题与各 Skill 的多条 `routing_examples` 做本地
+语义匹配；最高分或候选分差不足时回退到 `general_eeg`。桌面端会展示路由
+方式、关键词命中、语义候选分数、候选分差以及最终开放的工具列表。
 
 选中的 Markdown 正文只注入当前一次 DeepSeek 请求，并且这一轮只会开放和
 执行该 Skill 在 `allowed_tools` 中声明的 MCP 工具。

@@ -4,10 +4,18 @@ description: 根据当前会话中已经保存的分析结果生成结构化脑�
 priority: 260
 requires_session: true
 trigger_keywords:
-  - report
-  - summary
-  - 报告
-  - 总结
+  - generate eeg report
+  - generate report
+  - 生成脑电报告
+  - 生成筛查报告
+  - 汇总分析结果
+  - 导出分析报告
+routing_examples:
+  - 根据已有分析结果生成脑电报告
+  - 汇总当前会话中的筛查发现
+  - 生成这份脑电的结构化报告
+  - 把已经完成的检测结果整理成报告
+  - 输出当前记录的自动化筛查草稿
 allowed_tools:
   - get_eeg_basic_information
   - generate_eeg_report

@@ -4,6 +4,12 @@ description: 处理未明确匹配某个专用运行时 Skill 的一般脑电知
 priority: 0
 requires_session: false
 trigger_keywords: []
+routing_examples:
+  - 什么是癫痫样放电
+  - 解释一下脑电背景活动
+  - ACNS如何定义周期性放电
+  - 脑电报告通常包括哪些内容
+  - 请解释这个脑电术语
 allowed_tools:
   - get_eeg_basic_information
   - explore_eeg_segment

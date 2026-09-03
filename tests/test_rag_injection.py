@@ -24,18 +24,23 @@ class RAGInjectionTests(unittest.TestCase):
             "reports": [],
         }
         agent.messages = [agent.system_message, agent._session_summary_message()]
+        agent.session_id = None
         selected_skill = SkillSpec(
             name="general_eeg",
             description="fallback",
             priority=0,
             requires_session=False,
             trigger_keywords=(),
+            routing_examples=(),
             allowed_tools=frozenset(),
             instructions="Answer the request.",
             path=Path("SKILL.md"),
         )
+        def skill_route_must_not_run(*args, **kwargs):
+            raise AssertionError("Skill routing must not run without an EDF session")
+
         agent.skill_registry = types.SimpleNamespace(
-            select=lambda query, description_selector=None: selected_skill
+            select_with_details=skill_route_must_not_run
         )
 
         agent._retrieve_eeg_knowledge = types.MethodType(
@@ -46,9 +51,10 @@ class RAGInjectionTests(unittest.TestCase):
             agent,
         )
 
-        def fake_run(self, user_query, retrieval_results, skill, **callbacks):
+        def fake_run(self, user_query, retrieval_results, skill, selection, **callbacks):
             self.assert_temporary = self.messages[-1]["content"]
-            self.assert_skill = skill.name
+            self.assert_skill = skill
+            self.assert_selection = selection
             return {"response": "ok", "retrieved_sources": [retrieval_results[0]["source"]]}
 
         agent._run_stream_with_temporary_context = types.MethodType(fake_run, agent)
@@ -59,7 +65,8 @@ class RAGInjectionTests(unittest.TestCase):
         self.assertIn("temporary_retrieved_eeg_knowledge", agent.assert_temporary)
         self.assertEqual(agent.messages[-1]["content"], "question")
         self.assertEqual(agent.messages[0]["content"], original_system)
-        self.assertEqual(agent.assert_skill, "general_eeg")
+        self.assertIsNone(agent.assert_skill)
+        self.assertIsNone(agent.assert_selection)
         self.assertEqual(result["retrieved_sources"], ["guide.pdf"])
 
 

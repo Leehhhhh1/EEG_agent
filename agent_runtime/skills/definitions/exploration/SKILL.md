@@ -4,16 +4,23 @@ description: 探索指定脑电片段的背景节律、振幅、频谱功率、�
 priority: 180
 requires_session: true
 trigger_keywords:
-  - rhythm
-  - amplitude
-  - symmetry
-  - background
-  - frequency
-  - 频率
-  - 振幅
-  - 节律
-  - 对称
-  - 背景
+  - analyze background rhythm
+  - check symmetry
+  - analyze amplitude
+  - frequency spectrum
+  - 分析背景节律
+  - 背景节律
+  - 检查左右对称
+  - 左右是否对称
+  - 分析振幅
+  - 查看频谱
+routing_examples:
+  - 分析前30秒的背景节律
+  - 看一下左右两侧脑电是否对称
+  - 检查指定时间段的振幅变化
+  - 分析这段脑电的主要频率和频谱功率
+  - 探索前一分钟的脑电背景特征
+  - 查看这个片段是否存在明显的左右差异
 allowed_tools:
   - get_eeg_basic_information
   - explore_eeg_segment

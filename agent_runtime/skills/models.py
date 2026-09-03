@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 
 @dataclass(frozen=True)
@@ -13,6 +14,7 @@ class SkillSpec:
     priority: int
     requires_session: bool
     trigger_keywords: tuple[str, ...]
+    routing_examples: tuple[str, ...]
     allowed_tools: frozenset[str]
     instructions: str
     path: Path
@@ -27,3 +29,34 @@ class SkillSpec:
                 "</active_eeg_skill>"
             ),
         }
+
+
+@dataclass(frozen=True)
+class SemanticCandidate:
+    """One Skill candidate scored by local semantic routing."""
+
+    name: str
+    score: float
+    matched_examples: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SemanticSelection:
+    """Result of comparing one query against specialized Skill examples."""
+
+    accepted_name: str | None
+    candidates: tuple[SemanticCandidate, ...]
+    top_score: float
+    margin: float
+
+
+@dataclass(frozen=True)
+class SkillSelection:
+    """Selected Skill plus the route details shown by the desktop client."""
+
+    skill: SkillSpec
+    source: Literal["keyword", "embedding", "fallback"]
+    keyword_matches: tuple[str, ...] = ()
+    candidates: tuple[SemanticCandidate, ...] = ()
+    top_score: float = 0.0
+    margin: float = 0.0
