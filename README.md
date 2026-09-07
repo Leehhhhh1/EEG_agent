@@ -78,7 +78,7 @@ EEGAgent/
 
 # note
 ## Desktop MCP mode
-The desktop client starts the local EEG MCP server over stdio when an EDF file is loaded. It opens an EEG session, keeps the returned session ID in the active chat, and uses DeepSeek native Function Calling to invoke only the MCP tools allowed by the selected Skill route. Without an active EDF session, Skill routing and all EEG tools remain disabled; the request follows the ordinary RAG conversation path.
+The desktop client starts the local EEG MCP server over stdio when an EDF file is loaded. It opens an EEG session, keeps the returned session ID in the active chat, and sends DeepSeek one stable union of the MCP tool schemas referenced by runtime Skills. The selected Skill declares the tools allowed for its turn, and the runtime enforces that allowlist before executing any call. Without an active EDF session, Skill routing and all EEG tools remain disabled; the request follows the ordinary RAG conversation path.
 
 Install the project dependencies, including the MCP 1.x SDK, then start the client:
 
@@ -96,11 +96,21 @@ Skill。仅在已加载 EDF 并建立会话时进行路由：先使用 `trigger_
 `priority` 进行高精度关键词匹配；没有命中时，复用 RAG 的 BGE-M3，对用户问题
 与各专用 Skill 的多条 `routing_examples` 做本地语义匹配。高置信度结果选择专用
 Skill；分数达到 `SKILL_ROUTE_GENERAL_MIN_SCORE` 但未达到专用 Skill 阈值时选择
-受限的 `general_eeg`；分数更低时不选择 Skill，也不开放 EEG 工具。桌面端会展示
-路由方式、关键词命中、语义候选分数、候选分差以及最终开放的工具列表。
+受限的 `general_eeg`；分数更低时不选择 Skill，也不允许执行 EEG 工具。桌面端会展示
+路由方式、关键词命中、语义候选分数、候选分差以及本轮允许执行的工具列表。
 
-选中的 Markdown 正文只注入当前一次 DeepSeek 请求，并且这一轮只会开放和
-执行该 Skill 在 `allowed_tools` 中声明的 MCP 工具。
+选中的 Markdown 正文会作为带作用域的指令块，与对应问题合并到同一条 `user`
+消息中，并随该轮对话保留在模型历史中，直到旧轮次触发上下文压缩。这样动态
+Skill 不会作为新的 `system` 消息插入历史。每条 Skill 指令只约束同一消息中的
+用户请求及其工具调用循环。绑定 EEG 后，模型每轮都会看到
+顺序固定的完整运行时工具 schema 集合；Skill 消息明确列出本轮 `allowed_tools`，
+运行时只会执行该 Skill 允许的 MCP 工具。
+
+DeepSeek 思考模式返回的 `reasoning_content` 会保存在内部 assistant 历史中，
+并在后续携带工具的请求中原样回传；它不会作为可见回答显示在桌面端。控制台的
+`[Agent prompt prefix]` 日志会输出当前提示词指纹，以及它与上一次模型请求在本地
+编码后的最长公共前缀 token 数。该值可用于区分“本地请求前缀已经变化”和
+“本地前缀相同但服务端缓存未完全命中”。
 
 这些运行时 Skill 与 `.agents/skills` 中供 Codex 使用的仓库 Skill 相互独立；
 桌面端 EEGAgent 不会加载 Codex Skill。

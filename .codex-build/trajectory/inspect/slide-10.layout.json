@@ -1,0 +1,960 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/m90b6t0r",
+    "id": "m90b6t0r",
+    "slide": 10,
+    "layoutId": "/ppt/slideLayouts/slideLayout1.xml",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "backgroundColor": "#06111E",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "fontScheme": {
+      "name": "Office",
+      "majorFont": {
+        "latinTypeface": "Calibri Light",
+        "eastAsianTypeface": "Calibri Light",
+        "complexScriptTypeface": "Calibri Light"
+      },
+      "minorFont": {
+        "latinTypeface": "Calibri",
+        "eastAsianTypeface": "Calibri",
+        "complexScriptTypeface": "Calibri"
+      }
+    },
+    "typefaces": [
+      "Calibri",
+      "Calibri Light",
+      "Noto Sans SC"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout1.xml",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0bit8b2d",
+      "id": "14",
+      "name": "矩形 13",
+      "bbox": [
+        68,
+        30,
+        400,
+        24
+      ],
+      "geometry": "rect",
+      "text": "工程总结",
+      "textPreview": "工程总结",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "工程总结"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "工程总结",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Noto Sans SC",
+            "color": "#22D3EE",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "工程总结",
+              "fontSize": 14,
+              "typeface": "Noto Sans SC",
+              "color": "#22D3EE",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xc3mho32",
+      "id": "2",
+      "name": "矩形 1",
+      "bbox": [
+        68,
+        62,
+        1120,
+        60
+      ],
+      "geometry": "rect",
+      "text": "当前实现与演进方向",
+      "textPreview": "当前实现与演进方向",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "当前实现与演进方向"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "当前实现与演进方向",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 42,
+            "typeface": "Noto Sans SC",
+            "color": "#F7FAFC",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "当前实现与演进方向",
+              "fontSize": 42,
+              "typeface": "Noto Sans SC",
+              "color": "#F7FAFC",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cbu58j2h",
+      "id": "3",
+      "name": "矩形 2",
+      "bbox": [
+        68,
+        134,
+        1144,
+        2
+      ],
+      "geometry": "rect",
+      "fillColor": "#29465F",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zelojyl8",
+      "id": "4",
+      "name": "矩形 3",
+      "bbox": [
+        68,
+        151,
+        1110,
+        44
+      ],
+      "geometry": "rect",
+      "text": "面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。",
+      "textPreview": "面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Noto Sans SC",
+            "color": "#A4B5C7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。",
+              "fontSize": 20,
+              "typeface": "Noto Sans SC",
+              "color": "#A4B5C7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ydcnatkn",
+      "id": "5",
+      "name": "矩形 4",
+      "bbox": [
+        68,
+        214,
+        480,
+        38
+      ],
+      "geometry": "rect",
+      "text": "当前实现",
+      "textPreview": "当前实现",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "当前实现"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "当前实现",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "typeface": "Noto Sans SC",
+            "color": "#34D399",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "当前实现",
+              "fontSize": 26,
+              "typeface": "Noto Sans SC",
+              "color": "#34D399",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l036l83y",
+      "id": "6",
+      "name": "矩形 5",
+      "bbox": [
+        68,
+        274,
+        510,
+        250
+      ],
+      "geometry": "rect",
+      "text": "确定性关键词与本地语义路由结合，低置信度安全降级\nSkill 指令按轮次隔离，执行前强制校验工具权限\n三层记忆配合 token 预算，RAG 只在当前轮临时注入\nMCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹",
+      "textPreview": "确定性关键词与本地语义路由结合，低置信度安全降级 | Skill 指令按轮次隔离，执行前强制校验工具权限 | 三层记忆配合 token 预算，RAG 只在当前轮临时注入 | MCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "确定性关键词与本地语义路由结合，低置信度安全降级"
+          },
+          {
+            "index": 2,
+            "text": "Skill 指令按轮次隔离，执行前强制校验工具权限"
+          },
+          {
+            "index": 3,
+            "text": "三层记忆配合 token 预算，RAG 只在当前轮临时注入"
+          },
+          {
+            "index": 4,
+            "text": "MCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "确定性关键词与本地语义路由结合，低置信度安全降级",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "确定性关键词与本地语义路由结合，低置信度安全降级",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Skill 指令按轮次隔离，执行前强制校验工具权限",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Skill 指令按轮次隔离，执行前强制校验工具权限",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "三层记忆配合 token 预算，RAG 只在当前轮临时注入",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "三层记忆配合 token 预算，RAG 只在当前轮临时注入",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "MCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "MCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kzu5c32t",
+      "id": "7",
+      "name": "矩形 6",
+      "bbox": [
+        662,
+        214,
+        480,
+        38
+      ],
+      "geometry": "rect",
+      "text": "演进方向",
+      "textPreview": "演进方向",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "演进方向"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "演进方向",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "typeface": "Noto Sans SC",
+            "color": "#F59E0B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "演进方向",
+              "fontSize": 26,
+              "typeface": "Noto Sans SC",
+              "color": "#F59E0B",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/725onyl4",
+      "id": "8",
+      "name": "矩形 7",
+      "bbox": [
+        662,
+        274,
+        520,
+        250
+      ],
+      "geometry": "rect",
+      "text": "增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划\n把关键事件与报告写入可持久化记忆，并设计版本与权限策略\n建立路由准确率、工具成功率、引用正确性与临床复核指标\n对独立工具调用引入并行执行，同时保持会话状态一致性",
+      "textPreview": "增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划 | 把关键事件与报告写入可持久化记忆，并设计版本与权限策略 | 建立路由准确率、工具成功率、引用正确性与临床复核指标 | 对独立工具调用引入并行执行，同时保持会话状态一致性",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划"
+          },
+          {
+            "index": 2,
+            "text": "把关键事件与报告写入可持久化记忆，并设计版本与权限策"
+          },
+          {
+            "index": 3,
+            "text": "略"
+          },
+          {
+            "index": 4,
+            "text": "建立路由准确率、工具成功率、引用正确性与临床复核指标"
+          },
+          {
+            "index": 5,
+            "text": "对独立工具调用引入并行执行，同时保持会话状态一致性"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "把关键事件与报告写入可持久化记忆，并设计版本与权限策略",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "把关键事件与报告写入可持久化记忆，并设计版本与权限策略",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "建立路由准确率、工具成功率、引用正确性与临床复核指标",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "建立路由准确率、工具成功率、引用正确性与临床复核指标",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "对独立工具调用引入并行执行，同时保持会话状态一致性",
+          "lineSpacingPercent": 115000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "对独立工具调用引入并行执行，同时保持会话状态一致性",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m1cnetkj",
+      "id": "9",
+      "name": "圆角矩形 8",
+      "bbox": [
+        68,
+        570,
+        1114,
+        72
+      ],
+      "geometry": "roundRect",
+      "lineColor": "#22D3EE",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/s7yt4b21",
+      "id": "10",
+      "name": "矩形 9",
+      "bbox": [
+        92,
+        590,
+        140,
+        30
+      ],
+      "geometry": "rect",
+      "text": "面试总结",
+      "textPreview": "面试总结",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面试总结"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面试总结",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Noto Sans SC",
+            "color": "#22D3EE",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面试总结",
+              "fontSize": 20,
+              "typeface": "Noto Sans SC",
+              "color": "#22D3EE",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d87uxg3m",
+      "id": "11",
+      "name": "矩形 10",
+      "bbox": [
+        246,
+        586,
+        900,
+        38
+      ],
+      "geometry": "rect",
+      "text": "EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。",
+      "textPreview": "EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 21,
+            "typeface": "Noto Sans SC",
+            "color": "#F7FAFC",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。",
+              "fontSize": 21,
+              "typeface": "Noto Sans SC",
+              "color": "#F7FAFC",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/r6pcv6lw",
+      "id": "13",
+      "name": "矩形 12",
+      "bbox": [
+        1160,
+        681,
+        52,
+        20
+      ],
+      "geometry": "rect",
+      "text": "9",
+      "textPreview": "9",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "9",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Noto Sans SC",
+            "color": "#A4B5C7",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "9",
+              "fontSize": 13,
+              "typeface": "Noto Sans SC",
+              "color": "#A4B5C7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

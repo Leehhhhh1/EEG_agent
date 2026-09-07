@@ -156,6 +156,11 @@ class RuntimeSkillTests(unittest.TestCase):
                 description="explore",
                 inputSchema={"type": "object", "properties": {}, "required": []},
             ),
+            types.SimpleNamespace(
+                name="generate_eeg_report",
+                description="report",
+                inputSchema={"type": "object", "properties": {}, "required": []},
+            ),
         ]
         agent = MCPChatAgent.__new__(MCPChatAgent)
         agent.session_id = "session-test"
@@ -174,6 +179,30 @@ class RuntimeSkillTests(unittest.TestCase):
         self.assertNotIn("session_id", detect_schema["function"]["parameters"]["properties"])
         self.assertNotIn("session_id", detect_schema["function"]["parameters"]["required"])
 
+        agent.skill_registry = self.registry
+        detection_schemas = agent._model_tool_schemas(self.registry.get("detection"))
+        basic_schemas = agent._model_tool_schemas(self.registry.get("basic_information"))
+        expected_names = [
+            "detect_eeg_events",
+            "explore_eeg_segment",
+            "generate_eeg_report",
+            "get_eeg_basic_information",
+        ]
+        self.assertEqual(
+            [schema["function"]["name"] for schema in detection_schemas],
+            expected_names,
+        )
+        self.assertEqual(detection_schemas, basic_schemas)
+
+    def test_skill_message_declares_its_runtime_tool_allowlist(self):
+        instruction = self.registry.get("detection").as_instruction_block()
+
+        self.assertIn("<allowed_tools>", instruction)
+        self.assertIn("- detect_eeg_events", instruction)
+        self.assertIn("- get_eeg_basic_information", instruction)
+        self.assertNotIn("- explore_eeg_segment", instruction)
+        self.assertIn('applies_to="containing_user_message"', instruction)
+
     def test_skill_instructions_are_request_scoped(self):
         agent = MCPChatAgent.__new__(MCPChatAgent)
         agent.system_message = {"role": "system", "content": "base"}
@@ -187,17 +216,157 @@ class RuntimeSkillTests(unittest.TestCase):
         agent.messages = [
             agent.system_message,
             agent._session_summary_message(),
-            {"role": "user", "content": "question"},
+            {"role": "user", "content": "previous question"},
+            {"role": "assistant", "content": "previous answer"},
+            {
+                "role": "user",
+                "content": agent._scoped_user_content(
+                    "question", self.registry.get("detection"), True
+                ),
+            },
         ]
         agent.token_counter = DeepSeekV4TokenCounter(thinking_mode="thinking")
         agent.short_term_token_limit = 32_768
-        skill_message = self.registry.get("detection").as_system_message()
 
-        request_messages = agent._prepare_request_messages([], [skill_message])
+        request_messages = agent._prepare_request_messages([])
 
-        self.assertIs(request_messages[2], skill_message)
-        self.assertFalse(any(message is skill_message for message in agent.messages))
-        self.assertIn("active_eeg_skill", request_messages[2]["content"])
+        self.assertEqual(
+            [message["role"] for message in request_messages],
+            ["system", "system", "user", "assistant", "user"],
+        )
+        self.assertIs(request_messages[-1], agent.messages[-1])
+        self.assertIn("active_eeg_skill", request_messages[-1]["content"])
+        self.assertEqual(
+            agent._user_request_text(request_messages[-1]["content"]), "question"
+        )
+        self.assertEqual(
+            sum(message["role"] == "system" for message in request_messages), 2
+        )
+
+    def test_skill_instructions_stay_before_current_user_during_tool_rounds(self):
+        agent = MCPChatAgent.__new__(MCPChatAgent)
+        agent.system_message = {"role": "system", "content": "base"}
+        agent.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": [],
+            "findings": [],
+            "reports": [],
+        }
+        current_user = {
+            "role": "user",
+            "content": agent._scoped_user_content(
+                "question", self.registry.get("detection"), True
+            ),
+        }
+        agent.messages = [
+            agent.system_message,
+            agent._session_summary_message(),
+            {"role": "user", "content": "previous question"},
+            {"role": "assistant", "content": "previous answer"},
+            current_user,
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [{
+                    "id": "call-1",
+                    "type": "function",
+                    "function": {"name": "detect_eeg_events", "arguments": "{}"},
+                }],
+            },
+            {"role": "tool", "tool_call_id": "call-1", "content": "result"},
+        ]
+        agent.token_counter = DeepSeekV4TokenCounter(thinking_mode="thinking")
+        agent.short_term_token_limit = 32_768
+
+        request_messages = agent._prepare_request_messages([])
+
+        user_index = request_messages.index(current_user)
+        self.assertIn("active_eeg_skill", request_messages[user_index]["content"])
+        self.assertEqual(
+            sum(message["role"] == "system" for message in request_messages), 2
+        )
+        self.assertEqual(request_messages[-1]["role"], "tool")
+
+    def test_tool_memory_does_not_rewrite_prompt_before_compaction(self):
+        agent = MCPChatAgent.__new__(MCPChatAgent)
+        agent.system_message = {"role": "system", "content": "base"}
+        agent.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": [],
+            "findings": [],
+            "reports": [],
+            "conversation": [],
+        }
+        summary_message = agent._session_summary_message()
+        agent.messages = [agent.system_message, summary_message]
+
+        agent._remember_tool_result(
+            "detect_eeg_events",
+            {
+                "is_error": False,
+                "structured_content": {
+                    "analysis_window": {"start_seconds": 0, "end_seconds": 30},
+                    "event_count": 0,
+                    "events": [],
+                },
+                "content": [],
+            },
+        )
+
+        self.assertIs(agent.messages[1], summary_message)
+        self.assertNotIn("已检测", agent.messages[1]["content"])
+        self.assertIn("已检测", agent.session_summary["analyses"][0])
+
+    def test_crossing_threshold_compacts_oldest_complete_turns(self):
+        class CharacterCounter:
+            @staticmethod
+            def count_prompt(messages, tools):
+                return sum(len(str(message)) for message in messages) + len(str(tools))
+
+        agent = MCPChatAgent.__new__(MCPChatAgent)
+        agent.system_message = {"role": "system", "content": "base"}
+        agent.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": ["已检测 0-30 秒，发现 0 个筛查事件"],
+            "findings": [],
+            "reports": [],
+            "conversation": [],
+        }
+        original_summary = agent._session_summary_message()
+        old_turn = [
+            {"role": "user", "content": "分析第一段" + "旧" * 180},
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [{
+                    "id": "old-call",
+                    "type": "function",
+                    "function": {"name": "detect_eeg_events", "arguments": "{}"},
+                }],
+            },
+            {"role": "tool", "tool_call_id": "old-call", "content": "详细结果" + "值" * 180},
+            {"role": "assistant", "content": "第一段未发现筛查事件"},
+        ]
+        latest_turn = [
+            {"role": "user", "content": "现在分析第二段"},
+            {"role": "assistant", "content": "正在处理"},
+        ]
+        agent.messages = [agent.system_message, original_summary, *old_turn, *latest_turn]
+        agent.token_counter = CharacterCounter()
+        agent.short_term_token_limit = 900
+        agent.compression_trigger_ratio = 0.80
+        agent.compression_target_ratio = 0.55
+
+        request_messages = agent._prepare_request_messages([])
+
+        self.assertIsNot(agent.messages[1], original_summary)
+        self.assertIn("已压缩对话", agent.messages[1]["content"])
+        self.assertIn("分析第一段", agent.messages[1]["content"])
+        self.assertFalse(any(message.get("tool_call_id") == "old-call" for message in agent.messages))
+        self.assertTrue(any(message.get("content") == "现在分析第二段" for message in request_messages))
 
 
 if __name__ == "__main__":

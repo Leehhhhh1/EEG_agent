@@ -1,0 +1,223 @@
+{"kind":"deck","id":"pr/q4bd76","name":"Deck"}
+{"kind":"layout","layoutId":"3bd6466d-23d7-4971-827a-f812ccf61d31","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"bd444dfd-07a9-443c-8eee-89807f0b12a2","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/f2goid","slide":1,"title":"GENERAL-PURPOSE EEG ANALYSIS","textShapes":5}
+{"kind":"shape","id":"sh/of29cbex","slide":1,"bbox":[0,0,660,720]}
+{"kind":"textbox","id":"sh/pgba5gv2","slide":1,"text":"GENERAL-PURPOSE EEG ANALYSIS","textPreview":"GENERAL-PURPOSE EEG ANALYSIS","textChars":28,"textLines":1,"bbox":[72,116,300,30]}
+{"kind":"textbox","id":"sh/e90r61wf","slide":1,"text":"EEGAgent","textPreview":"EEGAgent","textChars":8,"textLines":1,"bbox":[72,178,540,92]}
+{"kind":"textbox","id":"sh/fa9sz6d0","slide":1,"text":"面向脑电自动分析的大模型智能体框架","textPreview":"面向脑电自动分析的大模型智能体框架","textChars":17,"textLines":1,"bbox":[76,282,500,72]}
+{"kind":"textbox","id":"sh/gbi98rel","slide":1,"text":"从自然语言问题出发，调度脑电工具，保留分析轨迹，并生成结构化筛查结果。","textPreview":"从自然语言问题出发，调度脑电工具，保留分析轨迹，并生成结构化筛查结果。","textChars":35,"textLines":1,"bbox":[76,382,460,100]}
+{"kind":"textbox","id":"sh/1cra1wv6","slide":1,"text":"项目介绍  ·  2026","textPreview":"项目介绍  ·  2026","textChars":13,"textLines":1,"bbox":[76,636,300,24]}
+{"kind":"image","id":"im/2tkzih83","slide":1,"name":"","alt":"抽象脑电波形、神经网络与智能体连接的科学视觉","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/f2goid","slide":1,"text":"本页概述 EEGAgent 的定位。\n来源：项目 README.md；arXiv:2511.09947v2。\n封面视觉由 OpenAI 图像生成工具创建，仅用于概念表达。"}
+{"kind":"slide","id":"sl/csconu","slide":2,"title":"01  项目定位","textShapes":10}
+{"kind":"textbox","id":"sh/lcz654vq","slide":2,"text":"01  项目定位","textPreview":"01  项目定位","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/y98nu9wz","slide":2,"text":"为什么需要 EEGAgent","textPreview":"为什么需要 EEGAgent","textChars":14,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/zaho3udk","slide":2,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/8za50je1","slide":2,"text":"传统 EEG 模型通常围绕单一任务训练。真实分析却需要连续追问、跨任务判断与多轮工具调用。","textPreview":"传统 EEG 模型通常围绕单一任务训练。真实分析却需要连续追问、跨任务判断与多轮工具调用。","textChars":45,"textLines":1,"bbox":[68,174,1120,82]}
+{"kind":"shape","id":"sh/90j69ovm","slide":2,"bbox":[68,296,468,250]}
+{"kind":"textbox","id":"sh/md8ny9wb","slide":2,"text":"单任务模型","textPreview":"单任务模型","textChars":5,"textLines":1,"bbox":[100,326,370,38]}
+{"kind":"textbox","id":"sh/7eho7edg","slide":2,"text":"输入与输出形式固定\n任务切换依赖独立模型\n难以承接连续分析上下文","textPreview":"输入与输出形式固定 | 任务切换依赖独立模型 | 难以承接连续分析上下文","textChars":32,"textLines":3,"bbox":[100,386,382,124]}
+{"kind":"shape","id":"sh/o365ofex","slide":2,"bbox":[570,270,642,302]}
+{"kind":"textbox","id":"sh/p4fmxkvi","slide":2,"text":"EEGAgent","textPreview":"EEGAgent","textChars":8,"textLines":1,"bbox":[610,309,280,42]}
+{"kind":"textbox","id":"sh/1cnypsb6","slide":2,"text":"大模型理解问题并规划下一步，工具完成信号处理与检测，运行时负责权限边界和会话状态。","textPreview":"大模型理解问题并规划下一步，工具完成信号处理与检测，运行时负责权限边界和会话状态。","textChars":41,"textLines":1,"bbox":[610,374,530,94]}
+{"kind":"textbox","id":"sh/0bexgnul","slide":2,"text":"结果以可解释的分析链路返回，而不是只给出一个分类标签。","textPreview":"结果以可解释的分析链路返回，而不是只给出一个分类标签。","textChars":27,"textLines":1,"bbox":[610,493,520,52]}
+{"kind":"textbox","id":"sh/fa5gnit0","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/e9wfedcf","slide":2,"text":"来源：README.md；arXiv:2511.09947v2","textPreview":"来源：README.md；arXiv:2511.09947v2","textChars":31,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/csconu","slide":2,"text":"核心观点来自论文摘要：现有模型多面向单一任务，EEGAgent 使用 LLM 调度多个工具完成多任务、连续推理。\n来源：https://arxiv.org/abs/2511.09947；项目 README.md。"}
+{"kind":"slide","id":"sl/7xaiov","slide":3,"title":"02  功能概览","textShapes":17}
+{"kind":"textbox","id":"sh/ax0bi9wr","slide":3,"text":"02  功能概览","textPreview":"02  功能概览","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/x0ratofi","slide":3,"text":"四类核心能力","textPreview":"四类核心能力","textChars":6,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/czitkjex","slide":3,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/nupsnux0","slide":3,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[68,190,110,70]}
+{"kind":"textbox","id":"sh/2tgbe9wv","slide":3,"text":"基础感知","textPreview":"基础感知","textChars":4,"textLines":1,"bbox":[68,282,215,44]}
+{"kind":"shape","id":"sh/pw7ap4f6","slide":3,"bbox":[68,345,215,3]}
+{"kind":"textbox","id":"sh/ovytgzel","slide":3,"text":"读取记录时长、采样率、原始通道与可用蒙太奇。","textPreview":"读取记录时长、采样率、原始通道与可用蒙太奇。","textChars":22,"textLines":1,"bbox":[68,380,220,156]}
+{"kind":"shape","id":"sh/f6psjux4","slide":3,"bbox":[313,186,1,370]}
+{"kind":"textbox","id":"sh/e5grapwj","slide":3,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[355,190,110,70]}
+{"kind":"textbox","id":"sh/wjelkvyd","slide":3,"text":"片段探索","textPreview":"片段探索","textChars":4,"textLines":1,"bbox":[355,282,215,44]}
+{"kind":"shape","id":"sh/xk72t0fy","slide":3,"bbox":[355,345,215,3]}
+{"kind":"textbox","id":"sh/ahwjilg7","slide":3,"text":"按时间窗查看背景节律、振幅、频谱、对称性与异常筛查特征。","textPreview":"按时间窗查看背景节律、振幅、频谱、对称性与异常筛查特征。","textChars":28,"textLines":1,"bbox":[355,380,220,156]}
+{"kind":"shape","id":"sh/vi5krqxs","slide":3,"bbox":[600,186,1,370]}
+{"kind":"textbox","id":"sh/8fe1gbyh","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[642,190,110,70]}
+{"kind":"textbox","id":"sh/9gn2pgfm","slide":3,"text":"事件检测","textPreview":"事件检测","textChars":4,"textLines":1,"bbox":[642,282,215,44]}
+{"kind":"shape","id":"sh/mdwje1gb","slide":3,"bbox":[642,345,215,3]}
+{"kind":"textbox","id":"sh/ne5kn6hw","slide":3,"text":"筛查发作样活动与癫痫样放电，返回时间、导联和脑区证据。","textPreview":"筛查发作样活动与癫痫样放电，返回时间、导联和脑区证据。","textChars":27,"textLines":1,"bbox":[642,380,220,156]}
+{"kind":"shape","id":"sh/sbilsfyl","slide":3,"bbox":[887,186,1,370]}
+{"kind":"textbox","id":"sh/tcr21kf6","slide":3,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[929,190,110,70]}
+{"kind":"textbox","id":"sh/hw3upg3y","slide":3,"text":"报告生成","textPreview":"报告生成","textChars":4,"textLines":1,"bbox":[929,282,215,44]}
+{"kind":"shape","id":"sh/gvutwbmd","slide":3,"bbox":[929,345,215,3]}
+{"kind":"textbox","id":"sh/fulsn6ls","slide":3,"text":"汇总当前会话中已保存的分析结果，生成结构化筛查草稿。","textPreview":"汇总当前会话中已保存的分析结果，生成结构化筛查草稿。","textChars":26,"textLines":1,"bbox":[929,380,220,156]}
+{"kind":"textbox","id":"sh/utcbu14n","slide":3,"text":"所有患者特异性结论都必须来自工具返回值，并由专业人员复核原始脑电图。","textPreview":"所有患者特异性结论都必须来自工具返回值，并由专业人员复核原始脑电图。","textChars":34,"textLines":1,"bbox":[68,615,1000,34]}
+{"kind":"textbox","id":"sh/tsjalw32","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/sratsbmh","slide":3,"text":"来源：mcp_server/server.py；agent_runtime/skills/definitions","textPreview":"来源：mcp_server/server.py；agent_runtime/skills/definitions","textChars":56,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/7xaiov","slide":3,"text":"能力对应 MCP 工具：get_eeg_basic_information、explore_eeg_segment、detect_eeg_events、generate_eeg_report。\n来源：mcp_server/server.py；agent_runtime/skills/definitions/*/SKILL.md。"}
+{"kind":"slide","id":"sl/yk8p3s","slide":4,"title":"03  系统设计","textShapes":8}
+{"kind":"textbox","id":"sh/srmlc3ad","slide":4,"text":"03  系统设计","textPreview":"03  系统设计","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/7qdk3y9s","slide":4,"text":"总体架构","textPreview":"总体架构","textChars":4,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/6pk3ats7","slide":4,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/1gv298ru","slide":4,"text":"问题驱动","textPreview":"问题驱动","textChars":4,"textLines":1,"bbox":[68,196,174,36]}
+{"kind":"textbox","id":"sh/gfmlg3ap","slide":4,"text":"用户用自然语言描述任务，智能体结合上下文进行规划。","textPreview":"用户用自然语言描述任务，智能体结合上下文进行规划。","textChars":25,"textLines":1,"bbox":[68,242,170,108]}
+{"kind":"textbox","id":"sh/fedk7y94","slide":4,"text":"工具执行","textPreview":"工具执行","textChars":4,"textLines":1,"bbox":[68,388,174,36]}
+{"kind":"textbox","id":"sh/ut43etsj","slide":4,"text":"预处理、特征提取与检测模型提供可调用的分析能力。","textPreview":"预处理、特征提取与检测模型提供可调用的分析能力。","textChars":24,"textLines":1,"bbox":[68,434,170,108]}
+{"kind":"shape","id":"sh/xkb2x4rq","slide":4,"bbox":[264,174,948,481]}
+{"kind":"textbox","id":"sh/e1sb2l8v","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/f21sbqpg","slide":4,"text":"图源：项目 framework.png","textPreview":"图源：项目 framework.png","textChars":19,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"image","id":"im/tkb2hgr2","slide":4,"name":"","alt":"EEGAgent 原始总体框架图","bbox":[278,188,920,454]}
+{"kind":"notes","id":"nt/yk8p3s","slide":4,"text":"框架图直接取自项目仓库 framework.png，未改动内容。\n图中展示环境信息、脑电知识库、智能体规划、工具箱、上下文和四类任务。"}
+{"kind":"slide","id":"sl/mb0vrp","slide":5,"title":"04  运行时链路","textShapes":25}
+{"kind":"textbox","id":"sh/fm1cj6dc","slide":5,"text":"04  运行时链路","textPreview":"04  运行时链路","textChars":9,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/gnatsbux","slide":5,"text":"一次请求如何完成","textPreview":"一次请求如何完成","textChars":8,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/1ojulwvi","slide":5,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/6h8bmhcv","slide":5,"text":"桌面端把自然语言请求转换为受约束的脑电工具调用，并把结果写回同一会话。","textPreview":"桌面端把自然语言请求转换为受约束的脑电工具调用，并把结果写回同一会话。","textChars":35,"textLines":1,"bbox":[68,158,1080,42]}
+{"kind":"shape","id":"sh/rihsfmdg","slide":5,"bbox":[68,270,154,148]}
+{"kind":"textbox","id":"sh/sjqtoru1","slide":5,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[84,286,28,28]}
+{"kind":"textbox","id":"sh/tkzuhwv6","slide":5,"text":"用户问题","textPreview":"用户问题","textChars":4,"textLines":1,"bbox":[84,330,122,35]}
+{"kind":"textbox","id":"sh/qdsbylcz","slide":5,"text":"任务与时间窗","textPreview":"任务与时间窗","textChars":6,"textLines":1,"bbox":[84,376,122,28]}
+{"kind":"shape","id":"sh/belcrqtk","slide":5,"bbox":[266,270,154,148]}
+{"kind":"textbox","id":"sh/r6d8b2xo","slide":5,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[282,286,28,28]}
+{"kind":"textbox","id":"sh/ql4rixw3","slide":5,"text":"Skill 路由","textPreview":"Skill 路由","textChars":8,"textLines":1,"bbox":[282,330,122,35]}
+{"kind":"textbox","id":"sh/d8vqdsfu","slide":5,"text":"关键词或语义","textPreview":"关键词或语义","textChars":6,"textLines":1,"bbox":[282,376,122,28]}
+{"kind":"shape","id":"sh/c7m9k7e9","slide":5,"bbox":[464,270,154,148]}
+{"kind":"textbox","id":"sh/zax8f2x0","slide":5,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[480,286,28,28]}
+{"kind":"textbox","id":"sh/e94rmxwf","slide":5,"text":"权限收敛","textPreview":"权限收敛","textChars":4,"textLines":1,"bbox":[480,330,122,35]}
+{"kind":"textbox","id":"sh/1cfahcfq","slide":5,"text":"allowed_tools","textPreview":"allowed_tools","textChars":13,"textLines":1,"bbox":[480,376,122,28]}
+{"kind":"shape","id":"sh/0b69o7e5","slide":5,"bbox":[662,270,154,148]}
+{"kind":"textbox","id":"sh/nexsjmxw","slide":5,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[678,286,28,28]}
+{"kind":"textbox","id":"sh/mdorqhwb","slide":5,"text":"MCP 工具","textPreview":"MCP 工具","textChars":6,"textLines":1,"bbox":[678,330,122,35]}
+{"kind":"textbox","id":"sh/y9sbilgj","slide":5,"text":"分析与检测","textPreview":"分析与检测","textChars":5,"textLines":1,"bbox":[678,376,122,28]}
+{"kind":"shape","id":"sh/ja1cbqh4","slide":5,"bbox":[860,270,154,148]}
+{"kind":"textbox","id":"sh/kbatkbyp","slide":5,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[876,286,28,28]}
+{"kind":"textbox","id":"sh/lwjudgza","slide":5,"text":"会话状态","textPreview":"会话状态","textChars":4,"textLines":1,"bbox":[876,330,122,35]}
+{"kind":"textbox","id":"sh/a58be1gn","slide":5,"text":"保存结果","textPreview":"保存结果","textChars":4,"textLines":1,"bbox":[876,376,122,28]}
+{"kind":"shape","id":"sh/b6hc76h8","slide":5,"bbox":[1058,270,154,148]}
+{"kind":"textbox","id":"sh/w7qtgbyd","slide":5,"text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[1074,286,28,28]}
+{"kind":"textbox","id":"sh/x8zu9gzy","slide":5,"text":"可见回答","textPreview":"可见回答","textChars":4,"textLines":1,"bbox":[1074,330,122,35]}
+{"kind":"textbox","id":"sh/u1cvq5gr","slide":5,"text":"证据与限制","textPreview":"证据与限制","textChars":5,"textLines":1,"bbox":[1074,376,122,28]}
+{"kind":"shape","id":"sh/v2lcjahc","slide":5,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/p8765onq","slide":5,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/47y5wjm5","slide":5,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/36po3y5k","slide":5,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/25wnut4z","slide":5,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/h4n61onu","slide":5,"bbox":[150,492,980,112]}
+{"kind":"textbox","id":"sh/g3e5sjm9","slide":5,"text":"会话级约束","textPreview":"会话级约束","textChars":5,"textLines":1,"bbox":[184,518,170,30]}
+{"kind":"textbox","id":"sh/f25oze5o","slide":5,"text":"只有加载 EDF 并建立会话后，专用 EEG Skill 与工具才会启用。运行时拒绝调用当前 Skill 未授权的工具。","textPreview":"只有加载 EDF 并建立会话后，专用 EEG Skill 与工具才会启用。运行时拒绝调用当前 Skill 未授权的工具。","textChars":60,"textLines":1,"bbox":[350,512,730,62]}
+{"kind":"textbox","id":"sh/u1wnq943","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/l0r6d8ny","slide":5,"text":"来源：README.md；agent_runtime/mcp_chat_agent.py；mcp_client.py","textPreview":"来源：README.md；agent_runtime/mcp_chat_agent.py；mcp_client.py","textChars":58,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/mb0vrp","slide":5,"text":"运行时先进行高精度关键词路由，再在无命中时使用本地 BGE-M3 做语义匹配。\n选中的 Skill 声明 allowed_tools，运行时在执行前强制检查。\n来源：README.md；agent_runtime/mcp_chat_agent.py；agent_runtime/mcp_client.py。"}
+{"kind":"slide","id":"sl/ly7hmq","slide":6,"title":"05  可控调用","textShapes":21}
+{"kind":"textbox","id":"sh/kvi9ozep","slide":6,"text":"05  可控调用","textPreview":"05  可控调用","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/zu9svex4","slide":6,"text":"Skill 把分析目标变成工具边界","textPreview":"Skill 把分析目标变成工具边界","textChars":17,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/y90rm9wj","slide":6,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/x8rqt4fe","slide":6,"text":"每个 Skill 同时定义触发条件、处理流程、允许工具和输出规则。","textPreview":"每个 Skill 同时定义触发条件、处理流程、允许工具和输出规则。","textChars":33,"textLines":1,"bbox":[68,160,1060,40]}
+{"kind":"textbox","id":"sh/c7i9kzet","slide":6,"text":"SKILL","textPreview":"SKILL","textChars":5,"textLines":1,"bbox":[82,232,190,25]}
+{"kind":"textbox","id":"sh/b698rux8","slide":6,"text":"执行约束","textPreview":"执行约束","textChars":4,"textLines":1,"bbox":[354,232,190,25]}
+{"kind":"textbox","id":"sh/a50ripgn","slide":6,"text":"允许调用","textPreview":"允许调用","textChars":4,"textLines":1,"bbox":[642,232,420,25]}
+{"kind":"shape","id":"sh/p4rqpkf2","slide":6,"bbox":[68,274,1144,64]}
+{"kind":"shape","id":"sh/o3y9gfyh","slide":6,"bbox":[68,274,6,64]}
+{"kind":"textbox","id":"sh/ipczet07","slide":6,"text":"基础信息","textPreview":"基础信息","textChars":4,"textLines":1,"bbox":[90,288,220,34]}
+{"kind":"textbox","id":"sh/jq5g7yhs","slide":6,"text":"读取元数据","textPreview":"读取元数据","textChars":5,"textLines":1,"bbox":[354,288,220,34]}
+{"kind":"textbox","id":"sh/krehg3id","slide":6,"text":"get_eeg_basic_information","textPreview":"get_eeg_basic_information","textChars":25,"textLines":1,"bbox":[642,288,520,34]}
+{"kind":"shape","id":"sh/5sny9ozy","slide":6,"bbox":[68,356,1144,64]}
+{"kind":"shape","id":"sh/alcza90b","slide":6,"bbox":[68,356,6,64]}
+{"kind":"textbox","id":"sh/vmlg3ehg","slide":6,"text":"片段探索","textPreview":"片段探索","textChars":4,"textLines":1,"bbox":[90,370,220,34]}
+{"kind":"textbox","id":"sh/wnuhcji1","slide":6,"text":"最长 60 秒","textPreview":"最长 60 秒","textChars":7,"textLines":1,"bbox":[354,370,220,34]}
+{"kind":"textbox","id":"sh/xo3y5ozm","slide":6,"text":"basic_information + explore_eeg_segment","textPreview":"basic_information + explore_eeg_segment","textChars":39,"textLines":1,"bbox":[642,370,520,34]}
+{"kind":"shape","id":"sh/mhsf690z","slide":6,"bbox":[68,438,1144,64]}
+{"kind":"shape","id":"sh/ni1gze1k","slide":6,"bbox":[68,438,6,64]}
+{"kind":"textbox","id":"sh/b2hw7axc","slide":6,"text":"事件检测","textPreview":"事件检测","textChars":4,"textLines":1,"bbox":[90,452,220,34]}
+{"kind":"textbox","id":"sh/q18ve5gr","slide":6,"text":"最长 600 秒","textPreview":"最长 600 秒","textChars":8,"textLines":1,"bbox":[354,452,220,34]}
+{"kind":"textbox","id":"sh/doze90fi","slide":6,"text":"basic_information + detect_eeg_events","textPreview":"basic_information + detect_eeg_events","textChars":37,"textLines":1,"bbox":[642,452,520,34]}
+{"kind":"shape","id":"sh/cnqdgfyx","slide":6,"bbox":[68,520,1144,64]}
+{"kind":"shape","id":"sh/zqhwbax8","slide":6,"bbox":[68,520,6,64]}
+{"kind":"textbox","id":"sh/yp8vi5g3","slide":6,"text":"报告生成","textPreview":"报告生成","textChars":4,"textLines":1,"bbox":[90,534,220,34]}
+{"kind":"textbox","id":"sh/lsjedkfe","slide":6,"text":"只汇总已有结果","textPreview":"只汇总已有结果","textChars":7,"textLines":1,"bbox":[354,534,220,34]}
+{"kind":"textbox","id":"sh/0radkfyt","slide":6,"text":"basic_information + generate_eeg_report","textPreview":"basic_information + generate_eeg_report","textChars":39,"textLines":1,"bbox":[642,534,520,34]}
+{"kind":"textbox","id":"sh/fuxczqh4","slide":6,"text":"一般脑电问题进入受限的 general_eeg。没有会话证据时，系统不得声称患者特异性发现。","textPreview":"一般脑电问题进入受限的 general_eeg。没有会话证据时，系统不得声称患者特异性发现。","textChars":46,"textLines":1,"bbox":[68,626,1100,32]}
+{"kind":"textbox","id":"sh/etov6lgj","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/4z2t0reh","slide":6,"text":"来源：agent_runtime/skills/definitions/*/SKILL.md","textPreview":"来源：agent_runtime/skills/definitions/*/SKILL.md","textChars":46,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/ly7hmq","slide":6,"text":"表中约束均来自运行时 Skill 定义。\n片段探索窗口不超过 60 秒，事件检测窗口不超过 600 秒。\n报告 Skill 不会静默执行检测或探索，只整理会话已有结果。"}
+{"kind":"slide","id":"sl/yl1y3s","slide":7,"title":"06  知识检索","textShapes":18}
+{"kind":"textbox","id":"sh/xwr2l036","slide":7,"text":"06  知识检索","textPreview":"06  知识检索","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/at0jal4f","slide":7,"text":"本地 RAG 如何补充脑电知识","textPreview":"本地 RAG 如何补充脑电知识","textChars":15,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/bu9kjql0","slide":7,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/kzi1gvmh","slide":7,"text":"知识问题进入两阶段检索。记录特异性工具请求会跳过 RAG，避免把通用资料混入患者证据。","textPreview":"知识问题进入两阶段检索。记录特异性工具请求会跳过 RAG，避免把通用资料混入患者证据。","textChars":43,"textLines":1,"bbox":[68,158,1100,60]}
+{"kind":"shape","id":"sh/lkb2p032","slide":7,"bbox":[120,240,1040,48]}
+{"kind":"textbox","id":"sh/yx0je54r","slide":7,"text":"策略判断","textPreview":"策略判断","textChars":4,"textLines":1,"bbox":[138,249,150,30]}
+{"kind":"textbox","id":"sh/zy9knalc","slide":7,"text":"跳过、直接检索或 FAISS 探测","textPreview":"跳过、直接检索或 FAISS 探测","textChars":17,"textLines":1,"bbox":[295,249,845,30]}
+{"kind":"shape","id":"sh/03y14bmd","slide":7,"bbox":[180,302,920,48]}
+{"kind":"textbox","id":"sh/1472dg3y","slide":7,"text":"双路召回","textPreview":"双路召回","textChars":4,"textLines":1,"bbox":[198,311,150,30]}
+{"kind":"textbox","id":"sh/x87md0b6","slide":7,"text":"Dense 与 Sparse 各召回 20 个子块","textPreview":"Dense 与 Sparse 各召回 20 个子块","textChars":25,"textLines":1,"bbox":[355,311,725,30]}
+{"kind":"shape","id":"sh/c7y54vul","slide":7,"bbox":[240,364,800,48]}
+{"kind":"textbox","id":"sh/b6p4bqt0","slide":7,"text":"三路融合","textPreview":"三路融合","textChars":4,"textLines":1,"bbox":[258,373,150,30]}
+{"kind":"textbox","id":"sh/a5gn2lcf","slide":7,"text":"加入 ColBERT，保留前 15 个候选","textPreview":"加入 ColBERT，保留前 15 个候选","textChars":21,"textLines":1,"bbox":[415,373,605,30]}
+{"kind":"shape","id":"sh/lwrmh0bi","slide":7,"bbox":[300,426,680,48]}
+{"kind":"textbox","id":"sh/kvy58fux","slide":7,"text":"重排过滤","textPreview":"重排过滤","textChars":4,"textLines":1,"bbox":[318,435,150,30]}
+{"kind":"textbox","id":"sh/zap4fatc","slide":7,"text":"bge-reranker-v2-m3 按阈值筛选","textPreview":"bge-reranker-v2-m3 按阈值筛选","textChars":24,"textLines":1,"bbox":[475,435,485,30]}
+{"kind":"shape","id":"sh/y9gn65cr","slide":7,"bbox":[360,488,560,48]}
+{"kind":"textbox","id":"sh/90rmlkbe","slide":7,"text":"邻接扩展","textPreview":"邻接扩展","textChars":4,"textLines":1,"bbox":[378,497,150,30]}
+{"kind":"textbox","id":"sh/8zi5cfut","slide":7,"text":"按父块去重并补充相邻子块","textPreview":"按父块去重并补充相邻子块","textChars":12,"textLines":1,"bbox":[535,497,365,30]}
+{"kind":"shape","id":"sh/s3qp8ji5","slide":7,"bbox":[420,550,440,48]}
+{"kind":"textbox","id":"sh/t4z6hojq","slide":7,"text":"临时注入","textPreview":"临时注入","textChars":4,"textLines":1,"bbox":[438,559,150,30]}
+{"kind":"textbox","id":"sh/6h876tkz","slide":7,"text":"仅给当前问题附加 0 至 3 段资料","textPreview":"仅给当前问题附加 0 至 3 段资料","textChars":18,"textLines":1,"bbox":[595,559,245,30]}
+{"kind":"textbox","id":"sh/72hofe1k","slide":7,"text":"最终评分  0.2 × 归一化融合分数 + 0.8 × 重排分数","textPreview":"最终评分  0.2 × 归一化融合分数 + 0.8 × 重排分数","textChars":32,"textLines":1,"bbox":[335,635,610,30]}
+{"kind":"textbox","id":"sh/g7qpc3i1","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/h8jql8jm","slide":7,"text":"来源：README.md；RAG/retriever.py；retrieval_policy.py","textPreview":"来源：README.md；RAG/retriever.py；retrieval_policy.py","textChars":49,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/yl1y3s","slide":7,"text":"检索流程、召回数量、融合数量、公式与注入段数来自 README.md 的 RAG retrieval pipeline。\n默认阈值：模糊问题 FAISS 探测 0.35，重排过滤 0.5；可通过环境变量调整。\n检索文本只附加到当前用户消息，不进入系统提示，也不保留到后续轮次。"}
+{"kind":"slide","id":"sl/rcs488","slide":8,"title":"07  人机协作","textShapes":16}
+{"kind":"textbox","id":"sh/u1ovitsb","slide":8,"text":"07  人机协作","textPreview":"07  人机协作","textChars":8,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/h4fed8bm","slide":8,"text":"桌面端使用体验","textPreview":"桌面端使用体验","textChars":7,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/w36xk3a1","slide":8,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/jqxwfits","slide":8,"text":"用户围绕当前 EDF 记录持续提问，界面同时呈现回答、工具状态和分析轨迹。","textPreview":"用户围绕当前 EDF 记录持续提问，界面同时呈现回答、工具状态和分析轨迹。","textChars":37,"textLines":1,"bbox":[68,158,1080,42]}
+{"kind":"textbox","id":"sh/ipofmds7","slide":8,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[68,236,55,44]}
+{"kind":"textbox","id":"sh/5szeh8by","slide":8,"text":"选择 EDF 文件","textPreview":"选择 EDF 文件","textChars":9,"textLines":1,"bbox":[130,238,438,34]}
+{"kind":"textbox","id":"sh/4rqxonad","slide":8,"text":"桌面端启动本地 MCP 服务并建立记录会话。","textPreview":"桌面端启动本地 MCP 服务并建立记录会话。","textChars":22,"textLines":1,"bbox":[130,275,438,60]}
+{"kind":"textbox","id":"sh/ruhwjito","slide":8,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[68,360,55,44]}
+{"kind":"textbox","id":"sh/6t8fqds3","slide":8,"text":"提出分析问题","textPreview":"提出分析问题","textChars":6,"textLines":1,"bbox":[130,362,438,34]}
+{"kind":"textbox","id":"sh/8bel8n29","slide":8,"text":"支持直接对话，也支持指定时间窗、导联和分析目标。","textPreview":"支持直接对话，也支持指定时间窗、导联和分析目标。","textChars":24,"textLines":1,"bbox":[130,399,438,60]}
+{"kind":"textbox","id":"sh/tcn21sje","slide":8,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[68,484,55,44]}
+{"kind":"textbox","id":"sh/69w36dk3","slide":8,"text":"观察执行轨迹","textPreview":"观察执行轨迹","textChars":6,"textLines":1,"bbox":[130,486,438,34]}
+{"kind":"textbox","id":"sh/7a5kzi1o","slide":8,"text":"界面显示 Skill 路由、候选分数、允许工具与工具调用状态。","textPreview":"界面显示 Skill 路由、候选分数、允许工具与工具调用状态。","textChars":31,"textLines":1,"bbox":[130,523,438,60]}
+{"kind":"shape","id":"sh/gzelc725","slide":8,"bbox":[650,232,562,344]}
+{"kind":"textbox","id":"sh/h07m5sjq","slide":8,"text":"“先看前 30 秒的背景节律，\n再检查是否存在左右不对称。”","textPreview":"“先看前 30 秒的背景节律， | 再检查是否存在左右不对称。”","textChars":30,"textLines":2,"bbox":[700,278,460,102]}
+{"kind":"shape","id":"sh/udw3axkz","slide":8,"bbox":[700,406,424,2]}
+{"kind":"textbox","id":"sh/ve54321k","slide":8,"text":"系统可流式返回文字，并在工具运行时更新状态。对话记录可以导出，移除数据后回到普通对话。","textPreview":"系统可流式返回文字，并在工具运行时更新状态。对话记录可以导出，移除数据后回到普通对话。","textChars":43,"textLines":1,"bbox":[700,438,445,94]}
+{"kind":"textbox","id":"sh/43ylg7i1","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/547m9cjm","slide":8,"text":"来源：desktop_app.py；trajectory_view.py；README.md","textPreview":"来源：desktop_app.py；trajectory_view.py；README.md","textChars":46,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/rcs488","slide":8,"text":"桌面端由 PySide6 构建。\n源代码提供 EDF 文件选择、流式消息、工具状态、轨迹页、对话清空与导出等功能。\n来源：desktop_app.py；trajectory_view.py。"}
+{"kind":"slide","id":"sl/9bgypw","slide":9,"title":"08  证据与限制","textShapes":14}
+{"kind":"textbox","id":"sh/cjqlobal","slide":9,"text":"08  证据与限制","textPreview":"08  证据与限制","textChars":9,"textLines":1,"bbox":[68,34,210,24]}
+{"kind":"textbox","id":"sh/bihkv690","slide":9,"text":"评估方向与使用边界","textPreview":"评估方向与使用边界","textChars":9,"textLines":1,"bbox":[68,66,1090,60]}
+{"kind":"shape","id":"sh/ah8jmlsf","slide":9,"bbox":[68,137,1144,2]}
+{"kind":"textbox","id":"sh/l8j210r2","slide":9,"text":"仓库中的评估入口","textPreview":"仓库中的评估入口","textChars":8,"textLines":1,"bbox":[68,174,470,38]}
+{"kind":"textbox","id":"sh/knalsvqh","slide":9,"text":"MDD","textPreview":"MDD","textChars":3,"textLines":1,"bbox":[68,236,108,40]}
+{"kind":"textbox","id":"sh/zm1kzq9c","slide":9,"text":"抑郁相关 EEG 任务","textPreview":"抑郁相关 EEG 任务","textChars":11,"textLines":1,"bbox":[188,239,350,36]}
+{"kind":"shape","id":"sh/yl83ql8r","slide":9,"bbox":[68,292,470,1]}
+{"kind":"textbox","id":"sh/1cf2pwry","slide":9,"text":"Sleep","textPreview":"Sleep","textChars":5,"textLines":1,"bbox":[68,332,108,40]}
+{"kind":"textbox","id":"sh/0r61grad","slide":9,"text":"睡眠分期任务","textPreview":"睡眠分期任务","textChars":6,"textLines":1,"bbox":[188,335,350,36]}
+{"kind":"shape","id":"sh/6lwju94r","slide":9,"bbox":[68,388,470,1]}
+{"kind":"textbox","id":"sh/7m5k3ulc","slide":9,"text":"TUSL","textPreview":"TUSL","textChars":4,"textLines":1,"bbox":[68,428,108,40]}
+{"kind":"textbox","id":"sh/sne1wzmx","slide":9,"text":"事件检测相关任务","textPreview":"事件检测相关任务","textChars":8,"textLines":1,"bbox":[188,431,350,36]}
+{"kind":"shape","id":"sh/to725432","slide":9,"bbox":[68,484,470,1]}
+{"kind":"textbox","id":"sh/upgjy94n","slide":9,"text":"论文摘要说明系统在公开数据集上完成能力评估。仓库 README 未提供可直接引用的量化结果，本介绍因此不添加性能数字。","textPreview":"论文摘要说明系统在公开数据集上完成能力评估。仓库 README 未提供可直接引用的量化结果，本介绍因此不添加性能数字。","textChars":59,"textLines":1,"bbox":[68,540,480,108]}
+{"kind":"shape","id":"sh/fqpk7el8","slide":9,"bbox":[624,174,588,390]}
+{"kind":"textbox","id":"sh/gry10jmt","slide":9,"text":"临床使用边界","textPreview":"临床使用边界","textChars":6,"textLines":1,"bbox":[670,214,450,44]}
+{"kind":"textbox","id":"sh/hs729o3e","slide":9,"text":"结果定位为自动化筛查发现或报告草稿\n不得把统计探索直接解释为诊断结论\n事件、导联、脑区与置信度必须来自工具输出\n专业人员仍需复核原始 EEG 及临床背景","textPreview":"结果定位为自动化筛查发现或报告草稿 | 不得把统计探索直接解释为诊断结论 | 事件、导联、脑区与置信度必须来自工具输出 | 专业人员仍需复核原始 EEG 及临床背景","textChars":76,"textLines":4,"bbox":[670,286,460,220]}
+{"kind":"textbox","id":"sh/2tgj2t4z","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1158,680,54,20]}
+{"kind":"textbox","id":"sh/3epkbelk","slide":9,"text":"来源：README.md；MDD_eval.py；Sleep_eval.py；TUSL_eval.py；运行时 Skill","textPreview":"来源：README.md；MDD_eval.py；Sleep_eval.py；TUSL_eval.py；运行时 Skill","textChars":61,"textLines":1,"bbox":[68,680,1000,20]}
+{"kind":"notes","id":"nt/9bgypw","slide":9,"text":"论文摘要只说明在公开数据集上进行了评估，没有在 README 中提供具体数值。\nMDD、Sleep、TUSL 三个评估方向来自仓库顶层评估脚本。\n临床边界来自 detection、exploration、reporting 与 general_eeg Skill 的输出规则。"}
+{"kind":"slide","id":"sl/bgt3cc","slide":10,"title":"快速启动","textShapes":11}
+{"kind":"shape","id":"sh/pg3epora","slide":10,"bbox":[0,0,780,720]}
+{"kind":"textbox","id":"sh/4fudwjqp","slide":10,"text":"快速启动","textPreview":"快速启动","textChars":4,"textLines":1,"bbox":[72,76,500,62]}
+{"kind":"textbox","id":"sh/ri5wry9g","slide":10,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[76,188,36,34]}
+{"kind":"textbox","id":"sh/qhcfyt8v","slide":10,"text":"安装 requirements.txt 中的依赖","textPreview":"安装 requirements.txt 中的依赖","textChars":24,"textLines":1,"bbox":[130,188,500,34]}
+{"kind":"textbox","id":"sh/dknetor6","slide":10,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[76,260,36,34]}
+{"kind":"textbox","id":"sh/cjex03q1","slide":10,"text":"配置 DEEPSEEK_API_KEY","textPreview":"配置 DEEPSEEK_API_KEY","textChars":19,"textLines":1,"bbox":[130,260,500,34]}
+{"kind":"textbox","id":"sh/7m1wfu9w","slide":10,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[76,332,36,34]}
+{"kind":"textbox","id":"sh/6lsvmp8b","slide":10,"text":"运行 desktop_app.py","textPreview":"运行 desktop_app.py","textChars":17,"textLines":1,"bbox":[130,332,500,34]}
+{"kind":"textbox","id":"sh/sv2dwjed","slide":10,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[76,404,36,34]}
+{"kind":"textbox","id":"sh/dwbepofy","slide":10,"text":"选择 EDF 文件并开始提问","textPreview":"选择 EDF 文件并开始提问","textChars":14,"textLines":1,"bbox":[130,404,500,34]}
+{"kind":"textbox","id":"sh/q9kvu9w7","slide":10,"text":"EEGAgent 的价值在于把多种 EEG 能力组织成可追踪、可约束、可扩展的分析过程。","textPreview":"EEGAgent 的价值在于把多种 EEG 能力组织成可追踪、可约束、可扩展的分析过程。","textChars":44,"textLines":1,"bbox":[76,512,610,94]}
+{"kind":"textbox","id":"sh/rutwnexs","slide":10,"text":"论文：arXiv:2511.09947v2","textPreview":"论文：arXiv:2511.09947v2","textChars":21,"textLines":1,"bbox":[76,645,420,24]}
+{"kind":"image","id":"im/3et8nyh4","slide":10,"name":"","alt":"抽象脑电与智能体背景","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/bgt3cc","slide":10,"text":"快速启动命令与环境变量名称来自项目 README.md 和 main.py。\n项目论文：https://arxiv.org/abs/2511.09947。\n图像生成提示词：深色科学编辑风格，脑电波形与神经网络连接，左侧留出标题空间，无文字与标识。"}

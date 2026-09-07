@@ -9,6 +9,101 @@ from threading import Event, Thread
 from typing import Any
 
 
+MAX_MODEL_EVENT_ITEMS = 24
+
+
+def _event_rank(event: dict[str, Any]) -> tuple[float, float]:
+    """Rank representative events by confidence and duration."""
+    confidence = event.get("confidence")
+    confidence_value = float(confidence) if isinstance(confidence, (int, float)) else 0.0
+    start = event.get("start_seconds")
+    end = event.get("end_seconds")
+    duration = (
+        max(0.0, float(end) - float(start))
+        if isinstance(start, (int, float)) and isinstance(end, (int, float))
+        else 0.0
+    )
+    return confidence_value, duration
+
+
+def _representative_events(
+    events: list[dict[str, Any]],
+    limit: int = MAX_MODEL_EVENT_ITEMS,
+) -> list[dict[str, Any]]:
+    """Keep channel coverage first, then fill with globally strongest events."""
+    if len(events) <= limit:
+        return list(events)
+    best_by_channel: dict[str, tuple[int, dict[str, Any]]] = {}
+    for index, event in enumerate(events):
+        channel = str(event.get("channel") or "unknown")
+        current = best_by_channel.get(channel)
+        if current is None or _event_rank(event) > _event_rank(current[1]):
+            best_by_channel[channel] = (index, event)
+    selected_indexes = {
+        index
+        for index, _event in sorted(
+            best_by_channel.values(), key=lambda item: _event_rank(item[1]), reverse=True
+        )[:limit]
+    }
+    if len(selected_indexes) < limit:
+        remaining = sorted(
+            (
+                (index, event) for index, event in enumerate(events)
+                if index not in selected_indexes
+            ),
+            key=lambda item: _event_rank(item[1]),
+            reverse=True,
+        )
+        selected_indexes.update(index for index, _event in remaining[:limit - len(selected_indexes)])
+    selected = [events[index] for index in selected_indexes]
+    return sorted(
+        selected,
+        key=lambda event: (
+            float(event.get("start_seconds", 0)),
+            float(event.get("end_seconds", 0)),
+            str(event.get("channel", "")),
+        ),
+    )
+
+
+def _event_counts(events: list[dict[str, Any]], key: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for event in events:
+        value = str(event.get(key) or "unknown")
+        counts[value] = counts.get(value, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _compact_events_for_model(
+    structured: dict[str, Any],
+    event_key: str,
+) -> dict[str, Any]:
+    """Return a model-facing copy with aggregate counts and bounded events."""
+    events = structured.get(event_key)
+    if not isinstance(events, list):
+        return structured
+    compact = dict(structured)
+    representatives = _representative_events(events)
+    compact[event_key] = representatives
+    compact["events_are_representative"] = len(representatives) < len(events)
+    compact["events_returned_to_model"] = len(representatives)
+    compact["events_omitted_from_model"] = max(0, len(events) - len(representatives))
+    compact["event_counts_by_channel"] = _event_counts(events, "channel")
+    compact["event_counts_by_brain_region"] = _event_counts(events, "brain_region")
+    return compact
+
+
+def _structured_result_for_model(tool_name: str | None, structured: Any) -> Any:
+    """Apply tool-specific size policy without mutating the local full result."""
+    if not isinstance(structured, dict):
+        return structured
+    if tool_name == "detect_eeg_events":
+        return _compact_events_for_model(structured, "events")
+    if tool_name == "generate_eeg_report":
+        return _compact_events_for_model(structured, "abnormal_findings")
+    return structured
+
+
 class MCPClientBridge:
     """Keep one EEG MCP server process alive for the desktop application's lifetime."""
 
@@ -159,7 +254,7 @@ class MCPClientBridge:
         self._ready.clear()
 
 
-def result_for_model(result: dict[str, Any]) -> str:
+def result_for_model(result: dict[str, Any], tool_name: str | None = None) -> str:
     """处理 result for model 相关逻辑。"""
     if result.get("is_error"):
         structured = result.get("structured_content")
@@ -178,7 +273,8 @@ def result_for_model(result: dict[str, Any]) -> str:
             error["message"] = "The tool call failed without an error message."
         return json.dumps(error, ensure_ascii=False)
     if result["structured_content"] is not None:
-        return json.dumps(result["structured_content"], ensure_ascii=False)
+        structured = _structured_result_for_model(tool_name, result["structured_content"])
+        return json.dumps(structured, ensure_ascii=False)
     if result["content"]:
         return "\n".join(result["content"])
     return json.dumps({"error": "The tool returned no content."}, ensure_ascii=False)

@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 from PySide6.QtCore import QObject, QThread, Qt, Signal, QTimer
-from PySide6.QtGui import QAction, QColor, QKeyEvent, QPainter, QPen
+from PySide6.QtGui import QAction, QActionGroup, QColor, QKeyEvent, QPainter, QPen
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -19,12 +19,14 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QScrollArea,
     QSplitter,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
 
-from agent_runtime.mcp_chat_agent import MCPChatAgent
+from agent_runtime.mcp_chat_agent import GenerationCancelled, MCPChatAgent
 from agent_runtime.mcp_client import MCPClientBridge
+from trajectory_view import AnalysisTrajectoryPage, TrajectorySummaryBar
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -110,10 +112,12 @@ class Spinner(QWidget):
 class ChatWorker(QObject):
     finished = Signal(dict)
     failed = Signal(str)
+    cancelled = Signal(str)
     delta = Signal(str)
     tool_started = Signal(str)
     tool_finished = Signal(str)
     tool_call_detected = Signal()
+    trace_event = Signal(dict)
 
     def __init__(self, agent, prompt: str):
         """初始化对象状态。"""
@@ -130,9 +134,16 @@ class ChatWorker(QObject):
                 on_tool_start=self.tool_started.emit,
                 on_tool_end=self.tool_finished.emit,
                 on_tool_call_detected=self.tool_call_detected.emit,
+                on_trace=self.trace_event.emit,
             ))
+        except GenerationCancelled as exc:
+            self.cancelled.emit(exc.partial_response)
         except Exception as exc:
             self.failed.emit(str(exc))
+
+    def cancel(self):
+        """请求安全中止当前生成。"""
+        self.agent.cancel_current_run()
 
 
 class RAGPreloader(QObject):
@@ -191,6 +202,8 @@ class EEGAgentWindow(QMainWindow):
         self.transcript = []
         self.streaming_label = None
         self.streaming_response = ""
+        self.trace_events = []
+        self.trace_event_indexes = {}
 
         self.setWindowTitle("EEGAgent 脑电分析客户端")
         self.resize(1280, 820)
@@ -199,36 +212,43 @@ class EEGAgentWindow(QMainWindow):
         self._start_rag_preload()
 
     def _build_menu(self):
-        """构建 build menu 所需内容。"""
-        file_menu = self.menuBar().addMenu("文件")
-        open_action = QAction("打开 EDF 文件...", self)
-        open_action.triggered.connect(self.choose_edf)
-        file_menu.addAction(open_action)
+        """构建只负责页面切换的顶部标签。"""
+        self.tab_action_group = QActionGroup(self)
+        self.tab_action_group.setExclusive(True)
 
-        export_action = QAction("导出对话...", self)
-        export_action.triggered.connect(self.export_conversation)
-        file_menu.addAction(export_action)
-        file_menu.addSeparator()
+        self.conversation_action = QAction("会话", self)
+        self.conversation_action.setCheckable(True)
+        self.conversation_action.setChecked(True)
+        self.conversation_action.triggered.connect(self._show_conversation)
+        self.tab_action_group.addAction(self.conversation_action)
+        self.menuBar().addAction(self.conversation_action)
 
-        quit_action = QAction("退出", self)
-        quit_action.triggered.connect(self.close)
-        file_menu.addAction(quit_action)
-
-        session_menu = self.menuBar().addMenu("会话")
-        clear_action = QAction("清空对话", self)
-        clear_action.triggered.connect(self.clear_conversation)
-        session_menu.addAction(clear_action)
+        self.trajectory_action = QAction("轨迹", self)
+        self.trajectory_action.setCheckable(True)
+        self.trajectory_action.triggered.connect(self._show_trajectory)
+        self.tab_action_group.addAction(self.trajectory_action)
+        self.menuBar().addAction(self.trajectory_action)
 
     def _build_ui(self):
         """构建 build ui 所需内容。"""
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_recording_panel())
         splitter.addWidget(self._build_chat_panel())
-        splitter.addWidget(self._build_details_panel())
-        splitter.setSizes([310, 650, 320])
-        self.setCentralWidget(splitter)
+        splitter.setSizes([390, 890])
+        self.main_page = splitter
+        self.trajectory_page = AnalysisTrajectoryPage()
+        self.trajectory_page.clear_requested.connect(self._clear_trajectory)
+        self.page_stack = QStackedWidget()
+        self.page_stack.addWidget(self.main_page)
+        self.page_stack.addWidget(self.trajectory_page)
+        self.setCentralWidget(self.page_stack)
+        self.trajectory_summary = TrajectorySummaryBar()
+        self.statusBar().addPermanentWidget(self.trajectory_summary)
+        self.spinner = Spinner()
+        self.statusBar().addPermanentWidget(self.spinner)
         self.setStyleSheet(
             "QMainWindow { background: #f5f7fa; }"
+            "QScrollArea#chatScroll, QWidget#chatViewport, QWidget#chatContainer { background: #ffffff; }"
             "QFrame#messageUser { background: #dceeff; border: 1px solid #a8c9e8; border-radius: 7px; }"
             "QFrame#messageAssistant { background: #ffffff; border: 1px solid #d6dde5; border-radius: 7px; }"
             "QPlainTextEdit, QLineEdit { background: #ffffff; border: 1px solid #c9d3df; border-radius: 4px; }"
@@ -257,15 +277,15 @@ class EEGAgentWindow(QMainWindow):
         buttons = QHBoxLayout()
         self.open_button = QPushButton("选择 EDF")
         self.open_button.clicked.connect(self.choose_edf)
-        self.load_button = QPushButton("加载")
-        self.load_button.clicked.connect(self.load_selected_edf)
-        self.load_button.setEnabled(False)
         self.detach_button = QPushButton("移除数据")
         self.detach_button.clicked.connect(self.detach_recording)
         self.detach_button.setEnabled(False)
+        self.export_button = QPushButton("导出会话")
+        self.export_button.clicked.connect(self.export_conversation)
+        self.export_button.setEnabled(False)
         buttons.addWidget(self.open_button)
-        buttons.addWidget(self.load_button)
         buttons.addWidget(self.detach_button)
+        buttons.addWidget(self.export_button)
         layout.addLayout(buttons)
 
         layout.addWidget(QLabel("记录信息"))
@@ -287,12 +307,14 @@ class EEGAgentWindow(QMainWindow):
         layout.addWidget(title)
 
         self.chat_scroll = QScrollArea()
+        self.chat_scroll.setObjectName("chatScroll")
+        self.chat_scroll.viewport().setObjectName("chatViewport")
         self.chat_scroll.setWidgetResizable(True)
         self.chat_container = QWidget()
+        self.chat_container.setObjectName("chatContainer")
         self.chat_layout = QVBoxLayout(self.chat_container)
         self.chat_layout.setContentsMargins(4, 4, 4, 4)
         self.chat_layout.setSpacing(10)
-        self.chat_layout.addStretch()
         self.chat_scroll.setWidget(self.chat_container)
         layout.addWidget(self.chat_scroll, 1)
 
@@ -307,50 +329,12 @@ class EEGAgentWindow(QMainWindow):
         self.clear_button = QPushButton("清空")
         self.clear_button.clicked.connect(self.clear_conversation)
         self.send_button = QPushButton("发送")
-        self.send_button.clicked.connect(self.send_message)
+        self.send_button.clicked.connect(self._handle_send_button)
         self.send_button.setEnabled(True)
         controls.addWidget(self.clear_button)
         controls.addStretch()
         controls.addWidget(self.send_button)
         layout.addLayout(controls)
-        return panel
-
-    def _build_details_panel(self):
-        """构建 build details panel 所需内容。"""
-        panel = QWidget()
-        layout = QVBoxLayout(panel)
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(10)
-
-        title = QLabel("分析状态")
-        title.setStyleSheet("font-size: 17px; font-weight: 600;")
-        layout.addWidget(title)
-
-        self.spinner = Spinner()
-        self.status_label = QLabel()
-        self.status_label.setWordWrap(True)
-        self.status_label.setStyleSheet("color: #405266;")
-        status_row = QHBoxLayout()
-        status_row.addWidget(self.spinner)
-        status_row.addWidget(self.status_label, 1)
-        layout.addLayout(status_row)
-
-        layout.addWidget(QLabel("最近一次运行"))
-        self.metrics = QPlainTextEdit()
-        self.metrics.setReadOnly(True)
-        self.metrics.setMaximumHeight(130)
-        self.metrics.setPlaceholderText("运行指标将在此显示。")
-        layout.addWidget(self.metrics)
-
-        layout.addWidget(QLabel("临床提示"))
-        note = QLabel(
-            "本客户端用于辅助脑电分析与报告整理。"
-            "分析结果须由具备资质的临床医生审核。"
-        )
-        note.setWordWrap(True)
-        note.setStyleSheet("color: #6b4b00; background: #fff6d8; padding: 8px; border-radius: 4px;")
-        layout.addWidget(note)
-        layout.addStretch()
         return panel
 
     def choose_edf(self):
@@ -367,8 +351,8 @@ class EEGAgentWindow(QMainWindow):
         if not file_path:
             return
         self.file_input.setText(file_path)
-        self.load_button.setEnabled(True)
-        self._set_status("已选择脑电记录，请加载后将其附加到当前会话。")
+        self._set_status("已选择脑电记录，正在自动加载...")
+        self.load_selected_edf()
 
     def load_selected_edf(self):
         """加载当前选择的 EDF 文件并创建分析会话。"""
@@ -424,9 +408,13 @@ class EEGAgentWindow(QMainWindow):
             return
         self.prompt_input.clear()
         self._add_message("你", prompt, True)
-        self.transcript.append(("你", prompt))
+        self._append_transcript("你", prompt)
         has_recording = self.eeg_session_id is not None
-        self._set_busy(True, "正在分析脑电并生成回答..." if has_recording else "正在生成回答...")
+        self._set_busy(
+            True,
+            "正在分析脑电并生成回答..." if has_recording else "正在生成回答...",
+            cancellable=True,
+        )
         # Keep composing available while the current answer streams. Sending
         # remains blocked by active_thread until this worker has finished.
         self.prompt_input.setEnabled(True)
@@ -435,6 +423,22 @@ class EEGAgentWindow(QMainWindow):
         self.streaming_label = self._add_message("EEGAgent", "正在生成回答...", False)
         worker = ChatWorker(agent, prompt)
         self._run_worker(worker, worker.finished, self._chat_finished, worker.failed, self._job_failed)
+
+    def _handle_send_button(self):
+        """根据当前运行状态发送消息或取消生成。"""
+        if isinstance(self.active_worker, ChatWorker):
+            self.cancel_generation()
+            return
+        self.send_message()
+
+    def cancel_generation(self):
+        """取消当前回答，同时等待后台任务安全退出。"""
+        if not isinstance(self.active_worker, ChatWorker):
+            return
+        self.send_button.setText("正在取消…")
+        self.send_button.setEnabled(False)
+        self._set_status("正在取消本轮生成...")
+        self.active_worker.cancel()
 
     def _run_worker(self, worker, success_signal, success_handler, failure_signal, failure_handler):
         """处理 run worker 相关逻辑。"""
@@ -448,6 +452,9 @@ class EEGAgentWindow(QMainWindow):
             worker.tool_call_detected.connect(self._reset_stream_response)
             worker.tool_started.connect(self._tool_started)
             worker.tool_finished.connect(self._tool_finished)
+            worker.trace_event.connect(self._upsert_trace_event)
+            worker.cancelled.connect(self._chat_cancelled)
+            worker.cancelled.connect(thread.quit)
         success_signal.connect(thread.quit)
         failure_signal.connect(thread.quit)
         thread.finished.connect(worker.deleteLater)
@@ -481,7 +488,7 @@ class EEGAgentWindow(QMainWindow):
         self.detach_button.setEnabled(True)
         file_name = loaded["summary"]["recording_name"]
         self._add_message("系统", f"已加载脑电数据：{file_name}。后续问题可结合该数据进行分析。", False)
-        self.transcript.append(("系统", f"已加载脑电数据：{file_name}。"))
+        self._append_transcript("系统", f"已加载脑电数据：{file_name}。")
         self._set_status("脑电记录加载完成，已附加到当前会话。")
 
     def _chat_finished(self, result):
@@ -491,61 +498,25 @@ class EEGAgentWindow(QMainWindow):
             self._set_message_text(self.streaming_label, "EEGAgent", response)
         else:
             self._add_message("EEGAgent", response, False)
-        self.transcript.append(("EEGAgent", response))
+        self._append_transcript("EEGAgent", response)
         self.streaming_label = None
         self.streaming_response = ""
         self.spinner.stop()
-        routing = result.get("routing") or {}
-        if not routing.get("enabled"):
-            routing_lines = [
-                "处理模式：普通 RAG 问答",
-                "路由过程：未加载 EDF → 跳过 Skill 路由 → 不开放 EEG 工具",
-                "Skill 路由：未启用（未加载 EDF）",
-                "开放工具：0 个",
-            ]
-        else:
-            source_labels = {
-                "keyword": "关键词匹配",
-                "embedding": "BGE-M3 语义匹配",
-                "general": "中等置信度通用路由",
-                "no_skill": "低置信度，不开放 EEG 工具",
-            }
-            route_processes = {
-                "keyword": "EDF 会话就绪 → 关键词命中 → 选择 Skill",
-                "embedding": "EDF 会话就绪 → 关键词未命中 → BGE-M3 语义匹配 → 选择 Skill",
-                "general": "EDF 会话就绪 → 未达到专用 Skill 阈值 → general_eeg（仅基础信息/澄清）",
-                "no_skill": "EDF 会话就绪 → 语义相似度过低 → 不选择 Skill、不开放 EEG 工具",
-            }
-            source = routing.get("source")
-            routing_lines = [
-                f"路由过程：{route_processes.get(source, 'EDF 会话就绪 → 选择 Skill')}",
-                f"Skill：{routing.get('skill') or '未选择'}",
-                f"路由方式：{source_labels.get(source, source or 'unknown')}",
-            ]
-            keyword_matches = routing.get("keyword_matches") or []
-            if keyword_matches:
-                routing_lines.append("命中关键词：" + "、".join(keyword_matches))
-            candidates = routing.get("candidates") or []
-            if candidates:
-                routing_lines.append(
-                    "语义候选：" + "；".join(
-                        f"{candidate.get('name')} {candidate.get('score', 0):.3f}"
-                        for candidate in candidates
-                    )
-                )
-                routing_lines.append(f"候选分差：{routing.get('margin', 0):.3f}")
-            allowed_tools = routing.get("allowed_tools") or []
-            routing_lines.append(
-                "开放工具：" + ("、".join(allowed_tools) if allowed_tools else "无")
-            )
-        self.metrics.setPlainText(
-            "\n".join(routing_lines) + "\n\n"
-            f"交互轮数：{result.get('rounds', 0)}\n"
-            f"模型耗时：{result.get('model_time', 0):.2f} 秒\n"
-            f"本地工具耗时：{result.get('local_tool_time', 0):.2f} 秒\n"
-            f"总耗时：{result.get('total_time', 0):.2f} 秒"
-        )
         self._set_status("分析完成。")
+
+    def _chat_cancelled(self, partial_response: str):
+        """保留已经生成的内容，并标记本轮由用户取消。"""
+        response = (partial_response or self.streaming_response).rstrip()
+        displayed_response = f"{response}\n\n（已取消）" if response else "已取消本次生成。"
+        if self.streaming_label is not None:
+            self._set_message_text(self.streaming_label, "EEGAgent", displayed_response)
+        else:
+            self._add_message("EEGAgent", displayed_response, False)
+        self._append_transcript("EEGAgent", displayed_response)
+        self.streaming_label = None
+        self.streaming_response = ""
+        self.spinner.stop()
+        self._set_status("本轮生成已取消。")
 
     def _job_failed(self, message):
         """处理 job failed 相关逻辑。"""
@@ -563,25 +534,60 @@ class EEGAgentWindow(QMainWindow):
         self.active_thread = None
         self.active_worker = None
         self.open_button.setEnabled(True)
-        self.load_button.setEnabled(bool(self.file_input.text().strip()))
         self.detach_button.setEnabled(self.eeg_session_id is not None)
+        self.send_button.setText("发送")
         self.send_button.setEnabled(self.rag_ready)
         self.prompt_input.setEnabled(self.rag_ready)
         self.spinner.stop()
 
-    def _set_busy(self, busy: bool, status: str):
+    def _set_busy(self, busy: bool, status: str, cancellable: bool = False):
         """处理 set busy 相关逻辑。"""
         self._set_status(status)
         self.open_button.setEnabled(not busy)
-        self.load_button.setEnabled(not busy and bool(self.file_input.text().strip()))
         self.detach_button.setEnabled(not busy and self.eeg_session_id is not None)
-        self.send_button.setEnabled(not busy and self.rag_ready)
+        self.send_button.setText("取消" if busy and cancellable else "发送")
+        self.send_button.setEnabled((busy and cancellable) or (not busy and self.rag_ready))
         self.prompt_input.setEnabled(not busy and self.rag_ready)
 
     def _set_status(self, status: str):
         """处理 set status 相关逻辑。"""
-        self.status_label.setText(status)
         self.statusBar().showMessage(status)
+
+    def _show_trajectory(self, _checked=False):
+        """切换到分析轨迹页面。"""
+        self.trajectory_action.setChecked(True)
+        self.trajectory_page.set_events(self.trace_events)
+        self.page_stack.setCurrentWidget(self.trajectory_page)
+
+    def _show_conversation(self, _checked=False):
+        """返回脑电分析对话页面。"""
+        self.conversation_action.setChecked(True)
+        self.page_stack.setCurrentWidget(self.main_page)
+
+    def _clear_trajectory(self, announce=True):
+        """清空当前会话的分析轨迹。"""
+        self.trace_events = []
+        self.trace_event_indexes = {}
+        self.trajectory_page.set_events(self.trace_events)
+        self.trajectory_summary.set_events(self.trace_events)
+        if announce:
+            self._set_status("分析轨迹已清空。")
+
+    def _upsert_trace_event(self, event):
+        """按稳定事件编号新增或更新一条实时轨迹。"""
+        event = dict(event)
+        event_id = str(event.get("id") or f"event-{len(self.trace_events) + 1}")
+        event["id"] = event_id
+        index = self.trace_event_indexes.get(event_id)
+        if index is None:
+            event.setdefault("sequence", len(self.trace_events) + 1)
+            self.trace_event_indexes[event_id] = len(self.trace_events)
+            self.trace_events.append(event)
+        else:
+            current = self.trace_events[index]
+            self.trace_events[index] = {**current, **event, "sequence": current["sequence"]}
+        self.trajectory_page.set_events(self.trace_events)
+        self.trajectory_summary.set_events(self.trace_events)
 
     def _update_prompt_placeholder(self):
         """处理 update prompt placeholder 相关逻辑。"""
@@ -626,28 +632,40 @@ class EEGAgentWindow(QMainWindow):
         frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(10, 8, 10, 8)
+        layout.setAlignment(Qt.AlignTop)
         label = QLabel()
         self._set_message_text(label, speaker, text)
         label.setWordWrap(True)
         label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         layout.addWidget(label)
-        self.chat_layout.insertWidget(self.chat_layout.count() - 1, frame)
+        # Let only the newest message absorb unused viewport height. Once the
+        # conversation exceeds the viewport, every card falls back to its
+        # natural minimum height and the scroll area has no trailing gap.
+        for index in range(self.chat_layout.count()):
+            self.chat_layout.setStretch(index, 0)
+        self.chat_layout.addWidget(frame, 1)
         self.chat_scroll.verticalScrollBar().rangeChanged.connect(
             lambda _minimum, maximum: self.chat_scroll.verticalScrollBar().setValue(maximum)
         )
         return label
 
+    def _append_transcript(self, speaker: str, content: str):
+        """Append exportable conversation content and refresh export availability."""
+        self.transcript.append((speaker, content))
+        self.export_button.setEnabled(bool(self.transcript))
+
     def clear_conversation(self):
         """清空当前聊天记录并重置对话上下文。"""
         if self.active_thread is not None:
             return
-        while self.chat_layout.count() > 1:
-            item = self.chat_layout.takeAt(0)
+        while self.chat_layout.count() > 0:
+            item = self.chat_layout.takeAt(self.chat_layout.count() - 1)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
         self.transcript = []
-        self.metrics.clear()
+        self.export_button.setEnabled(False)
+        self._clear_trajectory(announce=False)
         if self.agent is not None:
             self.agent.reset()
         if self.eeg_session_id is not None:
@@ -679,10 +697,9 @@ class EEGAgentWindow(QMainWindow):
         self.eeg_session_id = None
         self.file_input.clear()
         self.recording_info.clear()
-        self.load_button.setEnabled(False)
         self.detach_button.setEnabled(False)
         self._add_message("系统", f"已移除脑电数据：{file_name}。后续消息将作为直接对话处理。", False)
-        self.transcript.append(("系统", f"已移除脑电数据：{file_name}。"))
+        self._append_transcript("系统", f"已移除脑电数据：{file_name}。")
         self._set_status("脑电数据已移除，当前可直接对话。")
 
     def closeEvent(self, event):

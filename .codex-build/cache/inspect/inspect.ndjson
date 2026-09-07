@@ -1,0 +1,293 @@
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"","type":"master"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"INTERVIEW TECHNICAL DECK","textShapes":4}
+{"kind":"textbox","id":"sh/k3yl0zql","slide":1,"textChars":24,"textLines":1}
+{"kind":"textbox","id":"sh/7qp4be9c","slide":1,"textChars":8,"textLines":1}
+{"kind":"textbox","id":"sh/65g3298r","slide":1,"textChars":12,"textLines":1}
+{"kind":"textbox","id":"sh/ts7md4r2","slide":1,"textChars":27,"textLines":4}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"建议开场：EEGAgent 不是把 LLM 直接接到 EEG 数据，而是用运行时把规划、工具、记忆和知识检索拆成可控模块。 | 来源：README.md；..."}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"系统总览","textShapes":19}
+{"kind":"textbox","id":"sh/u94fqp4n","slide":2,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/9072xkry","slide":2,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/ozy1ofad","slide":2,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/b29kza94","slide":2,"textChars":35,"textLines":1}
+{"kind":"shape","id":"sh/a10jqpsj","slide":2,"name":"圆角矩形 4","bbox":[68,220,1144,62]}
+{"kind":"textbox","id":"sh/x4r21kru","slide":2,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/w3i1sfa9","slide":2,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/r65knqtk","slide":2,"textChars":21,"textLines":1}
+{"kind":"shape","id":"sh/q5wjelsz","slide":2,"name":"圆角矩形 8","bbox":[68,302,1144,62]}
+{"kind":"textbox","id":"sh/ove9o7yd","slide":2,"textChars":9,"textLines":1}
+{"kind":"textbox","id":"sh/9wnqhczy","slide":2,"textChars":29,"textLines":1}
+{"kind":"textbox","id":"sh/mtwrmxg7","slide":2,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/nu58f2hs","slide":2,"name":"圆角矩形 12","bbox":[68,384,1144,62]}
+{"kind":"textbox","id":"sh/wjy9sry9","slide":2,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/xk7qlczu","slide":2,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/ahwrqhgj","slide":2,"textChars":21,"textLines":1}
+{"kind":"shape","id":"sh/bip8jmho","slide":2,"name":"圆角矩形 16","bbox":[68,466,1144,62]}
+{"kind":"textbox","id":"sh/cnupgny5","slide":2,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/do3q9szq","slide":2,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/t8byxkn2","slide":2,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/s72xofmh","slide":2,"name":"圆角矩形 20","bbox":[68,548,1144,62]}
+{"kind":"textbox","id":"sh/76twva5c","slide":2,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/65kfmpor","slide":2,"textChars":9,"textLines":1}
+{"kind":"textbox","id":"sh/hcvy14ne","slide":2,"textChars":30,"textLines":1}
+{"kind":"textbox","id":"sh/fadgzu58","slide":2,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"面试讲法：用分层先建立全局认知。规划、记忆、调用协议、领域能力和知识库各自可替换。 | 当前桌面端通过 stdio 启动本地 MCP 服务，Agent 通..."}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"RAG 建库","textShapes":23}
+{"kind":"textbox","id":"sh/hwzihwzi","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/cza94vmx","slide":3,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/d0jax03i","slide":3,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/298ryl4v","slide":3,"textChars":34,"textLines":1}
+{"kind":"shape","id":"sh/3ah8rqlg","slide":3,"name":"圆角矩形 4","bbox":[68,230,150,170]}
+{"kind":"textbox","id":"sh/obq90bml","slide":3,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/pcjqtg36","slide":3,"textChars":26,"textLines":2}
+{"kind":"shape","id":"sh/m5cra54z","slide":3,"name":"圆角矩形 7","bbox":[254,230,150,170]}
+{"kind":"textbox","id":"sh/n6ls3alk","slide":3,"textChars":10,"textLines":1}
+{"kind":"textbox","id":"sh/n2l4fq98","slide":3,"textChars":16,"textLines":2}
+{"kind":"shape","id":"sh/m1c3mlsn","slide":3,"name":"圆角矩形 10","bbox":[440,230,150,170]}
+{"kind":"textbox","id":"sh/943mhgre","slide":3,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/83ulovat","slide":3,"textChars":28,"textLines":3}
+{"kind":"shape","id":"sh/v6l4jq94","slide":3,"name":"圆角矩形 13","bbox":[626,230,150,170]}
+{"kind":"textbox","id":"sh/a5c3ql8z","slide":3,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/x8nml0ra","slide":3,"textChars":22,"textLines":2}
+{"kind":"shape","id":"sh/w7ulsvqp","slide":3,"name":"圆角矩形 16","bbox":[812,230,150,170]}
+{"kind":"textbox","id":"sh/ja54na9g","slide":3,"textChars":9,"textLines":1}
+{"kind":"textbox","id":"sh/i9w3u58v","slide":3,"textChars":24,"textLines":2}
+{"kind":"shape","id":"sh/e10f2twf","slide":3,"name":"圆角矩形 19","bbox":[998,230,150,170]}
+{"kind":"textbox","id":"sh/f29gbyx0","slide":3,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/03ix43e5","slide":3,"textChars":40,"textLines":3}
+{"kind":"shape","id":"sh/ved4zqdk","slide":3,"name":"直接箭头连接符 59","bbox":[218,315,36,0]}
+{"kind":"shape","id":"sh/0bq5kfu9","slide":3,"name":"直接箭头连接符 60","bbox":[404,315,36,0]}
+{"kind":"shape","id":"sh/1czmdkvu","slide":3,"name":"直接箭头连接符 61","bbox":[590,315,36,0]}
+{"kind":"shape","id":"sh/b61o3exw","slide":3,"name":"直接箭头连接符 62","bbox":[776,315,36,0]}
+{"kind":"shape","id":"sh/a5s7a9gb","slide":3,"name":"直接箭头连接符 63","bbox":[962,315,36,0]}
+{"kind":"shape","id":"sh/a9kfadwn","slide":3,"name":"圆角矩形 27","bbox":[68,452,1144,140]}
+{"kind":"textbox","id":"sh/batgjixs","slide":3,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/l4fi9cza","slide":3,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/k3m1g7yp","slide":3,"textChars":21,"textLines":1}
+{"kind":"textbox","id":"sh/z2d07mh4","slide":3,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/y14jehgj","slide":3,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/x0vi5czy","slide":3,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/czmhc7id","slide":3,"textChars":44,"textLines":1}
+{"kind":"textbox","id":"sh/ax4zax0n","slide":3,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":"Parent 用于保存章节级上下文和来源元数据，Child 用于精细召回。 | 表格和列表按行拆分，普通段落按句子边界拆分；稳定 ID 使用 SHA-1 ..."}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"RAG 检索","textShapes":16}
+{"kind":"textbox","id":"sh/fu9sn2p0","slide":4,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/1cj2d8b6","slide":4,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/0ba143al","slide":4,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/rm1k7yt4","slide":4,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/ql8jytsj","slide":4,"name":"圆角矩形 4","bbox":[85,214,1110,54]}
+{"kind":"textbox","id":"sh/doj29oba","slide":4,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/sna103ap","slide":4,"textChars":36,"textLines":1}
+{"kind":"shape","id":"sh/3ihk3et8","slide":4,"name":"圆角矩形 7","bbox":[145,283,990,54]}
+{"kind":"textbox","id":"sh/ih8ju9sn","slide":4,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/kbm987y5","slide":4,"textChars":55,"textLines":1}
+{"kind":"shape","id":"sh/5cva1cfq","slide":4,"name":"圆角矩形 10","bbox":[205,352,870,54]}
+{"kind":"textbox","id":"sh/i94r6xgz","slide":4,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/jadsz2xk","slide":4,"textChars":46,"textLines":1}
+{"kind":"shape","id":"sh/w72947yt","slide":4,"name":"圆角矩形 13","bbox":[265,421,750,54]}
+{"kind":"textbox","id":"sh/x8vaxsfe","slide":4,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/a5kr2xg3","slide":4,"textChars":39,"textLines":1}
+{"kind":"shape","id":"sh/v6tsv2xo","slide":4,"name":"圆角矩形 16","bbox":[325,490,630,54]}
+{"kind":"textbox","id":"sh/g36tgryd","slide":4,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/h4fa9wfy","slide":4,"textChars":53,"textLines":1}
+{"kind":"shape","id":"sh/p0batw72","slide":4,"name":"圆角矩形 19","bbox":[385,559,510,54]}
+{"kind":"textbox","id":"sh/oz29krqh","slide":4,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/3ytsrmpw","slide":4,"textChars":42,"textLines":1}
+{"kind":"textbox","id":"sh/gv29g7q5","slide":4,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"模糊问题先用 Dense Top-1 做 FAISS probe，默认阈值 0.35。 | 三路融合使用 rank 而不是直接混合原始分数，降低不同打分尺..."}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"规划机制","textShapes":19}
+{"kind":"textbox","id":"sh/zmlk3yhk","slide":5,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/dgbulwnm","slide":5,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/cf2tcr61","slide":5,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/z2tcnm5s","slide":5,"textChars":25,"textLines":1}
+{"kind":"shape","id":"sh/yhkbe1o7","slide":5,"name":"圆角矩形 4","bbox":[68,242,250,112]}
+{"kind":"textbox","id":"sh/l4bupwny","slide":5,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/032tgr6d","slide":5,"textChars":17,"textLines":1}
+{"kind":"shape","id":"sh/n6dcr65o","slide":5,"name":"圆角矩形 7","bbox":[380,218,256,118]}
+{"kind":"textbox","id":"sh/m5kbi1oj","slide":5,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/w32dkbuh","slide":5,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/x4vedgvm","slide":5,"name":"圆角矩形 10","bbox":[380,376,256,118]}
+{"kind":"textbox","id":"sh/ahkvi1cb","slide":5,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/v2twb6dw","slide":5,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/k7mxovud","slide":5,"name":"圆角矩形 13","bbox":[704,205,242,108]}
+{"kind":"textbox","id":"sh/58vehgvy","slide":5,"textChars":8,"textLines":1}
+{"kind":"textbox","id":"sh/i54fmlc7","slide":5,"textChars":26,"textLines":1}
+{"kind":"shape","id":"sh/j6dwfqds","slide":5,"name":"圆角矩形 16","bbox":[704,342,242,108]}
+{"kind":"textbox","id":"sh/sb6xsvu9","slide":5,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/tcfel0vu","slide":5,"textChars":18,"textLines":1}
+{"kind":"shape","id":"sh/hgrmpwj2","slide":5,"name":"圆角矩形 19","bbox":[704,479,242,108]}
+{"kind":"textbox","id":"sh/gfi5grih","slide":5,"textChars":8,"textLines":1}
+{"kind":"textbox","id":"sh/fe94nm1w","slide":5,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/ud0ne10b","slide":5,"name":"圆角矩形 22","bbox":[1008,315,204,140]}
+{"kind":"textbox","id":"sh/pkr6tgjy","slide":5,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/4ji5kbid","slide":5,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/po7qd0f6","slide":5,"name":"直接箭头连接符 63","bbox":[318,277,62,21]}
+{"kind":"shape","id":"sh/e1w7y5w7","slide":5,"name":"直接箭头连接符 64","bbox":[636,259,68,18]}
+{"kind":"shape","id":"sh/f25oraxs","slide":5,"name":"直接箭头连接符 65","bbox":[508,336,0,40]}
+{"kind":"textbox","id":"sh/kny587i9","slide":5,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/14n6tkfy","slide":5,"name":"肘形连接符 67","bbox":[636,259,68,176]}
+{"kind":"shape","id":"sh/25w725wj","slide":5,"name":"肘形连接符 68","bbox":[636,396,68,39]}
+{"kind":"shape","id":"sh/36povax4","slide":5,"name":"肘形连接符 69","bbox":[636,435,68,98]}
+{"kind":"shape","id":"sh/o7yp4fe9","slide":5,"name":"肘形连接符 70","bbox":[946,259,62,126]}
+{"kind":"shape","id":"sh/ps76xkfu","slide":5,"name":"直接箭头连接符 71","bbox":[946,385,62,11]}
+{"kind":"shape","id":"sh/i9cnqlwz","slide":5,"name":"肘形连接符 72","bbox":[946,385,62,148]}
+{"kind":"textbox","id":"sh/e1sjatgz","slide":5,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":"关键词路由适合高精度意图，命中后不再走语义选择。 | 语义路由使用本地 BGE-M3，默认专用阈值 0.65，候选分差 0.05，general_eeg ..."}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"规划执行","textShapes":19}
+{"kind":"textbox","id":"sh/va98j210","slide":6,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/yhg7epsj","slide":6,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/zi98nu94","slide":6,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/87ipkzal","slide":6,"textChars":33,"textLines":1}
+{"kind":"shape","id":"sh/98rqt4r6","slide":6,"name":"圆角矩形 4","bbox":[68,250,156,164]}
+{"kind":"textbox","id":"sh/ml07i9sv","slide":6,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/7m98ru9g","slide":6,"textChars":27,"textLines":1}
+{"kind":"shape","id":"sh/oryp8fah","slide":6,"name":"圆角矩形 7","bbox":[264,250,156,164]}
+{"kind":"textbox","id":"sh/pc76hkr2","slide":6,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/h4bupgn6","slide":6,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/w32twb6l","slide":6,"name":"圆角矩形 10","bbox":[460,250,156,164]}
+{"kind":"textbox","id":"sh/v2tcn650","slide":6,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/u1kbu1ov","slide":6,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/5svutgni","slide":6,"name":"圆角矩形 13","bbox":[656,250,156,164]}
+{"kind":"textbox","id":"sh/47mt0b6x","slide":6,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/j6dcr65c","slide":6,"textChars":26,"textLines":1}
+{"kind":"shape","id":"sh/i54bylor","slide":6,"name":"圆角矩形 16","bbox":[852,250,156,164]}
+{"kind":"textbox","id":"sh/twfux0ne","slide":6,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/svmt4v6t","slide":6,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/cbe5g3ih","slide":6,"name":"圆角矩形 19","bbox":[1048,250,156,164]}
+{"kind":"textbox","id":"sh/dcnm98zm","slide":6,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/qpwnet0b","slide":6,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/9cjyhgj6","slide":6,"name":"直接箭头连接符 55","bbox":[224,332,40,0]}
+{"kind":"shape","id":"sh/adszq10r","slide":6,"name":"直接箭头连接符 56","bbox":[420,332,40,0]}
+{"kind":"shape","id":"sh/ve1gj61w","slide":6,"name":"直接箭头连接符 57","bbox":[616,332,40,0]}
+{"kind":"shape","id":"sh/wfahsbih","slide":6,"name":"直接箭头连接符 58","bbox":[812,332,40,0]}
+{"kind":"shape","id":"sh/xg3ylgj2","slide":6,"name":"直接箭头连接符 59","bbox":[1008,332,40,0]}
+{"kind":"shape","id":"sh/gju58ji9","slide":6,"name":"圆角矩形 27","bbox":[168,478,944,114]}
+{"kind":"textbox","id":"sh/1k3mhozu","slide":6,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/jet8nm1c","slide":6,"textChars":58,"textLines":1}
+{"kind":"textbox","id":"sh/idk7ehkr","slide":6,"textChars":44,"textLines":1}
+{"kind":"textbox","id":"sh/4f2pgr2h","slide":6,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"这是一个工程化 ReAct 循环：模型提出 action，MCP 返回 observation，模型继续决策。 | 运行时收集流式 reasoning_c..."}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"记忆模块","textShapes":4}
+{"kind":"textbox","id":"sh/4fm1wb6p","slide":7,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/cb2tkvap","slide":7,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/dcbud0ra","slide":7,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/jedkn654","slide":7,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/r2dkrq5g","slide":7,"textChars":14,"textLines":1}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":"会话摘要不是让模型自由总结工具原始输出。代码只抽取白名单字段，避免把大 payload 长期保存。 | 历史压缩以完整 user turn 为单位，too..."}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"工具调用","textShapes":14}
+{"kind":"textbox","id":"sh/kredcr6t","slide":8,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/18byd4zy","slide":8,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/g72x4zyd","slide":8,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/ri9g7uhw","slide":8,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/6h0fypgb","slide":8,"name":"圆角矩形 4","bbox":[68,240,245,138]}
+{"kind":"textbox","id":"sh/tkby9kzm","slide":8,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/sjix0zy1","slide":8,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/je9g3ahk","slide":8,"name":"圆角矩形 7","bbox":[394,220,290,178]}
+{"kind":"textbox","id":"sh/id0fu50z","slide":8,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/o7ydoret","slide":8,"textChars":43,"textLines":3}
+{"kind":"shape","id":"sh/98rehwve","slide":8,"name":"圆角矩形 10","bbox":[766,240,245,138]}
+{"kind":"textbox","id":"sh/m5gvmhwn","slide":8,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/n6pwfmd8","slide":8,"textChars":12,"textLines":2}
+{"kind":"shape","id":"sh/0jydkreh","slide":8,"name":"圆角矩形 13","bbox":[1067,240,145,138]}
+{"kind":"textbox","id":"sh/1k7edwv2","slide":8,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/ehgvihwr","slide":8,"textChars":17,"textLines":3}
+{"kind":"shape","id":"sh/hk3ah8by","slide":8,"name":"直接箭头连接符 40","bbox":[313,309,81,0]}
+{"kind":"shape","id":"sh/gjuto3ud","slide":8,"name":"直接箭头连接符 41","bbox":[684,309,82,0]}
+{"kind":"shape","id":"sh/filsfyts","slide":8,"name":"直接箭头连接符 42","bbox":[1011,309,56,0]}
+{"kind":"shape","id":"sh/tw7e9gnq","slide":8,"name":"圆角矩形 19","bbox":[68,464,1144,150]}
+{"kind":"textbox","id":"sh/svydgb65","slide":8,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/7u5w765k","slide":8,"textChars":128,"textLines":3}
+{"kind":"textbox","id":"sh/5sne5wne","slide":8,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"双重授权包括 schema 暴露和执行前 allowlist 校验。当前实现为了保持提示词前缀稳定，模型在会话内看见固定工具 schema 联集。 | 真..."}
+{"kind":"slide","id":"sl/udsvah03","slide":9,"title":"执行轨迹","textShapes":26}
+{"kind":"textbox","id":"sh/qtkf21ob","slide":9,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/1cfmhgne","slide":9,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/0b65obm9","slide":9,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/nex4jq5k","slide":9,"textChars":34,"textLines":1}
+{"kind":"shape","id":"sh/mdonql4z","slide":9,"name":"矩形 4","bbox":[118,222,3,360]}
+{"kind":"shape","id":"sh/9gzml0nq","slide":9,"name":"椭圆 5","bbox":[104,223,30,30]}
+{"kind":"textbox","id":"sh/ofq5svm5","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/bih4na5w","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/ah8nu54b","slide":9,"textChars":30,"textLines":1}
+{"kind":"shape","id":"sh/oza1gfyh","slide":9,"name":"椭圆 9","bbox":[104,281,30,30]}
+{"kind":"textbox","id":"sh/p0ji9kf2","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/2xsjepgb","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/3y107axw","slide":9,"textChars":37,"textLines":1}
+{"kind":"shape","id":"sh/cnu1kzyd","slide":9,"name":"椭圆 13","bbox":[104,339,30,30]}
+{"kind":"textbox","id":"sh/do3id4fy","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/qlcjipgn","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/bml0buxs","slide":9,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/0ru1ozyp","slide":9,"name":"椭圆 17","bbox":[104,397,30,30]}
+{"kind":"textbox","id":"sh/lsn2h4fa","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/98ji147e","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/87a18zqt","slide":9,"textChars":33,"textLines":1}
+{"kind":"shape","id":"sh/76h0zup8","slide":9,"name":"椭圆 21","bbox":[104,455,30,30]}
+{"kind":"textbox","id":"sh/ml8j6p8n","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/hcji5o7a","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/wba1cjqp","slide":9,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/va103ep4","slide":9,"name":"椭圆 25","bbox":[104,513,30,30]}
+{"kind":"textbox","id":"sh/u9sja98z","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/xgzitk76","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/cf6h0fql","slide":9,"textChars":48,"textLines":1}
+{"kind":"shape","id":"sh/2l4faloj","slide":9,"name":"椭圆 29","bbox":[104,571,30,30]}
+{"kind":"textbox","id":"sh/nmdg3q54","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/onmxcv69","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/pofy50nu","slide":9,"textChars":28,"textLines":1}
+{"kind":"shape","id":"sh/apofe5of","slide":9,"name":"圆角矩形 33","bbox":[540,604,672,56]}
+{"kind":"textbox","id":"sh/bqxg7q50","slide":9,"textChars":41,"textLines":1}
+{"kind":"textbox","id":"sh/xcfy90n6","slide":9,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/udsvah03","slide":9,"text":"轨迹事件由 Agent Runtime 发出，通过稳定事件 ID 增量更新状态。 | 事件类型覆盖 user/message、routing/decisi..."}
+{"kind":"slide","id":"sl/m90b6t0r","slide":10,"title":"端到端示例","textShapes":26}
+{"kind":"textbox","id":"sh/u187adsv","slide":10,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/xc3mho32","slide":10,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/cbu58j2h","slide":10,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/zelojyl8","slide":10,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/ydcnatkn","slide":10,"name":"矩形 4","bbox":[118,222,3,360]}
+{"kind":"shape","id":"sh/l036l83y","slide":10,"name":"椭圆 5","bbox":[104,223,30,30]}
+{"kind":"textbox","id":"sh/kzu5c32t","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/725onyl4","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/m1cnetkj","slide":10,"textChars":32,"textLines":1}
+{"kind":"shape","id":"sh/s7yt4b21","slide":10,"name":"椭圆 9","bbox":[104,281,30,30]}
+{"kind":"textbox","id":"sh/d87uxg3m","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/q5gb21kb","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/r6pcv6lw","slide":10,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/0bit8b2d","slide":10,"name":"椭圆 13","bbox":[104,339,30,30]}
+{"kind":"textbox","id":"sh/1cru1g3y","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/e9gb61k7","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/fapcz6ls","slide":10,"textChars":37,"textLines":1}
+{"kind":"shape","id":"sh/ozitcv29","slide":10,"name":"椭圆 17","bbox":[104,397,30,30]}
+{"kind":"textbox","id":"sh/p0ru503u","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/xwnupgvy","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/wvetgbud","slide":10,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/bu5cnqd8","slide":10,"name":"椭圆 21","bbox":[104,455,30,30]}
+{"kind":"textbox","id":"sh/atwbelcn","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/lk7ut0va","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/kjytkvup","slide":10,"textChars":32,"textLines":1}
+{"kind":"shape","id":"sh/jypcrqd4","slide":10,"name":"椭圆 25","bbox":[104,513,30,30]}
+{"kind":"textbox","id":"sh/yxgbilcj","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/1o3ahwvq","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/0nut8rul","slide":10,"textChars":22,"textLines":1}
+{"kind":"shape","id":"sh/q9srixs3","slide":10,"name":"椭圆 29","bbox":[104,571,30,30]}
+{"kind":"textbox","id":"sh/ru18r2to","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/cva9k7a9","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/dwjqtcbu","slide":10,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/exsrmhsf","slide":10,"name":"圆角矩形 33","bbox":[750,608,462,48]}
+{"kind":"textbox","id":"sh/zyl8vmt0","slide":10,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/103qxcbq","slide":10,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":"这个例子适合面试时按 Trace 顺序讲，能够把规划、RAG 策略、MCP、记忆和安全输出串起来。 | detection Skill 规定窗口不超过 6..."}
+{"kind":"slide","id":"sl/jetc3ut0","slide":11,"title":"工程总结","textShapes":10}
+{"kind":"textbox","id":"sh/0b6tc3yx","slide":11,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/xcryxg7y","slide":11,"textChars":9,"textLines":1}
+{"kind":"shape","id":"sh/wbih4b6d","slide":11,"name":"矩形 2","bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/n69grmpw","slide":11,"textChars":30,"textLines":1}
+{"kind":"textbox","id":"sh/250zy18b","slide":11,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/98rytw72","slide":11,"textChars":112,"textLines":4}
+{"kind":"textbox","id":"sh/o7ih0r6h","slide":11,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/72t03qp0","slide":11,"textChars":111,"textLines":4}
+{"kind":"shape","id":"sh/61kzalof","slide":11,"name":"圆角矩形 8","bbox":[68,570,1114,72]}
+{"kind":"textbox","id":"sh/ofqtgnyt","slide":11,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/9gza9sze","slide":11,"textChars":47,"textLines":1}
+{"kind":"textbox","id":"sh/nehs7iho","slide":11,"textChars":2,"textLines":1}
+{"kind":"notes","id":"nt/jetc3ut0","slide":11,"text":"最后一页把技术亮点与不足同时讲清楚。右侧均为建议，不代表当前已经实现。 | 可根据应聘岗位调整重点：Agent 岗强调规划和记忆，平台岗强调 MCP 与可..."}
+{"kind":"notice","message":"Truncated: omitted 0 lines. Increase maxChars or narrow target."}

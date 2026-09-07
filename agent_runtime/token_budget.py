@@ -11,7 +11,7 @@ from tokenizers import Tokenizer
 from third_party.deepseek_v4.encoding_dsv4 import encode_messages
 
 
-DEFAULT_SHORT_TERM_TOKEN_LIMIT = 32 * 1024
+DEFAULT_SHORT_TERM_TOKEN_LIMIT = 42 * 1024
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TOKENIZER_PATH = PROJECT_ROOT / "third_party" / "deepseek_v4" / "tokenizer.json"
 
@@ -27,26 +27,63 @@ class DeepSeekV4TokenCounter:
         self.tokenizer = Tokenizer.from_file(str(tokenizer_path))
         self.thinking_mode = thinking_mode
 
-    def count_prompt(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]] | None = None) -> int:
-        """Render OpenAI-format messages/tools with the official V4 prompt encoder and count tokens."""
+    def render_prompt(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> str:
+        """Render OpenAI-format messages/tools with the official V4 prompt encoder."""
         encoded_messages = copy.deepcopy(messages)
         if tools:
             if not encoded_messages or encoded_messages[0].get("role") != "system":
                 raise ValueError("DeepSeek tool schemas require a leading system message.")
             encoded_messages[0]["tools"] = copy.deepcopy(tools)
-        prompt = encode_messages(encoded_messages, thinking_mode=self.thinking_mode)
-        return len(self.tokenizer.encode(prompt, add_special_tokens=False).ids)
+        return encode_messages(encoded_messages, thinking_mode=self.thinking_mode)
+
+    def prompt_token_ids(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> list[int]:
+        """Return the exact locally encoded prompt token sequence."""
+        prompt = self.render_prompt(messages, tools)
+        return self.tokenizer.encode(prompt, add_special_tokens=False).ids
+
+    def count_prompt(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]] | None = None) -> int:
+        """Count tokens in the exact locally encoded DeepSeek V4 prompt."""
+        return len(self.prompt_token_ids(messages, tools))
 
 
-def _split_history_turns(messages: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-    """Split history at user-message boundaries while keeping tool exchanges intact."""
+def split_history_turns(messages: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
+    """Split history at user boundaries while keeping tool exchanges intact."""
     turns: list[list[dict[str, Any]]] = []
     current: list[dict[str, Any]] = []
+    pending_instructions: list[dict[str, Any]] = []
     for message in messages:
+        content = message.get("content")
+        is_scoped_instruction = (
+            message.get("role") == "system"
+            and isinstance(content, str)
+            and content.startswith("<active_eeg_skill ")
+        )
+        if is_scoped_instruction:
+            if current:
+                turns.append(current)
+                current = []
+            pending_instructions.append(message)
+            continue
         if message.get("role") == "user" and current:
             turns.append(current)
             current = []
+        if message.get("role") == "user" and pending_instructions:
+            current.extend(pending_instructions)
+            pending_instructions = []
+        elif pending_instructions:
+            current.extend(pending_instructions)
+            pending_instructions = []
         current.append(message)
+    if pending_instructions:
+        current.extend(pending_instructions)
     if current:
         turns.append(current)
     return turns
@@ -66,7 +103,7 @@ def trim_messages_to_token_limit(
         raise ValueError("The message list does not contain the required preserved messages.")
 
     preserved = messages[:preserved_message_count]
-    turns = _split_history_turns(messages[preserved_message_count:])
+    turns = split_history_turns(messages[preserved_message_count:])
 
     while True:
         candidate = preserved + [message for turn in turns for message in turn]

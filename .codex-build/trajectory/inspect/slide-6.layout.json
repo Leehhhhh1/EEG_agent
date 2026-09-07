@@ -1,0 +1,1706 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/x8f69ofe",
+    "id": "x8f69ofe",
+    "slide": 6,
+    "layoutId": "/ppt/slideLayouts/slideLayout1.xml",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "backgroundColor": "#06111E",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "fontScheme": {
+      "name": "Office",
+      "majorFont": {
+        "latinTypeface": "Calibri Light",
+        "eastAsianTypeface": "Calibri Light",
+        "complexScriptTypeface": "Calibri Light"
+      },
+      "minorFont": {
+        "latinTypeface": "Calibri",
+        "eastAsianTypeface": "Calibri",
+        "complexScriptTypeface": "Calibri"
+      }
+    },
+    "typefaces": [
+      "Calibri",
+      "Calibri Light",
+      "Noto Sans SC"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout1.xml",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/va98j210",
+      "id": "34",
+      "name": "矩形 33",
+      "bbox": [
+        68,
+        30,
+        400,
+        24
+      ],
+      "geometry": "rect",
+      "text": "规划执行",
+      "textPreview": "规划执行",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "规划执行"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "规划执行",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Noto Sans SC",
+            "color": "#22D3EE",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "规划执行",
+              "fontSize": 14,
+              "typeface": "Noto Sans SC",
+              "color": "#22D3EE",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/yhg7epsj",
+      "id": "2",
+      "name": "矩形 1",
+      "bbox": [
+        68,
+        62,
+        1120,
+        60
+      ],
+      "geometry": "rect",
+      "text": "受约束的流式 ReAct 循环",
+      "textPreview": "受约束的流式 ReAct 循环",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "受约束的流式 ReAct 循环"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "受约束的流式 ReAct 循环",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 42,
+            "typeface": "Noto Sans SC",
+            "color": "#F7FAFC",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "受约束的流式 ReAct 循环",
+              "fontSize": 42,
+              "typeface": "Noto Sans SC",
+              "color": "#F7FAFC",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zi98nu94",
+      "id": "3",
+      "name": "矩形 2",
+      "bbox": [
+        68,
+        134,
+        1144,
+        2
+      ],
+      "geometry": "rect",
+      "fillColor": "#29465F",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/87ipkzal",
+      "id": "4",
+      "name": "矩形 3",
+      "bbox": [
+        68,
+        151,
+        1110,
+        44
+      ],
+      "geometry": "rect",
+      "text": "模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。",
+      "textPreview": "模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Noto Sans SC",
+            "color": "#A4B5C7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。",
+              "fontSize": 20,
+              "typeface": "Noto Sans SC",
+              "color": "#A4B5C7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/98rqt4r6",
+      "id": "5",
+      "name": "圆角矩形 4",
+      "bbox": [
+        68,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#22D3EE",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ml07i9sv",
+      "id": "6",
+      "name": "矩形 5",
+      "bbox": [
+        88,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "组织上下文",
+      "textPreview": "组织上下文",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "组织上下文"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "组织上下文",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#22D3EE",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "组织上下文",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#22D3EE",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7m98ru9g",
+      "id": "7",
+      "name": "矩形 6",
+      "bbox": [
+        88,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "系统指令、会话摘要、本轮 Skill、用户提问、RAG",
+      "textPreview": "系统指令、会话摘要、本轮 Skill、用户提问、RAG",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "系统指令、会话"
+          },
+          {
+            "index": 2,
+            "text": "摘要、本轮"
+          },
+          {
+            "index": 3,
+            "text": "Skill、用户"
+          },
+          {
+            "index": 4,
+            "text": "提问、RAG"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "系统指令、会话摘要、本轮 Skill、用户提问、RAG",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "系统指令、会话摘要、本轮 Skill、",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            },
+            {
+              "index": 2,
+              "text": "用户",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            },
+            {
+              "index": 3,
+              "text": "提问、",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            },
+            {
+              "index": 4,
+              "text": "RAG",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/oryp8fah",
+      "id": "8",
+      "name": "圆角矩形 7",
+      "bbox": [
+        264,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#8B5CF6",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pc76hkr2",
+      "id": "9",
+      "name": "矩形 8",
+      "bbox": [
+        284,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "模型决策",
+      "textPreview": "模型决策",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "模型决策"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "模型决策",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#8B5CF6",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "模型决策",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#8B5CF6",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h4bupgn6",
+      "id": "10",
+      "name": "矩形 9",
+      "bbox": [
+        284,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "流式输出文本、推理内容与函数参数",
+      "textPreview": "流式输出文本、推理内容与函数参数",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "流式输出文本、"
+          },
+          {
+            "index": 2,
+            "text": "推理内容与函数"
+          },
+          {
+            "index": 3,
+            "text": "参数"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "流式输出文本、推理内容与函数参数",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "流式输出文本、推理内容与函数参数",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/w32twb6l",
+      "id": "11",
+      "name": "圆角矩形 10",
+      "bbox": [
+        460,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#8B5CF6",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/v2tcn650",
+      "id": "12",
+      "name": "矩形 11",
+      "bbox": [
+        480,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "解析 tool_calls",
+      "textPreview": "解析 tool_calls",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "解析"
+          },
+          {
+            "index": 2,
+            "text": "tool_calls"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "解析 tool_calls",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#8B5CF6",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "解析 tool_calls",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#8B5CF6",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u1kbu1ov",
+      "id": "13",
+      "name": "矩形 12",
+      "bbox": [
+        480,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "按 index 拼接增量参数",
+      "textPreview": "按 index 拼接增量参数",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "按 index"
+          },
+          {
+            "index": 2,
+            "text": "拼接增量参数"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "按 index 拼接增量参数",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "按 index 拼接增量参数",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5svutgni",
+      "id": "14",
+      "name": "圆角矩形 13",
+      "bbox": [
+        656,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#FB7185",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/47mt0b6x",
+      "id": "15",
+      "name": "矩形 14",
+      "bbox": [
+        676,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "运行时校验",
+      "textPreview": "运行时校验",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "运行时校验"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "运行时校验",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#FB7185",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "运行时校验",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#FB7185",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/j6dcr65c",
+      "id": "16",
+      "name": "矩形 15",
+      "bbox": [
+        676,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "检查 session 与 allowed_tools",
+      "textPreview": "检查 session 与 allowed_tools",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "检查 session 与"
+          },
+          {
+            "index": 2,
+            "text": "allowed_tools"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "检查 session 与 allowed_tools",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "检查 session 与 allowed_tools",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i54bylor",
+      "id": "17",
+      "name": "圆角矩形 16",
+      "bbox": [
+        852,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#F59E0B",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/twfux0ne",
+      "id": "18",
+      "name": "矩形 17",
+      "bbox": [
+        872,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "MCP 执行",
+      "textPreview": "MCP 执行",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "MCP 执行"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "MCP 执行",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#F59E0B",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "MCP 执行",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#F59E0B",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/svmt4v6t",
+      "id": "19",
+      "name": "矩形 18",
+      "bbox": [
+        872,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "自动注入 session_id",
+      "textPreview": "自动注入 session_id",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "自动注入"
+          },
+          {
+            "index": 2,
+            "text": "session_id"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "自动注入 session_id",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "自动注入 session_id",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cbe5g3ih",
+      "id": "20",
+      "name": "圆角矩形 19",
+      "bbox": [
+        1048,
+        250,
+        156,
+        164
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#10263B",
+      "lineColor": "#34D399",
+      "lineWidth": 1.5
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dcnm98zm",
+      "id": "21",
+      "name": "矩形 20",
+      "bbox": [
+        1068,
+        267,
+        116,
+        32
+      ],
+      "geometry": "rect",
+      "text": "写回结果",
+      "textPreview": "写回结果",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "写回结果"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "写回结果",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#34D399",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "写回结果",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#34D399",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qpwnet0b",
+      "id": "22",
+      "name": "矩形 21",
+      "bbox": [
+        1068,
+        310,
+        116,
+        89
+      ],
+      "geometry": "rect",
+      "text": "tool 消息进入下一轮模型请求",
+      "textPreview": "tool 消息进入下一轮模型请求",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "tool"
+          },
+          {
+            "index": 2,
+            "text": "消息进入下一轮"
+          },
+          {
+            "index": 3,
+            "text": "模型请求"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "tool 消息进入下一轮模型请求",
+          "lineSpacingPercent": 118000,
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "tool 消息进入下一轮模型请求",
+              "fontSize": 16,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zaxwbuhw",
+      "id": "56",
+      "name": "直接箭头连接符 55",
+      "bbox": [
+        224,
+        332,
+        40,
+        0
+      ],
+      "geometry": "straightConnector1",
+      "lineColor": "#587A95",
+      "lineWidth": 2
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/y94v2p0b",
+      "id": "57",
+      "name": "直接箭头连接符 56",
+      "bbox": [
+        420,
+        332,
+        40,
+        0
+      ],
+      "geometry": "straightConnector1",
+      "lineColor": "#587A95",
+      "lineWidth": 2
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x8ve9kzq",
+      "id": "58",
+      "name": "直接箭头连接符 57",
+      "bbox": [
+        616,
+        332,
+        40,
+        0
+      ],
+      "geometry": "straightConnector1",
+      "lineColor": "#587A95",
+      "lineWidth": 2
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c7md0zi5",
+      "id": "59",
+      "name": "直接箭头连接符 58",
+      "bbox": [
+        812,
+        332,
+        40,
+        0
+      ],
+      "geometry": "straightConnector1",
+      "lineColor": "#587A95",
+      "lineWidth": 2
+    },
+    {
+      "order": 27,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/o3a5cjud",
+      "id": "60",
+      "name": "直接箭头连接符 59",
+      "bbox": [
+        1008,
+        332,
+        40,
+        0
+      ],
+      "geometry": "straightConnector1",
+      "lineColor": "#587A95",
+      "lineWidth": 2
+    },
+    {
+      "order": 28,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gju58ji9",
+      "id": "28",
+      "name": "圆角矩形 27",
+      "bbox": [
+        168,
+        478,
+        944,
+        114
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#0A1F32",
+      "lineColor": "#29465F",
+      "lineWidth": 1
+    },
+    {
+      "order": 29,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1k3mhozu",
+      "id": "29",
+      "name": "矩形 28",
+      "bbox": [
+        204,
+        506,
+        145,
+        30
+      ],
+      "geometry": "rect",
+      "text": "继续循环",
+      "textPreview": "继续循环",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "继续循环"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "继续循环",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Noto Sans SC",
+            "color": "#22D3EE",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "继续循环",
+              "fontSize": 20,
+              "typeface": "Noto Sans SC",
+              "color": "#22D3EE",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 30,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jet8nm1c",
+      "id": "30",
+      "name": "矩形 29",
+      "bbox": [
+        350,
+        500,
+        705,
+        52
+      ],
+      "geometry": "rect",
+      "text": "存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。",
+      "textPreview": "存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "存在 tool_calls 时追加 assistant 与 tool"
+          },
+          {
+            "index": 2,
+            "text": "消息，再请求模型。没有工具调用时输出最终答案。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Noto Sans SC",
+            "color": "#E6EEF7",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。",
+              "fontSize": 19,
+              "typeface": "Noto Sans SC",
+              "color": "#E6EEF7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 31,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/idk7ehkr",
+      "id": "31",
+      "name": "矩形 30",
+      "bbox": [
+        204,
+        558,
+        850,
+        28
+      ],
+      "geometry": "rect",
+      "text": "硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据输出回答。",
+      "textPreview": "硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据输出回答。",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据输出回答。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据输出回答。",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Noto Sans SC",
+            "color": "#F59E0B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据",
+              "fontSize": 17,
+              "typeface": "Noto Sans SC",
+              "color": "#F59E0B",
+              "bold": true
+            },
+            {
+              "index": 2,
+              "text": "输出回答",
+              "fontSize": 17,
+              "typeface": "Noto Sans SC",
+              "color": "#F59E0B",
+              "bold": true
+            },
+            {
+              "index": 3,
+              "text": "。",
+              "fontSize": 17,
+              "typeface": "Noto Sans SC",
+              "color": "#F59E0B",
+              "bold": true
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 32,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4f2pgr2h",
+      "id": "33",
+      "name": "矩形 32",
+      "bbox": [
+        1160,
+        681,
+        52,
+        20
+      ],
+      "geometry": "rect",
+      "text": "05",
+      "textPreview": "05",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "Calibri",
+        "color": "tx1",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "05"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "05",
+          "lineSpacingPercent": 112000,
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Noto Sans SC",
+            "color": "#A4B5C7",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "0",
+              "fontSize": 13,
+              "typeface": "Noto Sans SC",
+              "color": "#A4B5C7"
+            },
+            {
+              "index": 2,
+              "text": "5",
+              "fontSize": 13,
+              "typeface": "Noto Sans SC",
+              "color": "#A4B5C7"
+            }
+          ],
+          "bulletCharacter": "",
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

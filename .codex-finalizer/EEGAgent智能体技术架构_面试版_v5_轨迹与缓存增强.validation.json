@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "presentation-finalization.v1",
+  "finalSha256": "87e588dd41d07ce9a2eb689344a850d4fe4810bb2fa82fd5e72ece9c448b11ae",
+  "byteCount": 1958163,
+  "packageIntegrity": {
+    "chart_count": 0,
+    "claim_boundary": "Structural package checks only; no slide text, notes, formulas, chart values, or native PowerPoint execution were inspected.",
+    "finding_count": 0,
+    "findings": [],
+    "notes_parts_skipped": 12,
+    "relationship_part_count": 29,
+    "slide_count": 12,
+    "status": "pass",
+    "exitCode": 0,
+    "findingCount": 0,
+    "warnings": []
+  },
+  "presentationLayout": {
+    "finding_count": 0,
+    "findings": [],
+    "font_policy": {
+      "checked_text_script_count": 325,
+      "native_font_rendering_verified": false,
+      "observed_font_families": [
+        "Calibri",
+        "Noto Sans SC"
+      ],
+      "observed_font_use_counts": {
+        "Calibri": 4,
+        "Noto Sans SC": 321
+      },
+      "passed": true,
+      "performed": true
+    },
+    "slide_count": 12,
+    "slide_size_in": [
+      13.3333,
+      7.5
+    ],
+    "warning_count": 0,
+    "warnings": [],
+    "exitCode": 0,
+    "findingCount": 0,
+    "fontPolicy": {
+      "checked_text_script_count": 325,
+      "native_font_rendering_verified": false,
+      "observed_font_families": [
+        "Calibri",
+        "Noto Sans SC"
+      ],
+      "observed_font_use_counts": {
+        "Calibri": 4,
+        "Noto Sans SC": 321
+      },
+      "passed": true,
+      "performed": true
+    }
+  },
+  "fontSelection": {
+    "basis": "reference",
+    "approvedFamilies": [
+      "Noto Sans SC",
+      "Calibri"
+    ],
+    "scriptFonts": {},
+    "referenceSha256": "a0930aefc0c283e8dbf196e2f26a0237a04aa7e273d6c15bcb0f89fbf5d97bb9",
+    "referenceFontsVerifiedInEncodedText": true,
+    "checked_text_script_count": 325,
+    "native_font_rendering_verified": false,
+    "observed_font_families": [
+      "Calibri",
+      "Noto Sans SC"
+    ],
+    "observed_font_use_counts": {
+      "Calibri": 4,
+      "Noto Sans SC": 321
+    },
+    "passed": true,
+    "performed": true
+  },
+  "firstPartyImport": {
+    "performed": true,
+    "passed": true,
+    "slideCount": 12,
+    "sha256": "87e588dd41d07ce9a2eb689344a850d4fe4810bb2fa82fd5e72ece9c448b11ae",
+    "runtimeNodeModules": "C:/Users/Administrator/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules",
+    "nodeExecutable": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe"
+  },
+  "nativeTableArithmetic": {
+    "performed": true,
+    "checked_column_count": 0,
+    "checks": [],
+    "claim_boundary": "Displayed-value arithmetic with rounding tolerance; not source-data verification.",
+    "eligible_table_count": 0,
+    "finding_count": 0,
+    "findings": [],
+    "native_table_count": 0,
+    "passed": true,
+    "schema_version": "presentation-native-table-arithmetic.v1",
+    "skipped_tables": [],
+    "slide_count": 12,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "nativeChartTitles": {
+    "performed": true,
+    "checks": [],
+    "finding_count": 0,
+    "findings": [],
+    "native_chart_count": 0,
+    "native_powerpoint_verified": false,
+    "passed": true,
+    "presentation_sha256": "87e588dd41d07ce9a2eb689344a850d4fe4810bb2fa82fd5e72ece9c448b11ae",
+    "schema_version": "presentation-native-chart-titles.v1",
+    "slide_count": 12,
+    "source_text_emitted": false,
+    "unresolved_linked_title_count": 0
+  },
+  "sourceDerivedPolicyFlags": [
+    "--expected-slide-size-emu",
+    "12192000,6858000",
+    "--validate-bullet-geometry",
+    "--validate-heading-fit",
+    "--cover-role",
+    "none",
+    "--expected-slide-count",
+    "12",
+    "--approved-font-family",
+    "Noto Sans SC",
+    "--approved-font-family",
+    "Calibri"
+  ],
+  "nativeChartValidation": {
+    "detectedOwnerSlides": [],
+    "detectedChartCount": 0,
+    "targetApplication": "portable",
+    "sourceChartOwnersExplicitlyDeclared": true,
+    "validatorRan": false,
+    "passed": true
+  }
+}

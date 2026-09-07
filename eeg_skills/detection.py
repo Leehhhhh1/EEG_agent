@@ -6,6 +6,7 @@ import numpy as np
 
 from eeg_core.processing import ensure_processed_data
 from eeg_core.region_mapping import region_for_channel
+from eeg_skills.event_utils import merge_contiguous_channel_events
 
 
 VALID_EVENT_TYPES = {"seizure"}
@@ -25,20 +26,6 @@ def _select_channels(available: list[str], requested: list[str] | None) -> list[
     if invalid:
         raise ValueError(f"Unsupported bipolar channels: {', '.join(invalid)}")
     return requested
-
-
-def _merge_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """合并 merge candidates 相关结果。"""
-    events: list[dict[str, Any]] = []
-    for candidate in candidates:
-        if events and events[-1]["channel"] == candidate["channel"] and abs(events[-1]["end_seconds"] - candidate["start_seconds"]) < 1e-6:
-            event = events[-1]
-            event["end_seconds"] = candidate["end_seconds"]
-            event["confidence"] = max(event["confidence"], candidate["confidence"])
-            event["evidence"]["fine_windows"] += 1
-        else:
-            events.append(candidate)
-    return events
 
 
 def detect_events(
@@ -116,7 +103,7 @@ def detect_events(
                     },
                 })
 
-    events = _merge_candidates(raw_candidates)
+    events = merge_contiguous_channel_events(raw_candidates)
     result = {
         "session_id": session.session_id,
         "analysis_window": {"start_seconds": start, "end_seconds": end, "channels": selected_channels, "sampling_rate_hz": fs},

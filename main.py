@@ -247,7 +247,7 @@ if __name__ == "__main__":
         config_path="config/config.json",
         file_name="data/gped_049_a_6.edf",
     )
-    user_question = "Can epileptic discharges be observed within the first minute? If so, where?"
+    user_question = "癫痫放电可以在第一分钟内被观察到吗？如果可以，在哪些部位？"
     print("Human:", user_question)
     result = agent.run(user_question)
     print("Assistant:", result["response"])

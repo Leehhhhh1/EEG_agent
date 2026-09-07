@@ -1,0 +1,284 @@
+{"kind":"deck","id":"pr/xptwz2","name":"Deck"}
+{"kind":"layout","layoutId":"377a8b1f-f3e0-4080-be2b-e6eb24ba252e","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"b9b309a8-5e1e-412b-b4a3-9d3baeeb25fb","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/agplan","slide":1,"title":"INTERVIEW TECHNICAL DECK","textShapes":5}
+{"kind":"shape","id":"sh/kfq98zed","slide":1,"bbox":[0,0,720,720]}
+{"kind":"textbox","id":"sh/lgza14vy","slide":1,"text":"INTERVIEW TECHNICAL DECK","textPreview":"INTERVIEW TECHNICAL DECK","textChars":24,"textLines":1,"bbox":[72,96,260,30]}
+{"kind":"textbox","id":"sh/6h8ra9wj","slide":1,"text":"EEGAgent","textPreview":"EEGAgent","textChars":8,"textLines":1,"bbox":[72,164,560,82]}
+{"kind":"textbox","id":"sh/7i1s3ud4","slide":1,"text":"智能体技术架构与工程实现","textPreview":"智能体技术架构与工程实现","textChars":12,"textLines":1,"bbox":[76,264,570,58]}
+{"kind":"textbox","id":"sh/8ja9cze9","slide":1,"text":"规划机制、记忆模块\nMCP 工具调用、RAG 建库与检索","textPreview":"规划机制、记忆模块 | MCP 工具调用、RAG 建库与检索","textChars":28,"textLines":2,"bbox":[76,344,570,84]}
+{"kind":"textbox","id":"sh/tkja54vu","slide":1,"text":"面试讲解版  10 页","textPreview":"面试讲解版  10 页","textChars":11,"textLines":1,"bbox":[76,632,320,25]}
+{"kind":"image","id":"im/u50vipsj","slide":1,"name":"","alt":"脑电信号与智能体网络的概念视觉","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/agplan","slide":1,"text":"建议开场：EEGAgent 不是把 LLM 直接接到 EEG 数据，而是用运行时把规划、工具、记忆和知识检索拆成可控模块。\n来源：README.md；agent_runtime；RAG；mcp_server。\n封面视觉为项目已有生成资源，仅用于技术主题表达。"}
+{"kind":"slide","id":"sl/kj8cd8","slide":2,"title":"01  系统总览","textShapes":20}
+{"kind":"textbox","id":"sh/qlk3mdkz","slide":2,"text":"01  系统总览","textPreview":"01  系统总览","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/dob2xs3a","slide":2,"text":"五层技术架构","textPreview":"五层技术架构","textChars":6,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/sn2lon2p","slide":2,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/3i9kryl8","slide":2,"text":"核心目标是让 LLM 负责决策，让确定性代码负责边界、执行和状态管理。","textPreview":"核心目标是让 LLM 负责决策，让确定性代码负责边界、执行和状态管理。","textChars":35,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/ih0jidkn","slide":2,"bbox":[68,220,1144,62]}
+{"kind":"textbox","id":"sh/5kb2t83e","slide":2,"text":"交互层","textPreview":"交互层","textChars":3,"textLines":1,"bbox":[88,233,130,34]}
+{"kind":"textbox","id":"sh/4j2lk32t","slide":2,"text":"PySide6 桌面端","textPreview":"PySide6 桌面端","textChars":11,"textLines":1,"bbox":[238,233,330,34]}
+{"kind":"textbox","id":"sh/vu9knylc","slide":2,"text":"EDF 选择、对话流、执行轨迹、取消与导出","textPreview":"EDF 选择、对话流、执行轨迹、取消与导出","textChars":21,"textLines":1,"bbox":[594,233,580,34]}
+{"kind":"shape","id":"sh/ut0jetkr","slide":2,"bbox":[68,302,1144,62]}
+{"kind":"textbox","id":"sh/w3q1kz25","slide":2,"text":"Agent 运行时","textPreview":"Agent 运行时","textChars":9,"textLines":1,"bbox":[88,315,130,34]}
+{"kind":"textbox","id":"sh/x4z2dkjq","slide":2,"text":"Planner + Memory + ReAct Loop","textPreview":"Planner + Memory + ReAct Loop","textChars":29,"textLines":1,"bbox":[238,315,330,34]}
+{"kind":"textbox","id":"sh/a18jipkz","slide":2,"text":"路由 Skill、管理上下文、驱动多轮工具调用","textPreview":"路由 Skill、管理上下文、驱动多轮工具调用","textChars":23,"textLines":1,"bbox":[594,315,580,34]}
+{"kind":"shape","id":"sh/v2h0bu1k","slide":2,"bbox":[68,384,1144,62]}
+{"kind":"textbox","id":"sh/8z61gf29","slide":2,"text":"协议层","textPreview":"协议层","textChars":3,"textLines":1,"bbox":[88,397,130,34]}
+{"kind":"textbox","id":"sh/90fi9kje","slide":2,"text":"MCP over stdio","textPreview":"MCP over stdio","textChars":14,"textLines":1,"bbox":[238,397,330,34]}
+{"kind":"textbox","id":"sh/mxoje5k3","slide":2,"text":"持久连接、工具发现、结构化调用与错误归一化","textPreview":"持久连接、工具发现、结构化调用与错误归一化","textChars":21,"textLines":1,"bbox":[594,397,580,34]}
+{"kind":"shape","id":"sh/nyx07alo","slide":2,"bbox":[68,466,1144,62]}
+{"kind":"textbox","id":"sh/sva1sj2d","slide":2,"text":"能力层","textPreview":"能力层","textChars":3,"textLines":1,"bbox":[88,479,130,34]}
+{"kind":"textbox","id":"sh/twj2l4jy","slide":2,"text":"EEG Tools + Session","textPreview":"EEG Tools + Session","textChars":19,"textLines":1,"bbox":[238,479,330,34]}
+{"kind":"textbox","id":"sh/1cfi54b2","slide":2,"text":"基础信息、片段探索、事件检测、报告生成","textPreview":"基础信息、片段探索、事件检测、报告生成","textChars":19,"textLines":1,"bbox":[594,479,580,34]}
+{"kind":"shape","id":"sh/gb61czuh","slide":2,"bbox":[68,548,1144,62]}
+{"kind":"textbox","id":"sh/fax03utw","slide":2,"text":"知识层","textPreview":"知识层","textChars":3,"textLines":1,"bbox":[88,561,130,34]}
+{"kind":"textbox","id":"sh/e9oja9cb","slide":2,"text":"Local RAG","textPreview":"Local RAG","textChars":9,"textLines":1,"bbox":[238,561,330,34]}
+{"kind":"textbox","id":"sh/tofi14bq","slide":2,"text":"Docling 建库、BGE-M3 混合召回、重排与临时注入","textPreview":"Docling 建库、BGE-M3 混合召回、重排与临时注入","textChars":30,"textLines":1,"bbox":[594,561,580,34]}
+{"kind":"textbox","id":"sh/sn618zul","slide":2,"text":"来源：desktop_app.py、agent_runtime、mcp_server、eeg_core、RAG","textPreview":"来源：desktop_app.py、agent_runtime、mcp_server、eeg_core、RAG","textChars":55,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/rmd0zut0","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/kj8cd8","slide":2,"text":"面试讲法：用分层先建立全局认知。规划、记忆、调用协议、领域能力和知识库各自可替换。\n当前桌面端通过 stdio 启动本地 MCP 服务，Agent 通过 OpenAI 兼容接口调用 DeepSeek。"}
+{"kind":"slide","id":"sl/cikbuy","slide":3,"title":"02  规划机制","textShapes":21}
+{"kind":"textbox","id":"sh/f2x4zapk","slide":3,"text":"02  规划机制","textPreview":"02  规划机制","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/g36lsfq5","slide":3,"text":"两级 Skill 路由与安全降级","textPreview":"两级 Skill 路由与安全降级","textChars":16,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/14fm1k7q","slide":3,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/25o3u58b","slide":3,"text":"规划首先确定本轮任务边界，再决定是否生成工具调用。","textPreview":"规划首先确定本轮任务边界，再决定是否生成工具调用。","textChars":25,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/36x43apw","slide":3,"bbox":[68,242,250,112]}
+{"kind":"textbox","id":"sh/o76lwfqh","slide":3,"text":"用户问题","textPreview":"用户问题","textChars":4,"textLines":1,"bbox":[88,259,210,32]}
+{"kind":"textbox","id":"sh/p8zm5k7m","slide":3,"text":"例如：检查前十分钟有没有癫痫样放电","textPreview":"例如：检查前十分钟有没有癫痫样放电","textChars":17,"textLines":1,"bbox":[88,302,210,37]}
+{"kind":"shape","id":"sh/q983yp87","slide":3,"bbox":[380,218,256,118]}
+{"kind":"textbox","id":"sh/bah47ups","slide":3,"text":"关键词路由","textPreview":"关键词路由","textChars":5,"textLines":1,"bbox":[400,235,216,32]}
+{"kind":"textbox","id":"sh/fu9g369k","slide":3,"text":"统计命中数，再按 priority 与名称排序","textPreview":"统计命中数，再按 priority 与名称排序","textChars":23,"textLines":1,"bbox":[400,278,216,43]}
+{"kind":"shape","id":"sh/et0zu1sz","slide":3,"bbox":[380,376,256,118]}
+{"kind":"textbox","id":"sh/1wry5wrq","slide":3,"text":"语义路由","textPreview":"语义路由","textChars":4,"textLines":1,"bbox":[400,393,216,32]}
+{"kind":"textbox","id":"sh/gvihwra5","slide":3,"text":"BGE-M3 对描述和 routing_examples 编码","textPreview":"BGE-M3 对描述和 routing_examples 编码","textChars":31,"textLines":1,"bbox":[400,436,216,43]}
+{"kind":"shape","id":"sh/rqpgzm9o","slide":3,"bbox":[704,205,242,108]}
+{"kind":"textbox","id":"sh/6pgzqhs3","slide":3,"text":"专用 Skill","textPreview":"专用 Skill","textChars":8,"textLines":1,"bbox":[724,222,202,32]}
+{"kind":"textbox","id":"sh/tsry1wre","slide":3,"text":"top ≥ 0.65 且 margin ≥ 0.05","textPreview":"top ≥ 0.65 且 margin ≥ 0.05","textChars":26,"textLines":1,"bbox":[724,265,202,33]}
+{"kind":"shape","id":"sh/sryhsra9","slide":3,"bbox":[704,342,242,108]}
+{"kind":"textbox","id":"sh/bmt0bq9s","slide":3,"text":"general_eeg","textPreview":"general_eeg","textChars":11,"textLines":1,"bbox":[724,359,202,32]}
+{"kind":"textbox","id":"sh/qlkz2l87","slide":3,"text":"专用未通过，但 top ≥ 0.45","textPreview":"专用未通过，但 top ≥ 0.45","textChars":18,"textLines":1,"bbox":[724,402,202,33]}
+{"kind":"shape","id":"sh/6tobq9wr","slide":3,"bbox":[704,479,242,108]}
+{"kind":"textbox","id":"sh/7uxsjexc","slide":3,"text":"no_skill","textPreview":"no_skill","textChars":8,"textLines":1,"bbox":[724,496,202,32]}
+{"kind":"textbox","id":"sh/8v6tsjex","slide":3,"text":"低置信度时禁用 EEG 工具","textPreview":"低置信度时禁用 EEG 工具","textChars":14,"textLines":1,"bbox":[724,539,202,33]}
+{"kind":"shape","id":"sh/twzalofi","slide":3,"bbox":[1008,315,204,140]}
+{"kind":"textbox","id":"sh/ux8butwn","slide":3,"text":"本轮计划","textPreview":"本轮计划","textChars":4,"textLines":1,"bbox":[1028,332,164,32]}
+{"kind":"textbox","id":"sh/vyhsnyx8","slide":3,"text":"Skill 指令 + allowed_tools + 输出规则","textPreview":"Skill 指令 + allowed_tools + 输出规则","textChars":31,"textLines":1,"bbox":[1028,375,164,65]}
+{"kind":"shape","id":"sh/gjqtwjet","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/hkzapofe","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/a14ripgj","slide":3,"bbox":[0,0,0,0]}
+{"kind":"textbox","id":"sh/b2dsbux4","slide":3,"text":"无命中","textPreview":"无命中","textChars":3,"textLines":1,"bbox":[555,344,70,22]}
+{"kind":"shape","id":"sh/dg3ehszm","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/sfudony1","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/re1wfihg","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/qdsvmxgv","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/1k3elczi","slide":3,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/0juds7yd","slide":3,"bbox":[0,0,0,0]}
+{"kind":"textbox","id":"sh/filwj2hs","slide":3,"text":"语义分数取每个 Skill 最相似的 2 条样例均值，减少单条样例偶然命中。","textPreview":"语义分数取每个 Skill 最相似的 2 条样例均值，减少单条样例偶然命中。","textChars":38,"textLines":1,"bbox":[68,618,950,32]}
+{"kind":"textbox","id":"sh/ehcvqxg7","slide":3,"text":"来源：agent_runtime/skills/selector.py、semantic_selector.py、registry.py","textPreview":"来源：agent_runtime/skills/selector.py、semantic_selector.py、registry.py","textChars":68,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/hoju98ze","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/cikbuy","slide":3,"text":"关键词路由适合高精度意图，命中后不再走语义选择。\n语义路由使用本地 BGE-M3，默认专用阈值 0.65，候选分差 0.05，general_eeg 下限 0.45。\n每个 Skill 的描述与多条 routing_examples 都参与编码，每个 Skill 取最相似两条的均值。"}
+{"kind":"slide","id":"sl/3y9gjr","slide":4,"title":"03  规划执行","textShapes":20}
+{"kind":"textbox","id":"sh/29wry1of","slide":4,"text":"03  规划执行","textPreview":"03  规划执行","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/pw7q9gnq","slide":4,"text":"受约束的流式 ReAct 循环","textPreview":"受约束的流式 ReAct 循环","textChars":15,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/4ve90b6l","slide":4,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/ryp8b65w","slide":4,"text":"模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。","textPreview":"模型可以连续调用工具，但运行时掌握会话、授权、终止条件和错误处理。","textChars":33,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/qxgr21ob","slide":4,"bbox":[68,250,156,164]}
+{"kind":"textbox","id":"sh/d07qdgn2","slide":4,"text":"组织上下文","textPreview":"组织上下文","textChars":5,"textLines":1,"bbox":[88,267,116,32]}
+{"kind":"textbox","id":"sh/czy94b6h","slide":4,"text":"系统指令、会话摘要、本轮 Skill、RAG","textPreview":"系统指令、会话摘要、本轮 Skill、RAG","textChars":22,"textLines":1,"bbox":[88,310,116,89]}
+{"kind":"shape","id":"sh/72l8zm5s","slide":4,"bbox":[264,250,156,164]}
+{"kind":"textbox","id":"sh/61c7qho7","slide":4,"text":"模型决策","textPreview":"模型决策","textChars":4,"textLines":1,"bbox":[284,267,116,32]}
+{"kind":"textbox","id":"sh/srqlsr6h","slide":4,"text":"流式输出文本、推理内容与函数参数","textPreview":"流式输出文本、推理内容与函数参数","textChars":16,"textLines":1,"bbox":[284,310,116,89]}
+{"kind":"shape","id":"sh/dsz21wnm","slide":4,"bbox":[460,250,156,164]}
+{"kind":"textbox","id":"sh/qpo3qhob","slide":4,"text":"解析 tool_calls","textPreview":"解析 tool_calls","textChars":13,"textLines":1,"bbox":[480,267,116,32]}
+{"kind":"textbox","id":"sh/rqhkzm5w","slide":4,"text":"按 index 拼接增量参数","textPreview":"按 index 拼接增量参数","textChars":14,"textLines":1,"bbox":[480,310,116,89]}
+{"kind":"shape","id":"sh/0vqlwr6d","slide":4,"bbox":[656,250,156,164]}
+{"kind":"textbox","id":"sh/1wzm5wny","slide":4,"text":"运行时校验","textPreview":"运行时校验","textChars":5,"textLines":1,"bbox":[676,267,116,32]}
+{"kind":"textbox","id":"sh/et83uho7","slide":4,"text":"检查 session 与 allowed_tools","textPreview":"检查 session 与 allowed_tools","textChars":26,"textLines":1,"bbox":[676,310,116,89]}
+{"kind":"shape","id":"sh/fuh43m5s","slide":4,"bbox":[852,250,156,164]}
+{"kind":"textbox","id":"sh/gz6lk769","slide":4,"text":"MCP 执行","textPreview":"MCP 执行","textChars":6,"textLines":1,"bbox":[872,267,116,32]}
+{"kind":"textbox","id":"sh/h0f2tcnu","slide":4,"text":"自动注入 session_id","textPreview":"自动注入 session_id","textChars":15,"textLines":1,"bbox":[872,310,116,89]}
+{"kind":"shape","id":"sh/xkna14b6","slide":4,"bbox":[1048,250,156,164]}
+{"kind":"textbox","id":"sh/cje98zul","slide":4,"text":"写回结果","textPreview":"写回结果","textChars":4,"textLines":1,"bbox":[1068,267,116,32]}
+{"kind":"textbox","id":"sh/bi5szut0","slide":4,"text":"tool 消息进入下一轮模型请求","textPreview":"tool 消息进入下一轮模型请求","textChars":16,"textLines":1,"bbox":[1068,310,116,89]}
+{"kind":"shape","id":"sh/ahwr6pcv","slide":4,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/l8na54bi","slide":4,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/k7e9czux","slide":4,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/z65s3etc","slide":4,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/ylwra9cr","slide":4,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/tc7a9obe","slide":4,"bbox":[168,478,944,114]}
+{"kind":"textbox","id":"sh/8bytgjut","slide":4,"text":"继续循环","textPreview":"继续循环","textChars":4,"textLines":1,"bbox":[204,506,145,30]}
+{"kind":"textbox","id":"sh/qh87alsb","slide":4,"text":"存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。","textPreview":"存在 tool_calls 时追加 assistant 与 tool 消息，再请求模型。没有工具调用时输出最终答案。","textChars":58,"textLines":1,"bbox":[350,500,705,52]}
+{"kind":"textbox","id":"sh/ri1o3qtw","slide":4,"text":"硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据收敛。","textPreview":"硬上限：8 轮工具调用。达到上限后移除工具 schema，要求模型基于已有证据收敛。","textChars":42,"textLines":1,"bbox":[204,558,850,28]}
+{"kind":"textbox","id":"sh/sjapcbah","slide":4,"text":"来源：agent_runtime/mcp_chat_agent.py","textPreview":"来源：agent_runtime/mcp_chat_agent.py","textChars":34,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/dkj65gr2","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/3y9gjr","slide":4,"text":"这是一个工程化 ReAct 循环：模型提出 action，MCP 返回 observation，模型继续决策。\n运行时收集流式 reasoning_content 和 tool_call 增量，确保 DeepSeek 思考模式在后续工具轮次保持上下文连续。\nMAX_TOOL_ROUNDS 为 8。错误会转为模型可见的结构化结果，不直接让整轮崩溃。"}
+{"kind":"slide","id":"sl/6afyy4","slide":5,"title":"04  记忆模块","textShapes":16}
+{"kind":"textbox","id":"sh/pg7up8zu","slide":5,"text":"04  记忆模块","textPreview":"04  记忆模块","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/2twbed03","slide":5,"text":"三层记忆与低频压缩","textPreview":"三层记忆与低频压缩","textChars":9,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/ne5cni1o","slide":5,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/0retc3ix","slide":5,"text":"系统分别保存对话过程、稳定事实和 EEG 领域状态，避免把所有信息都塞进聊天历史。","textPreview":"系统分别保存对话过程、稳定事实和 EEG 领域状态，避免把所有信息都塞进聊天历史。","textChars":41,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/1snul8ji","slide":5,"bbox":[68,222,1144,92]}
+{"kind":"textbox","id":"sh/epwbat07","slide":5,"text":"短期对话记忆","textPreview":"短期对话记忆","textChars":6,"textLines":1,"bbox":[90,240,210,30]}
+{"kind":"textbox","id":"sh/fq5cjy1c","slide":5,"text":"messages","textPreview":"messages","textChars":8,"textLines":1,"bbox":[90,275,210,22]}
+{"kind":"textbox","id":"sh/snut83i1","slide":5,"text":"完整 user、assistant、tool 交换，保留 reasoning_content 供工具轮次续接","textPreview":"完整 user、assistant、tool 交换，保留 reasoning_content 供工具轮次续接","textChars":54,"textLines":1,"bbox":[322,241,842,58]}
+{"kind":"shape","id":"sh/donuhojm","slide":5,"bbox":[68,334,1144,92]}
+{"kind":"textbox","id":"sh/5sv2lcvu","slide":5,"text":"结构化会话摘要","textPreview":"结构化会话摘要","textChars":7,"textLines":1,"bbox":[90,352,210,30]}
+{"kind":"textbox","id":"sh/krm1c7u9","slide":5,"text":"session_summary","textPreview":"session_summary","textChars":15,"textLines":1,"bbox":[90,387,210,22]}
+{"kind":"textbox","id":"sh/jqdkjmdo","slide":5,"text":"recording、patient、analyses、findings、reports、conversation，每类最多 12 条","textPreview":"recording、patient、analyses、findings、reports、conversation，每类最多 12 条","textChars":66,"textLines":1,"bbox":[322,353,842,58]}
+{"kind":"shape","id":"sh/i5kjahc3","slide":5,"bbox":[68,446,1144,92]}
+{"kind":"textbox","id":"sh/x4bihcvy","slide":5,"text":"领域状态记忆","textPreview":"领域状态记忆","textChars":6,"textLines":1,"bbox":[90,464,210,30]}
+{"kind":"textbox","id":"sh/w32187ud","slide":5,"text":"EEGSession","textPreview":"EEGSession","textChars":10,"textLines":1,"bbox":[90,499,210,22]}
+{"kind":"textbox","id":"sh/v2t0f2ds","slide":5,"text":"raw、processed_data、bipolar_channels、findings、reports，由 session_id 隔离","textPreview":"raw、processed_data、bipolar_channels、findings、reports，由 session_id 隔离","textChars":68,"textLines":1,"bbox":[322,465,842,58]}
+{"kind":"shape","id":"sh/a1kj6xc7","slide":5,"bbox":[68,574,1144,74]}
+{"kind":"textbox","id":"sh/90bidsvm","slide":5,"text":"压缩策略","textPreview":"压缩策略","textChars":4,"textLines":1,"bbox":[90,594,130,30]}
+{"kind":"textbox","id":"sh/8z214nu1","slide":5,"text":"32K token 上限。达到 80% 后压缩最旧完整轮次，目标降到 55%。系统提示、会话摘要和最新轮次继续保留。","textPreview":"32K token 上限。达到 80% 后压缩最旧完整轮次，目标降到 55%。系统提示、会话摘要和最新轮次继续保留。","textChars":58,"textLines":1,"bbox":[240,588,920,42]}
+{"kind":"textbox","id":"sh/0j61k7mx","slide":5,"text":"来源：agent_runtime/mcp_chat_agent.py、token_budget.py、eeg_core/session.py","textPreview":"来源：agent_runtime/mcp_chat_agent.py、token_budget.py、eeg_core/session.py","textChars":70,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/1kf2tc3i","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/6afyy4","slide":5,"text":"会话摘要不是让模型自由总结工具原始输出。代码只抽取白名单字段，避免把大 payload 长期保存。\n历史压缩以完整 user turn 为单位，tool_calls 与对应 tool 消息保持原子性。\nRAG 文本只临时注入当前 user message，模型返回后会替换回原问题，避免知识片段污染长期记忆。"}
+{"kind":"slide","id":"sl/iovrln","slide":6,"title":"05  工具调用","textShapes":15}
+{"kind":"textbox","id":"sh/cja5ojyd","slide":6,"text":"05  工具调用","textPreview":"05  工具调用","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/by14fehs","slide":6,"text":"MCP 工具链与双重授权","textPreview":"MCP 工具链与双重授权","textChars":12,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/qxsnm9g7","slide":6,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/pwjmd4zm","slide":6,"text":"模型看见稳定 schema，运行时仍会在真正执行前做二次检查。","textPreview":"模型看见稳定 schema，运行时仍会在真正执行前做二次检查。","textChars":31,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/ova5kzy1","slide":6,"bbox":[68,240,245,138]}
+{"kind":"textbox","id":"sh/3u14behg","slide":6,"text":"LLM","textPreview":"LLM","textChars":3,"textLines":1,"bbox":[88,257,205,32]}
+{"kind":"textbox","id":"sh/2ts3i90v","slide":6,"text":"固定展示所有运行时 Skill 所引用工具的 schema","textPreview":"固定展示所有运行时 Skill 所引用工具的 schema","textChars":29,"textLines":1,"bbox":[88,300,205,63]}
+{"kind":"shape","id":"sh/1sjm94zq","slide":6,"bbox":[394,220,290,178]}
+{"kind":"textbox","id":"sh/grqlgzi5","slide":6,"text":"Agent Runtime","textPreview":"Agent Runtime","textChars":13,"textLines":1,"bbox":[414,237,250,32]}
+{"kind":"textbox","id":"sh/q9wvmt0j","slide":6,"text":"解析 JSON 参数\n校验 Skill allowlist\n注入 session_id","textPreview":"解析 JSON 参数 | 校验 Skill allowlist | 注入 session_id","textChars":43,"textLines":3,"bbox":[414,280,250,103]}
+{"kind":"shape","id":"sh/ba5wfyh4","slide":6,"bbox":[766,240,245,138]}
+{"kind":"textbox","id":"sh/cvedo3ip","slide":6,"text":"MCP Client Bridge","textPreview":"MCP Client Bridge","textChars":17,"textLines":1,"bbox":[786,257,205,32]}
+{"kind":"textbox","id":"sh/dwneh8za","slide":6,"text":"持久 stdio 连接\n同步接口桥接异步 event loop","textPreview":"持久 stdio 连接 | 同步接口桥接异步 event loop","textChars":31,"textLines":2,"bbox":[786,300,205,63]}
+{"kind":"shape","id":"sh/25cvit0n","slide":6,"bbox":[1067,240,145,138]}
+{"kind":"textbox","id":"sh/36lwbyh8","slide":6,"text":"FastMCP Server","textPreview":"FastMCP Server","textChars":14,"textLines":1,"bbox":[1087,257,105,32]}
+{"kind":"textbox","id":"sh/o7edk3id","slide":6,"text":"会话查找\n领域函数执行\n结构化结果","textPreview":"会话查找 | 领域函数执行 | 结构化结果","textChars":17,"textLines":3,"bbox":[1087,300,105,63]}
+{"kind":"shape","id":"sh/p8nedozy","slide":6,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/e1cve90b","slide":6,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/f2lc7ehw","slide":6,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/j6hsfaxo","slide":6,"bbox":[68,464,1144,150]}
+{"kind":"textbox","id":"sh/il8bm5g3","slide":6,"text":"关键工程处理","textPreview":"关键工程处理","textChars":6,"textLines":1,"bbox":[96,490,210,32]}
+{"kind":"textbox","id":"sh/58jahkfu","slide":6,"text":"模型 schema 中删除 session_id，运行时绑定当前会话后自动注入\n调用异常转成 ok=false、error_type、message、retryable，作为 tool 结果回传\n事件检测结果先做代表性压缩，降低大规模事件列表对上下文的占用","textPreview":"模型 schema 中删除 session_id，运行时绑定当前会话后自动注入 | 调用异常转成 ok=false、error_type、message、retryable，作为 tool 结果回传 | 事件检测结果先做代表性压缩，降低大规模事件列表对上下文的占用","textChars":128,"textLines":3,"bbox":[330,484,830,112]}
+{"kind":"textbox","id":"sh/47qtofy9","slide":6,"text":"来源：agent_runtime/mcp_client.py、mcp_chat_agent.py、mcp_server/server.py","textPreview":"来源：agent_runtime/mcp_client.py、mcp_chat_agent.py、mcp_server/server.py","textChars":69,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/ra1sjux0","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/iovrln","slide":6,"text":"双重授权包括 schema 暴露和执行前 allowlist 校验。当前实现为了保持提示词前缀稳定，模型在会话内看见固定工具 schema 联集。\n真正调用时仍按当前 Skill 检查权限，所以 schema 稳定不会扩大执行能力。\nMCPClientBridge 在后台线程维护异步 stdio 会话，对桌面端提供同步 list_tools 与 call_tool。"}
+{"kind":"slide","id":"sl/0ocd03","slide":7,"title":"06  RAG 建库","textShapes":24}
+{"kind":"textbox","id":"sh/fytgfitw","slide":7,"text":"06  RAG 建库","textPreview":"06  RAG 建库","textChars":10,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/gj2honuh","slide":7,"text":"结构感知的父子分块与双索引","textPreview":"结构感知的父子分块与双索引","textChars":13,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/hkbyhsb2","slide":7,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/2lkzqxcn","slide":7,"text":"建库优先保留标题层级、表格和页码，再为召回与上下文扩展分别设计粒度。","textPreview":"建库优先保留标题层级、表格和页码，再为召回与上下文扩展分别设计粒度。","textChars":34,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/3mt0j2ts","slide":7,"bbox":[68,230,150,170]}
+{"kind":"textbox","id":"sh/4nmhs7ud","slide":7,"text":"知识文件","textPreview":"知识文件","textChars":4,"textLines":1,"bbox":[88,247,110,32]}
+{"kind":"textbox","id":"sh/povilsby","slide":7,"text":"PDF、DOCX、MD\nTXT、HTML、XHTML","textPreview":"PDF、DOCX、MD | TXT、HTML、XHTML","textChars":26,"textLines":2,"bbox":[88,290,110,95]}
+{"kind":"shape","id":"sh/yp0zetc3","slide":7,"bbox":[254,230,150,170]}
+{"kind":"textbox","id":"sh/jq9g7yto","slide":7,"text":"Docling 解析","textPreview":"Docling 解析","textChars":10,"textLines":1,"bbox":[274,247,110,32]}
+{"kind":"textbox","id":"sh/z2psbuds","slide":7,"text":"OCR、表格结构\n标题层级、页码","textPreview":"OCR、表格结构 | 标题层级、页码","textChars":16,"textLines":2,"bbox":[274,290,110,95]}
+{"kind":"shape","id":"sh/y1gbipw7","slide":7,"bbox":[440,230,150,170]}
+{"kind":"textbox","id":"sh/l47ad4vi","slide":7,"text":"结构块","textPreview":"结构块","textChars":3,"textLines":1,"bbox":[460,247,110,32]}
+{"kind":"textbox","id":"sh/k3ytkzux","slide":7,"text":"heading\nparagraph\nlist、table","textPreview":"heading | paragraph | list、table","textChars":28,"textLines":3,"bbox":[460,290,110,95]}
+{"kind":"shape","id":"sh/byps7adg","slide":7,"bbox":[626,230,150,170]}
+{"kind":"textbox","id":"sh/axwbe5wv","slide":7,"text":"父子分块","textPreview":"父子分块","textChars":4,"textLines":1,"bbox":[646,247,110,32]}
+{"kind":"textbox","id":"sh/x07a9kvm","slide":7,"text":"Parent 保持章节\nChild 面向召回","textPreview":"Parent 保持章节 | Child 面向召回","textChars":22,"textLines":2,"bbox":[646,290,110,95]}
+{"kind":"shape","id":"sh/czytgfe1","slide":7,"bbox":[812,230,150,170]}
+{"kind":"textbox","id":"sh/na5s3adk","slide":7,"text":"BGE-M3 编码","textPreview":"BGE-M3 编码","textChars":9,"textLines":1,"bbox":[832,247,110,32]}
+{"kind":"textbox","id":"sh/29wra5wz","slide":7,"text":"Dense 向量\nSparse token 权重","textPreview":"Dense 向量 | Sparse token 权重","textChars":24,"textLines":2,"bbox":[832,290,110,95]}
+{"kind":"shape","id":"sh/65cbm5gr","slide":7,"bbox":[998,230,150,170]}
+{"kind":"textbox","id":"sh/r6lcvaxc","slide":7,"text":"索引落盘","textPreview":"索引落盘","textChars":4,"textLines":1,"bbox":[1018,247,110,32]}
+{"kind":"textbox","id":"sh/s7etofyx","slide":7,"text":"FAISS Dense\nSparse 倒排\nParent / Child 元数据","textPreview":"FAISS Dense | Sparse 倒排 | Parent / Child 元数据","textChars":40,"textLines":3,"bbox":[1018,290,110,95]}
+{"kind":"shape","id":"sh/t8nux0fi","slide":7,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/e9wbq5gn","slide":7,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/fu5czax8","slide":7,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/0vetsfyt","slide":7,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/1wnu1kfe","slide":7,"bbox":[0,0,0,0]}
+{"kind":"shape","id":"sh/2xwbupgz","slide":7,"bbox":[68,452,1144,140]}
+{"kind":"textbox","id":"sh/nypc3uxk","slide":7,"text":"分块参数","textPreview":"分块参数","textChars":4,"textLines":1,"bbox":[96,480,150,32]}
+{"kind":"textbox","id":"sh/xsretozm","slide":7,"text":"Parent","textPreview":"Parent","textChars":6,"textLines":1,"bbox":[268,480,90,28]}
+{"kind":"textbox","id":"sh/crixkji1","slide":7,"text":"目标 900，最大 1400 tokens","textPreview":"目标 900，最大 1400 tokens","textChars":21,"textLines":1,"bbox":[350,480,300,28]}
+{"kind":"textbox","id":"sh/bq9wrehg","slide":7,"text":"Child","textPreview":"Child","textChars":5,"textLines":1,"bbox":[268,529,90,28]}
+{"kind":"textbox","id":"sh/apgfi90v","slide":7,"text":"目标 280，最大 400，重叠 50 tokens","textPreview":"目标 280，最大 400，重叠 50 tokens","textChars":26,"textLines":1,"bbox":[350,529,360,28]}
+{"kind":"textbox","id":"sh/lwrexozy","slide":7,"text":"增量重建","textPreview":"增量重建","textChars":4,"textLines":1,"bbox":[760,480,120,28]}
+{"kind":"textbox","id":"sh/kvixojid","slide":7,"text":"registry 比较文件 mtime、size、解析与分块配置。版本变化自动全量重建。","textPreview":"registry 比较文件 mtime、size、解析与分块配置。版本变化自动全量重建。","textChars":44,"textLines":1,"bbox":[760,516,385,52]}
+{"kind":"textbox","id":"sh/zu9wvyhs","slide":7,"text":"来源：RAG/docling_parser.py、chunker.py、indexer.py","textPreview":"来源：RAG/docling_parser.py、chunker.py、indexer.py","textChars":46,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/yt0fmt07","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/0ocd03","slide":7,"text":"Parent 用于保存章节级上下文和来源元数据，Child 用于精细召回。\n表格和列表按行拆分，普通段落按句子边界拆分；稳定 ID 使用 SHA-1 摘要。\nFAISS 使用 IndexFlatIP，Sparse 使用 token_id 到文档权重的倒排表。"}
+{"kind":"slide","id":"sl/a6a5z1","slide":8,"title":"07  RAG 检索","textShapes":18}
+{"kind":"textbox","id":"sh/elo3qlw7","slide":8,"text":"07  RAG 检索","textPreview":"07  RAG 检索","textChars":10,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/1ofm1gfi","slide":8,"text":"策略路由、三路召回与重排","textPreview":"策略路由、三路召回与重排","textChars":12,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/0n6lsbex","slide":8,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/ridkv6xg","slide":8,"text":"检索结果最多返回 3 个父块，并在当前用户消息中临时注入。","textPreview":"检索结果最多返回 3 个父块，并在当前用户消息中临时注入。","textChars":29,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/qh43m1wv","slide":8,"bbox":[85,214,1110,54]}
+{"kind":"textbox","id":"sh/dkvmxgfm","slide":8,"text":"检索策略","textPreview":"检索策略","textChars":4,"textLines":1,"bbox":[103,224,150,34]}
+{"kind":"textbox","id":"sh/sjmlobe1","slide":8,"text":"知识问题直接检索。记录特异性工具请求跳过。模糊问题先做 FAISS 探测","textPreview":"知识问题直接检索。记录特异性工具请求跳过。模糊问题先做 FAISS 探测","textChars":36,"textLines":1,"bbox":[260,224,915,34]}
+{"kind":"shape","id":"sh/3udkr6xk","slide":8,"bbox":[145,283,990,54]}
+{"kind":"textbox","id":"sh/it43i1wz","slide":8,"text":"双路召回","textPreview":"双路召回","textChars":4,"textLines":1,"bbox":[163,293,150,34]}
+{"kind":"textbox","id":"sh/cfe5gvmp","slide":8,"text":"Dense Top 20 + Sparse Top 20，RRF 权重 0.6 / 0.4，合并 Top 40","textPreview":"Dense Top 20 + Sparse Top 20，RRF 权重 0.6 / 0.4，合并 Top 40","textChars":55,"textLines":1,"bbox":[320,293,795,34]}
+{"kind":"shape","id":"sh/dgn6p0na","slide":8,"bbox":[205,352,870,54]}
+{"kind":"textbox","id":"sh/qdwnel4z","slide":8,"text":"三路融合","textPreview":"三路融合","textChars":4,"textLines":1,"bbox":[223,362,150,34]}
+{"kind":"textbox","id":"sh/re5onq54","slide":8,"text":"Dense 0.35 + Sparse 0.20 + ColBERT 0.45，保留 Top 15","textPreview":"Dense 0.35 + Sparse 0.20 + ColBERT 0.45，保留 Top 15","textChars":49,"textLines":1,"bbox":[380,362,675,34]}
+{"kind":"shape","id":"sh/4be5cbmt","slide":8,"bbox":[265,421,750,54]}
+{"kind":"textbox","id":"sh/pcn6lgne","slide":8,"text":"Cross Encoder","textPreview":"Cross Encoder","textChars":13,"textLines":1,"bbox":[283,431,150,34]}
+{"kind":"textbox","id":"sh/29cnal4n","slide":8,"text":"bge-reranker-v2-m3 计算 query-passage 相关度","textPreview":"bge-reranker-v2-m3 计算 query-passage 相关度","textChars":39,"textLines":1,"bbox":[440,431,555,34]}
+{"kind":"shape","id":"sh/3a5ojq58","slide":8,"bbox":[325,490,630,54]}
+{"kind":"textbox","id":"sh/o7ypofmx","slide":8,"text":"最终评分","textPreview":"最终评分","textChars":4,"textLines":1,"bbox":[343,500,150,34]}
+{"kind":"textbox","id":"sh/9876xk3i","slide":8,"text":"0.2 × coarse_normalized + 0.8 × rerank_score，默认阈值 0.5","textPreview":"0.2 × coarse_normalized + 0.8 × rerank_score，默认阈值 0.5","textChars":53,"textLines":1,"bbox":[500,500,435,34]}
+{"kind":"shape","id":"sh/xs3elgra","slide":8,"bbox":[385,559,510,54]}
+{"kind":"textbox","id":"sh/wruxcba5","slide":8,"text":"上下文扩展","textPreview":"上下文扩展","textChars":5,"textLines":1,"bbox":[403,569,150,34]}
+{"kind":"textbox","id":"sh/bqlwj69k","slide":8,"text":"按 parent 去重，补充命中 child 的前后相邻块，最终 Top 0 至 3","textPreview":"按 parent 去重，补充命中 child 的前后相邻块，最终 Top 0 至 3","textChars":42,"textLines":1,"bbox":[560,569,315,34]}
+{"kind":"textbox","id":"sh/apsfqlsz","slide":8,"text":"隔离原则：检索片段只服务本轮知识回答，工具结果才形成患者特异性证据。","textPreview":"隔离原则：检索片段只服务本轮知识回答，工具结果才形成患者特异性证据。","textChars":34,"textLines":1,"bbox":[68,642,1020,28]}
+{"kind":"textbox","id":"sh/9ojehgre","slide":8,"text":"来源：RAG/retrieval_policy.py、retriever.py、ranking.py、searcher.py","textPreview":"来源：RAG/retrieval_policy.py、retriever.py、ranking.py、searcher.py","textChars":62,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/onaxobat","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/a6a5z1","slide":8,"text":"模糊问题先用 Dense Top-1 做 FAISS probe，默认阈值 0.35。\n三路融合使用 rank 而不是直接混合原始分数，降低不同打分尺度造成的偏差。\nreranker 输出 sigmoid 相关度，低于 0.5 的候选会被过滤，因此最终可能返回 0 条。"}
+{"kind":"slide","id":"sl/1qq9rz","slide":9,"title":"08  端到端示例","textShapes":27}
+{"kind":"textbox","id":"sh/2lwnmhwj","slide":9,"text":"08  端到端示例","textPreview":"08  端到端示例","textChars":9,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/po76xwvu","slide":9,"text":"一次事件筛查请求的执行轨迹","textPreview":"一次事件筛查请求的执行轨迹","textChars":13,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/4ny5ore9","slide":9,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/rapozmd0","slide":9,"text":"示例问题：前一分钟是否存在癫痫样放电？如果有，出现在哪些导联？","textPreview":"示例问题：前一分钟是否存在癫痫样放电？如果有，出现在哪些导联？","textChars":31,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"shape","id":"sh/q9gnqhwf","slide":9,"bbox":[118,222,3,360]}
+{"kind":"shape","id":"sh/dc761wv6","slide":9,"bbox":[104,223,30,30]}
+{"kind":"textbox","id":"sh/cby5srel","slide":9,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[151,214,52,38]}
+{"kind":"textbox","id":"sh/ze9o36dw","slide":9,"text":"规划","textPreview":"规划","textChars":2,"textLines":1,"bbox":[218,214,116,38]}
+{"kind":"textbox","id":"sh/edgnu1wr","slide":9,"text":"关键词命中 detection，加载 allowed_tools","textPreview":"关键词命中 detection，加载 allowed_tools","textChars":32,"textLines":1,"bbox":[348,214,815,38]}
+{"kind":"shape","id":"sh/4z6hkjex","slide":9,"bbox":[104,281,30,30]}
+{"kind":"textbox","id":"sh/50fidof2","slide":9,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[151,272,52,38]}
+{"kind":"textbox","id":"sh/ix4zi9wr","slide":9,"text":"检索","textPreview":"检索","textChars":2,"textLines":1,"bbox":[218,272,116,38]}
+{"kind":"textbox","id":"sh/jyx0bexc","slide":9,"text":"识别为记录特异性请求，本轮跳过 RAG","textPreview":"识别为记录特异性请求，本轮跳过 RAG","textChars":19,"textLines":1,"bbox":[348,272,815,38]}
+{"kind":"shape","id":"sh/s36hojet","slide":9,"bbox":[104,339,30,30]}
+{"kind":"textbox","id":"sh/d4fihofe","slide":9,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[151,330,52,38]}
+{"kind":"textbox","id":"sh/61ozmtwn","slide":9,"text":"模型","textPreview":"模型","textChars":2,"textLines":1,"bbox":[218,330,116,38]}
+{"kind":"textbox","id":"sh/r2x0fex8","slide":9,"text":"记录时长未知时，先请求 get_eeg_basic_information","textPreview":"记录时长未知时，先请求 get_eeg_basic_information","textChars":37,"textLines":1,"bbox":[348,330,815,38]}
+{"kind":"shape","id":"sh/07q1s3ep","slide":9,"bbox":[104,397,30,30]}
+{"kind":"textbox","id":"sh/1szil8fa","slide":9,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[151,388,52,38]}
+{"kind":"textbox","id":"sh/9ovi587e","slide":9,"text":"执行","textPreview":"执行","textChars":2,"textLines":1,"bbox":[218,388,116,38]}
+{"kind":"textbox","id":"sh/onmhc369","slide":9,"text":"运行时注入 session_id，经 MCP 获取记录范围","textPreview":"运行时注入 session_id，经 MCP 获取记录范围","textChars":29,"textLines":1,"bbox":[348,388,815,38]}
+{"kind":"shape","id":"sh/nmd03ypo","slide":9,"bbox":[104,455,30,30]}
+{"kind":"textbox","id":"sh/ml4zato3","slide":9,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[151,446,52,38]}
+{"kind":"textbox","id":"sh/xcfi987q","slide":9,"text":"模型","textPreview":"模型","textChars":2,"textLines":1,"bbox":[218,446,116,38]}
+{"kind":"textbox","id":"sh/wrmhg365","slide":9,"text":"构造 detect_eeg_events，窗口 0 至 60 秒","textPreview":"构造 detect_eeg_events，窗口 0 至 60 秒","textChars":32,"textLines":1,"bbox":[348,446,815,38]}
+{"kind":"shape","id":"sh/bqd07ypk","slide":9,"bbox":[104,513,30,30]}
+{"kind":"textbox","id":"sh/ap4zetoz","slide":9,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[151,504,52,38]}
+{"kind":"textbox","id":"sh/dwbyxo76","slide":9,"text":"记忆","textPreview":"记忆","textChars":2,"textLines":1,"bbox":[218,504,116,38]}
+{"kind":"textbox","id":"sh/sv2h4j61","slide":9,"text":"把事件数量、时间、导联、脑区和置信度写入摘要","textPreview":"把事件数量、时间、导联、脑区和置信度写入摘要","textChars":22,"textLines":1,"bbox":[348,504,815,38]}
+{"kind":"shape","id":"sh/i1gfep4j","slide":9,"bbox":[104,571,30,30]}
+{"kind":"textbox","id":"sh/329w7a54","slide":9,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[151,562,52,38]}
+{"kind":"textbox","id":"sh/4nixgfmp","slide":9,"text":"回答","textPreview":"回答","textChars":2,"textLines":1,"bbox":[218,562,116,38]}
+{"kind":"textbox","id":"sh/5ore9kna","slide":9,"text":"只引用工具证据，并说明需要专业人员复核","textPreview":"只引用工具证据，并说明需要专业人员复核","textChars":19,"textLines":1,"bbox":[348,562,815,38]}
+{"kind":"shape","id":"sh/qp0fip4v","slide":9,"bbox":[750,608,462,48]}
+{"kind":"textbox","id":"sh/rq9wbu5g","slide":9,"text":"可观测性：路由分数、工具耗时、上下文占用、缓存命中率","textPreview":"可观测性：路由分数、工具耗时、上下文占用、缓存命中率","textChars":26,"textLines":1,"bbox":[772,618,418,28]}
+{"kind":"textbox","id":"sh/srixkzm1","slide":9,"text":"来源：agent_runtime/mcp_chat_agent.py、detection Skill、mcp_server/server.py","textPreview":"来源：agent_runtime/mcp_chat_agent.py、detection Skill、mcp_server/server.py","textChars":71,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/dsred4n6","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/1qq9rz","slide":9,"text":"这个例子适合面试时按 Trace 顺序讲，能够把规划、RAG 策略、MCP、记忆和安全输出串起来。\ndetection Skill 规定窗口不超过 600 秒；本例使用 0 至 60 秒。\n路由、RAG、模型请求、工具调用和 turn end 都会发出可视化 trace 事件。"}
+{"kind":"slide","id":"sl/x7fzmc","slide":10,"title":"09  工程总结","textShapes":11}
+{"kind":"textbox","id":"sh/t472pcb6","slide":10,"text":"09  工程总结","textPreview":"09  工程总结","textChars":8,"textLines":1,"bbox":[68,30,400,24]}
+{"kind":"textbox","id":"sh/61w3excf","slide":10,"text":"当前实现与演进方向","textPreview":"当前实现与演进方向","textChars":9,"textLines":1,"bbox":[68,62,1120,60]}
+{"kind":"shape","id":"sh/r2pkn2t0","slide":10,"bbox":[68,134,1144,2]}
+{"kind":"textbox","id":"sh/grylkruh","slide":10,"text":"面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。","textPreview":"面试中需要同时说明已经落地的能力，以及下一阶段可以怎样扩展。","textChars":30,"textLines":1,"bbox":[68,151,1110,44]}
+{"kind":"textbox","id":"sh/1s7mtwb2","slide":10,"text":"当前实现","textPreview":"当前实现","textChars":4,"textLines":1,"bbox":[68,214,480,38]}
+{"kind":"textbox","id":"sh/epg3ihcr","slide":10,"text":"确定性关键词与本地语义路由结合，低置信度安全降级\nSkill 指令按轮次隔离，执行前强制校验工具权限\n三层记忆配合 token 预算，RAG 只在当前轮临时注入\nMCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹","textPreview":"确定性关键词与本地语义路由结合，低置信度安全降级 | Skill 指令按轮次隔离，执行前强制校验工具权限 | 三层记忆配合 token 预算，RAG 只在当前轮临时注入 | MCP 解耦 Agent 与 EEG 算法，并提供完整执行轨迹","textChars":112,"textLines":4,"bbox":[68,274,510,250]}
+{"kind":"textbox","id":"sh/fqpkrmtc","slide":10,"text":"演进方向","textPreview":"演进方向","textChars":4,"textLines":1,"bbox":[662,214,480,38]}
+{"kind":"textbox","id":"sh/wvel8nud","slide":10,"text":"增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划\n把关键事件与报告写入可持久化记忆，并设计版本与权限策略\n建立路由准确率、工具成功率、引用正确性与临床复核指标\n对独立工具调用引入并行执行，同时保持会话状态一致性","textPreview":"增加显式任务图，让复杂问题拆成可检查的多 Skill 子计划 | 把关键事件与报告写入可持久化记忆，并设计版本与权限策略 | 建立路由准确率、工具成功率、引用正确性与临床复核指标 | 对独立工具调用引入并行执行，同时保持会话状态一致性","textChars":111,"textLines":4,"bbox":[662,274,520,250]}
+{"kind":"shape","id":"sh/hwn2hsby","slide":10,"bbox":[68,570,1114,72]}
+{"kind":"textbox","id":"sh/tofi1sne","slide":10,"text":"面试总结","textPreview":"面试总结","textChars":4,"textLines":1,"bbox":[92,590,140,30]}
+{"kind":"textbox","id":"sh/sn6h8nmt","slide":10,"text":"EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。","textPreview":"EEGAgent 的技术重点是把 LLM 的灵活决策放进一个可控、可追踪、可扩展的领域运行时。","textChars":47,"textLines":1,"bbox":[246,586,900,38]}
+{"kind":"textbox","id":"sh/7mx0zi58","slide":10,"text":"来源：当前仓库实现。演进方向为基于现状的设计建议","textPreview":"来源：当前仓库实现。演进方向为基于现状的设计建议","textChars":24,"textLines":1,"bbox":[68,681,1050,20]}
+{"kind":"textbox","id":"sh/6loz6d43","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1160,681,52,20]}
+{"kind":"notes","id":"nt/x7fzmc","slide":10,"text":"最后一页把技术亮点与不足同时讲清楚。右侧均为建议，不代表当前已经实现。\n可根据应聘岗位调整重点：Agent 岗强调规划和记忆，平台岗强调 MCP 与可观测性，算法岗强调 RAG 与 EEG 工具。"}

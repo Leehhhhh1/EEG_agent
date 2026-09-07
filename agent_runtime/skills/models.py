@@ -19,16 +19,20 @@ class SkillSpec:
     instructions: str
     path: Path
 
-    def as_system_message(self) -> dict[str, str]:
-        """Render request-scoped instructions for DeepSeek."""
-        return {
-            "role": "system",
-            "content": (
-                f'<active_eeg_skill name="{self.name}">\n'
-                f"{self.instructions.strip()}\n"
-                "</active_eeg_skill>"
-            ),
-        }
+    def as_instruction_block(self) -> str:
+        """Render instructions scoped to the user message that contains them."""
+        allowed_tools = "\n".join(
+            f"- {tool_name}" for tool_name in sorted(self.allowed_tools)
+        ) or "- none"
+        return (
+            f'<active_eeg_skill name="{self.name}" '
+            'applies_to="containing_user_message">\n'
+            "<allowed_tools>\n"
+            f"{allowed_tools}\n"
+            "</allowed_tools>\n"
+            f"{self.instructions.strip()}\n"
+            "</active_eeg_skill>"
+        )
 
 
 @dataclass(frozen=True)

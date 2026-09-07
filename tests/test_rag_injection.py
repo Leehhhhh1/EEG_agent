@@ -8,7 +8,7 @@ if "openai" not in sys.modules:
     openai_stub.OpenAI = object
     sys.modules["openai"] = openai_stub
 
-from agent_runtime.mcp_chat_agent import MCPChatAgent
+from agent_runtime.mcp_chat_agent import GenerationCancelled, MCPChatAgent
 from agent_runtime.skills.models import SkillSpec
 
 
@@ -68,6 +68,41 @@ class RAGInjectionTests(unittest.TestCase):
         self.assertIsNone(agent.assert_skill)
         self.assertIsNone(agent.assert_selection)
         self.assertEqual(result["retrieved_sources"], ["guide.pdf"])
+
+    def test_cancelled_generation_keeps_only_the_visible_partial_answer(self):
+        agent = MCPChatAgent.__new__(MCPChatAgent)
+        agent.system_message = {"role": "system", "content": "fixed system prompt"}
+        agent.session_summary = {
+            "recording": None,
+            "patient": {},
+            "analyses": [],
+            "findings": [],
+            "reports": [],
+        }
+        agent.messages = [agent.system_message, agent._session_summary_message()]
+        agent.session_id = None
+        agent.skill_registry = types.SimpleNamespace(
+            select_with_details=lambda *args, **kwargs: None
+        )
+        agent._retrieve_eeg_knowledge = types.MethodType(
+            lambda self, query: (query, []),
+            agent,
+        )
+
+        def fake_run(self, user_query, retrieval_results, skill, selection, **callbacks):
+            callbacks["on_delta"]("已经生成的内容")
+            raise GenerationCancelled()
+
+        agent._run_stream_with_temporary_context = types.MethodType(fake_run, agent)
+        trace_events = []
+
+        with self.assertRaises(GenerationCancelled) as raised:
+            agent.run_stream("question", on_trace=trace_events.append)
+
+        self.assertEqual(raised.exception.partial_response, "已经生成的内容")
+        self.assertEqual(agent.messages[-2]["role"], "user")
+        self.assertEqual(agent.messages[-1], {"role": "assistant", "content": "已经生成的内容"})
+        self.assertEqual(trace_events[-1]["status"], "cancelled")
 
 
 if __name__ == "__main__":
