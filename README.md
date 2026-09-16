@@ -38,10 +38,10 @@ EEGAgent/
 
 ├─ RAG/                    # Retrieval-Augmented Generation module
 │  ├─ chunker.py
+│  ├─ docling_parser.py
 │  ├─ embedder.py
 │  ├─ indexer.py
 │  ├─ searcher.py
-│  ├─ txtDealer.py
 │  ├─ children.pkl, parents.pkl
 │  ├─ faiss.index, sparse_index.pkl
 │  ├─ docs/
@@ -159,9 +159,9 @@ The default thresholds are `0.35` for the ambiguous-query FAISS probe and
 `0.5` for reranker filtering. They can be changed with
 `RAG_FAISS_PROBE_THRESHOLD` and `RAG_RERANK_THRESHOLD`.
 
-The versioned registry automatically rebuilds legacy indexes into
-`parents.pkl`, `children.pkl`, `faiss.index`, and `sparse_index.pkl` on the
-first startup after this upgrade.
+The versioned registry automatically rebuilds `parents.pkl`, `children.pkl`,
+`faiss.index`, and `sparse_index.pkl` whenever the source documents or parser
+and chunking configuration change.
 
 The local reranker must be present at
 `RAG/sentenceModel/bge-reranker-v2-m3`. The model directory is intentionally

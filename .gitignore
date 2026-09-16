@@ -61,7 +61,6 @@ runs/
 RAG/sentenceModel/
 
 # Generated RAG artifacts
-RAG/chunks.pkl
 RAG/faiss.index
 RAG/children.pkl
 RAG/parents.pkl

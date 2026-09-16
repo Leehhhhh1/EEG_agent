@@ -71,6 +71,3 @@ class HybridSearcher:
         result["page_start"] = parent.get("page_start", child.get("page_start"))
         result["page_end"] = parent.get("page_end", child.get("page_end"))
         return result
-
-
-FaissSearcher = HybridSearcher
