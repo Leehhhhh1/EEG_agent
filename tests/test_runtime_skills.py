@@ -30,6 +30,17 @@ class RuntimeSkillTests(unittest.TestCase):
         self.assertEqual(self.registry.select("生成筛查报告").name, "reporting")
         self.assertIsNone(self.registry.select("这是一条没有专用关键词的问题"))
 
+    def test_compound_sampling_rate_and_seizure_request_routes_to_detection(self):
+        query = "请先调用基础信息工具重新确认采样率，再检查前60秒是否存在发作样事件。"
+
+        selection = self.registry.select_with_details(query)
+
+        self.assertEqual(selection.skill.name, "detection")
+        self.assertEqual(selection.source, "keyword")
+        self.assertIn("发作样事件", selection.keyword_matches)
+        self.assertIn("是否存在发作", selection.keyword_matches)
+        self.assertEqual(self.registry.select("当前记录的采样率是多少？").name, "basic_information")
+
     def test_specialized_skills_have_semantic_examples(self):
         for skill in self.registry.all():
             if skill.name != "general_eeg":

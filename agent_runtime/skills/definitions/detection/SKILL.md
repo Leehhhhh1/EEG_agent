@@ -9,6 +9,8 @@ trigger_keywords:
   - seizure detection
   - 检测发作
   - 有没有发作
+  - 发作样事件
+  - 是否存在发作
   - 检测癫痫样放电
   - 有没有放电
   - 查找尖波

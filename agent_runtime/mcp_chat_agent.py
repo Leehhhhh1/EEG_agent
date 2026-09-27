@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from .mcp_client import MCPClientBridge, result_for_model
 from .skills import SemanticSkillSelector, SkillRegistry, SkillSelection, SkillSpec
+from .skills.hybrid_router import HybridSkillRouter, RoutePlan
 from .token_budget import (
     DEFAULT_SHORT_TERM_TOKEN_LIMIT,
     DeepSeekV4TokenCounter,
@@ -165,6 +166,10 @@ class MCPChatAgent:
         self.bridge = bridge
         self.skill_registry = SkillRegistry.load_default()
         self.skill_registry.validate_tools(tool.name for tool in self.bridge.list_tools())
+        self.hybrid_router = HybridSkillRouter(self.skill_registry)
+        self.routing_turns: list[dict[str, Any]] = []
+        self.available_bipolar_channels: tuple[str, ...] = ()
+        self.last_route_model_usage: dict[str, int] = {}
         self.session_id = session_id
         self.system_message = {
             "role": "system",
@@ -232,6 +237,8 @@ class MCPChatAgent:
         self._discard_tool_messages()
         self._previous_prompt_token_ids = []
         self.session_id = session_id
+        self.routing_turns = []
+        self.available_bipolar_channels = ()
         self.session_summary = {
             "recording": None,
             "patient": {},
@@ -252,6 +259,8 @@ class MCPChatAgent:
         self._discard_tool_messages()
         self._previous_prompt_token_ids = []
         self.session_id = None
+        self.routing_turns = []
+        self.available_bipolar_channels = ()
         self.session_summary = {
             "recording": None,
             "patient": {},
@@ -275,6 +284,7 @@ class MCPChatAgent:
         self.trace_turn = 0
         self._previous_prompt_token_ids = []
         self.last_prompt_diagnostics = {}
+        self.routing_turns = []
 
     def _session_summary_message(self) -> dict[str, str]:
         """生成当前 EEG 会话摘要消息。"""
@@ -338,15 +348,22 @@ class MCPChatAgent:
         return self._compact_old_history(tools, prompt_tokens)
 
     @staticmethod
-    def _scoped_user_content(content: str, skill: SkillSpec | None, has_session: bool) -> str:
+    def _scoped_user_content(
+        content: str, skill: SkillSpec | None, has_session: bool,
+        route_plan: RoutePlan | None = None,
+    ) -> str:
         """Keep dynamic Skill instructions at the tail inside the current user message."""
         if not has_session:
             return content
         instruction = (
             skill.as_instruction_block() if skill is not None else NO_SKILL_INSTRUCTION
         )
+        plan_instruction = (
+            f"<current_route_plan>\n{route_plan.instruction()}\n</current_route_plan>\n"
+            if route_plan is not None else ""
+        )
         return (
-            f"{instruction}\n"
+            f"{instruction}\n{plan_instruction}"
             f"{USER_REQUEST_OPEN}\n"
             f"{content}\n"
             f"{USER_REQUEST_CLOSE}"
@@ -469,6 +486,7 @@ class MCPChatAgent:
             self.session_summary["recording"] = data.get("recording") or self.session_summary["recording"]
             self.session_summary["patient"] = data.get("patient") or self.session_summary["patient"]
             montage = data.get("montage", {})
+            self.available_bipolar_channels = tuple(montage.get("available_bipolar_channels") or ())
             channel_count = montage.get("raw_channel_count")
             bipolar_count = len(montage.get("available_bipolar_channels", []))
             if channel_count is not None:
@@ -674,6 +692,81 @@ class MCPChatAgent:
         )
         return format_temporary_context(user_query, results), results
 
+    def _route_with_llm(
+        self,
+        query: str,
+        history: list[dict[str, Any]],
+        semantic,
+    ) -> dict[str, Any]:
+        """Ask for a compact route plan, never raw chat or tool result payloads."""
+        self._check_cancelled()
+        candidates = [
+            {"skill": item.name, "score": round(item.score, 3)}
+            for item in (semantic.candidates[:3] if semantic else ())
+        ]
+        context = {
+            "user_request": query,
+            "same_edf_session_as_recent_turns": self.session_id is not None,
+            "recording_duration_seconds": (self.session_summary.get("recording") or {}).get("duration_seconds"),
+            "available_bipolar_channels": list(getattr(self, "available_bipolar_channels", ())),
+            "recent_turns": history[-5:],
+            "semantic_candidates": candidates,
+            "available_skills": {
+                item.name: {
+                    "description": item.description,
+                    "tools": sorted(item.allowed_tools),
+                } for item in self.skill_registry.all()
+            },
+        }
+        instruction = (
+            "你是 EEGAgent 的路由规划器，只返回一个 JSON 对象，不回答医学问题。"
+            "字段：decision(route/clarify/reject_invalid), skill(basic_information/exploration/"
+            "detection/reporting/general_eeg), relation(new/modify_previous/explain_existing/switch), "
+            "reference_turn(整数或null), steps(按顺序的数组，每项为 {tool,arguments}), "
+            "parameter_changes(对象), clarification(字符串), note(字符串)。"
+            "优先识别本轮整句话的最终分析目标，前置步骤放入 steps；不要因为前置的通道数查询选择 basic_information。"
+            "发作样事件、是否存在发作属于 detection。"
+            "仅当本轮明确更正、延续或解释旧任务时引用 recent_turns；更正时沿用同一 Skill，"
+            "只给出改动参数，并在 steps 中写需重做的工具；明确要求生成报告则切换到 reporting。"
+            "一般 EEG 知识选 general_eeg，steps 为空。只解释已有结果时 steps 为空。"
+            "不要猜测缺失的时间窗口或导联；不确定就 clarify。"
+            "每个分析步骤的 start/end 单位为秒，exploration 窗口最多 60 秒，detection 最多 600 秒。"
+            "各 Skill 只能使用 available_skills 中的工具。禁止返回 session_id。"
+        )
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": instruction},
+                {"role": "user", "content": json.dumps(context, ensure_ascii=False)},
+            ],
+            temperature=0,
+            max_tokens=900,
+            timeout=30,
+            extra_body={"thinking": {"type": "disabled"}},
+        )
+        self._check_cancelled()
+        self.last_route_model_usage = _completion_usage_dict(getattr(completion, "usage", None))
+        content = completion.choices[0].message.content or ""
+        content = content.strip()
+        if content.startswith("```"):
+            content = content.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+        return json.loads(content)
+
+    def _remember_routing_turn(
+        self, turn: int, query: str, skill: SkillSpec | None, result: dict[str, Any],
+    ) -> None:
+        """Retain only a few session-bound routing facts, not full model history."""
+        if self.session_id is None:
+            return
+        self.routing_turns.append({
+            "turn": turn,
+            "user": query[:500],
+            "skill": skill.name if skill else None,
+            "tool_calls": result.get("executed_tool_calls", []),
+            "assistant_summary": str(result.get("response", ""))[:320],
+        })
+        self.routing_turns = self.routing_turns[-5:]
+
     def run_stream(
         self,
         user_query: str,
@@ -690,6 +783,7 @@ class MCPChatAgent:
         partial_response_parts: list[str] = []
         selection: SkillSelection | None = None
         skill: SkillSpec | None = None
+        route_plan: RoutePlan | None = None
 
         def forward_delta(delta: str) -> None:
             partial_response_parts.append(delta)
@@ -732,10 +826,17 @@ class MCPChatAgent:
                             self.set_rag_retriever(self.rag_retriever)
                     return self.semantic_skill_selector.select(query, skills)
 
-                selection = self.skill_registry.select_with_details(
+                router = getattr(self, "hybrid_router", None) or HybridSkillRouter(self.skill_registry)
+                recording = self.session_summary.get("recording") or {}
+                route_plan = router.select(
                     user_query,
                     semantic_selector=semantic_route,
+                    llm_selector=self._route_with_llm,
+                    history=list(getattr(self, "routing_turns", [])),
+                    duration=recording.get("duration_seconds"),
+                    available_channels=getattr(self, "available_bipolar_channels", ()),
                 )
+                selection = route_plan.selection
                 skill = selection.skill
             route_ended_at = time.time()
             self._check_cancelled()
@@ -750,6 +851,11 @@ class MCPChatAgent:
                     {"name": candidate.name, "score": candidate.score}
                     for candidate in (selection.candidates[:2] if selection else ())
                 ],
+                "decision": route_plan.decision if route_plan else None,
+                "relation": route_plan.relation if route_plan else None,
+                "reference_turn": route_plan.reference_turn if route_plan else None,
+                "steps": [call.tool for call in route_plan.calls] if route_plan else [],
+                "router_usage": getattr(self, "last_route_model_usage", {}) if route_source == "llm" else {},
             }
             _emit_trace(on_trace, {
                 "id": f"turn-{turn}-route",
@@ -796,15 +902,17 @@ class MCPChatAgent:
                     temporary_content,
                     skill,
                     has_session=self.session_id is not None,
+                    route_plan=route_plan if selection and selection.source != "embedding" else None,
                 ),
             }
             self.messages.append(user_message)
             try:
-                return self._run_stream_with_temporary_context(
+                result = self._run_stream_with_temporary_context(
                     user_query,
                     retrieval_results,
                     skill,
                     selection,
+                    route_plan=route_plan if selection and selection.source != "embedding" else None,
                     on_delta=forward_delta,
                     on_tool_start=on_tool_start,
                     on_tool_end=on_tool_end,
@@ -813,6 +921,8 @@ class MCPChatAgent:
                     trace_turn=turn,
                     trace_started_at=turn_started_at,
                 )
+                self._remember_routing_turn(turn, user_query, skill, result)
+                return result
             finally:
                 # Retrieved passages are intentionally limited to this request.
                 user_message["content"] = self._scoped_user_content(
@@ -873,6 +983,7 @@ class MCPChatAgent:
         retrieval_results: list[dict[str, Any]],
         skill: SkillSpec | None,
         selection: SkillSelection | None = None,
+        route_plan: RoutePlan | None = None,
         on_delta=None,
         on_tool_start=None,
         on_tool_end=None,
@@ -893,6 +1004,9 @@ class MCPChatAgent:
         turn_cache_hit_tokens = 0
         turn_cache_miss_tokens = 0
         has_turn_cache_usage = False
+        plan_cursor = 0
+        last_plan_error: str | None = None
+        executed_tool_calls: list[dict[str, Any]] = []
 
         while True:
             self._check_cancelled()
@@ -938,7 +1052,7 @@ class MCPChatAgent:
                         "first_token_at": first_token_at,
                         "ttft": first_token_at - model_started,
                     })
-                if on_delta:
+                if on_delta and (route_plan is None or plan_cursor >= len(route_plan.calls)):
                     on_delta(delta)
 
             model_error = None
@@ -1052,6 +1166,13 @@ class MCPChatAgent:
             if force_final_answer:
                 calls = []
             if not calls:
+                plan_complete = route_plan is None or plan_cursor >= len(route_plan.calls)
+                if not plan_complete:
+                    missing = ", ".join(call.tool for call in route_plan.calls[plan_cursor:])
+                    reason = last_plan_error or f"未执行必要步骤 {missing}"
+                    response = f"本轮任务尚未完成：{reason}。请重试，不能据此给出脑电分析结论。"
+                    if on_delta:
+                        on_delta(response)
                 assistant_response_message = {
                     "role": "assistant",
                     "content": response,
@@ -1085,6 +1206,9 @@ class MCPChatAgent:
                     ],
                     "allowed_tools": sorted(skill.allowed_tools) if skill is not None else [],
                     "model_tool_schemas": [schema["function"]["name"] for schema in tools],
+                    "decision": route_plan.decision if route_plan else None,
+                    "relation": route_plan.relation if route_plan else None,
+                    "plan_complete": plan_complete,
                 }
                 result = {
                     "response": response,
@@ -1101,6 +1225,7 @@ class MCPChatAgent:
                     "cache_hit_tokens": turn_cache_hit_tokens,
                     "cache_miss_tokens": turn_cache_miss_tokens,
                     "cache_hit_rate": turn_cache_hit_rate,
+                    "executed_tool_calls": executed_tool_calls,
                 }
                 turn_ended_at = time.time()
                 context_ratio = (
@@ -1212,8 +1337,39 @@ class MCPChatAgent:
                     continue
                 try:
                     arguments = json.loads(call["arguments"] or "{}")
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, TypeError):
                     arguments = {}
+                if not isinstance(arguments, dict):
+                    arguments = {}
+                if route_plan is not None:
+                    expected = (
+                        route_plan.calls[plan_cursor]
+                        if route_plan.decision == "route" and plan_cursor < len(route_plan.calls)
+                        else None
+                    )
+                    if expected is None or tool_name != expected.tool or arguments != expected.arguments:
+                        reason = (
+                            "本轮不允许调用 EEG 工具"
+                            if expected is None else
+                            f"必须先调用 {expected.tool}，并使用已校验参数 {expected.arguments}"
+                        )
+                        result = _tool_exception_result(tool_name, PermissionError(reason))
+                        last_plan_error = reason
+                        self.messages.append({
+                            "role": "tool",
+                            "tool_call_id": call["id"],
+                            "content": result_for_model(result, tool_name=tool_name),
+                        })
+                        failed_at = time.time()
+                        _emit_trace(on_trace, {
+                            "id": tool_event_id,
+                            "status": "error",
+                            "summary": "工具调用与当前计划不符",
+                            "output": _trace_text(result),
+                            "ended_at": failed_at,
+                            "duration": failed_at - tool_started,
+                        })
+                        continue
                 arguments["session_id"] = self.session_id
                 if on_tool_start:
                     on_tool_start(tool_name)
@@ -1236,6 +1392,19 @@ class MCPChatAgent:
                     "content": model_context_content,
                 })
                 is_error = bool(result.get("is_error"))
+                if not is_error:
+                    last_plan_error = None
+                    executed_tool_calls.append({
+                        "name": tool_name,
+                        "arguments": {key: value for key, value in arguments.items() if key != "session_id"},
+                    })
+                    if route_plan is not None:
+                        plan_cursor += 1
+                elif route_plan is not None:
+                    details = result.get("structured_content") or {}
+                    last_plan_error = str(
+                        details.get("message") if isinstance(details, dict) else ""
+                    ) or f"工具 {tool_name} 调用失败"
                 _emit_trace(on_trace, {
                     "id": tool_event_id,
                     "status": "error" if is_error else "complete",

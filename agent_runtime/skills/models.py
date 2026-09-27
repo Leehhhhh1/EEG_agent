@@ -59,7 +59,7 @@ class SkillSelection:
     """Selected Skill plus the route details shown by the desktop client."""
 
     skill: SkillSpec | None
-    source: Literal["keyword", "embedding", "general", "no_skill"]
+    source: Literal["keyword", "embedding", "general", "no_skill", "llm", "llm_clarify"]
     keyword_matches: tuple[str, ...] = ()
     candidates: tuple[SemanticCandidate, ...] = ()
     top_score: float = 0.0

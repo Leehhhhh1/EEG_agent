@@ -92,19 +92,23 @@ The desktop client starts `mcp_server.server` automatically. Do not start a seco
 ### 运行时 EEG Skill
 
 桌面端 Agent 从 `agent_runtime/skills/definitions/*/SKILL.md` 加载应用运行时
-Skill。仅在已加载 EDF 并建立会话时进行路由：先使用 `trigger_keywords` 和
-`priority` 进行高精度关键词匹配；没有命中时，复用 RAG 的 BGE-M3，对用户问题
-与各专用 Skill 的多条 `routing_examples` 做本地语义匹配。高置信度结果选择专用
-Skill；分数达到 `SKILL_ROUTE_GENERAL_MIN_SCORE` 但未达到专用 Skill 阈值时选择
-受限的 `general_eeg`；分数更低时不选择 Skill，也不允许执行 EEG 工具。桌面端会展示
-路由方式、关键词命中、语义候选分数、候选分差以及本轮允许执行的工具列表。
+Skill。仅在已加载 EDF 并建立会话时进行路由：先复用 RAG 的 BGE-M3，计算本轮
+问题与各专用 Skill 示例的语义相似度。单一、明确的请求若最高分至少为
+`SKILL_ROUTE_FAST_MIN_SCORE`（默认 0.75），且与第二名差距至少为
+`SKILL_ROUTE_FAST_MIN_MARGIN`（默认 0.10），直接选择该 Skill。多步骤、跨轮更正、
+解释旧结果以及低置信度请求交给 LLM 判断最终目标和执行步骤。路由模型只接收
+本轮问题、最近五轮的简短摘要与成功工具参数、当前 EDF 的基本信息、语义候选，
+不接收完整对话或原始工具结果。程序会核对引用的旧轮次、Skill 工具权限、时间
+窗口、导联和步骤顺序；不能安全执行时要求澄清或说明参数无效。未加载 EDF 时
+仍不提供 EEG 分析工具。桌面端的路由轨迹会显示决策方式、候选分数与执行计划。
 
 选中的 Markdown 正文会作为带作用域的指令块，与对应问题合并到同一条 `user`
 消息中，并随该轮对话保留在模型历史中，直到旧轮次触发上下文压缩。这样动态
 Skill 不会作为新的 `system` 消息插入历史。每条 Skill 指令只约束同一消息中的
 用户请求及其工具调用循环。绑定 EEG 后，模型每轮都会看到
 顺序固定的完整运行时工具 schema 集合；Skill 消息明确列出本轮 `allowed_tools`，
-运行时只会执行该 Skill 允许的 MCP 工具。
+运行时只会执行该 Skill 允许的 MCP 工具；LLM 规划的复杂请求还必须按已校验的
+步骤和参数调用工具。
 
 DeepSeek 思考模式返回的 `reasoning_content` 会保存在内部 assistant 历史中，
 并在后续携带工具的请求中原样回传；它不会作为可见回答显示在桌面端。控制台的
